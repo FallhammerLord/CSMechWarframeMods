@@ -35,6 +35,18 @@ const ACTIONS = {
 /** Actions an observer (non-editable sheet) may still use, as on the default sheet. */
 const READ_ONLY_ACTIONS = new Set(["sendToChat"]);
 
+/**
+ * The popover lives on document.body, outside the sheet, so it can't inherit the sheet's
+ * theme. Copy the effective theme: the nearest `.themed` ancestor of the sheet (a per-document
+ * theme chosen in Sheet Configuration), else the body (the global UI theme).
+ */
+function applyTheme(el, sheet) {
+  const themed = sheet.element?.closest(".themed") ?? document.body;
+  const [, theme] = themed.className.match(/(?:^|\s)(theme-\w+)/) ?? [];
+  el.classList.remove("themed", "theme-light", "theme-dark");
+  if (theme) el.classList.add("themed", theme);
+}
+
 class CardPopoverManager {
   #el = null;
   #sheet = null;
@@ -92,6 +104,7 @@ class CardPopoverManager {
 
     const el = document.createElement("section");
     el.className = "ccs-popover";
+    applyTheme(el, sheet);
     el.setAttribute("role", "dialog");
     el.setAttribute("aria-label", cs.displayName(item));
     if ("popover" in HTMLElement.prototype) el.setAttribute("popover", "manual");
@@ -153,6 +166,7 @@ class CardPopoverManager {
     const scroller = this.#el.querySelector(".ccs-pop-desc");
     const scrollTop = scroller?.scrollTop ?? 0;
     this.#el.innerHTML = html;
+    applyTheme(this.#el, sheet);
     const next = this.#el.querySelector(".ccs-pop-desc");
     if (next) next.scrollTop = scrollTop;
     this.#position();

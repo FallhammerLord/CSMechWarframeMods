@@ -245,7 +245,7 @@ Choices made while building the module, following the "UX/UI standards first, tr
   - "Hide archived", bound to the actor's existing `hideArchive` setting.
 - **Armor totals and the dice tray** sit at the right end of the tab bar, to keep the header short.
 - **Unknown category values** (for example, a skill whose `sorting` matches no category) fall back to the type's first category instead of disappearing.
-- **Dark theme** is forced on the sheet, including the tab panels, whatever Foundry's light/dark UI setting is.
+- **Theme** follows Foundry: the per-document Theme in Sheet Configuration, else the global UI theme (the nearest `theme-light` / `theme-dark` class). The sheet has its own light and dark palettes covering every surface, and the popover copies the sheet's theme, since it lives outside the sheet.
 - **Pool names** can be renamed per actor in the settings tab (`flags.cypher-card-sheet.poolLabels`). The names apply on the sheet only; system chat messages keep the standard names.
 - **Movement per action** is a per-actor distance (`flags.cypher-card-sheet.movePerAction`) in scene units. When it is set, the system's token ruler label also shows how many move actions the path costs. The system's range bands and colours are unchanged, and actors without the setting are untouched. This is done by wrapping the ruler's label method, because the system's Token class creates its ruler class directly.
 - **Default grouping** is a client setting, "Default card grouping". The sheet remembers the chosen mode per actor for the rest of the session.

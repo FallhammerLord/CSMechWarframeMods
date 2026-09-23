@@ -19,7 +19,17 @@
   --ccs-accent-soft: rgba(220, 182, 94, 0.18);
   --ccs-info: #62c9e6;
   --ccs-danger: #e36a6a;
+  --ccs-danger-soft: rgba(227, 106, 106, 0.12);
   --ccs-focus: #8fd3ff;
+  --ccs-shadow: rgba(0, 0, 0, 0.45);
+  --ccs-portrait-bg: rgba(0, 0, 0, 0.3);
+  --ccs-badge-bg: rgba(0, 0, 0, 0.75);
+  --ccs-scheme: dark;
+
+  /* Pools */
+  --ccs-pool-might: #e0694f;
+  --ccs-pool-speed: #5fc38c;
+  --ccs-pool-intellect: #6aa6f0;
 
   /* Training level = rarity */
   --ccs-tr-inability: #cf5d55;
@@ -37,6 +47,48 @@
   --ccs-card-w: 148px;
   --ccs-card-h: 196px;
   --ccs-font: var(--font-primary, "Signika", sans-serif);
+}
+
+/*
+ * Light theme. Foundry marks the theme with `theme-light` / `theme-dark` on the application
+ * (per-document choice in Sheet Configuration) or on <body> (the global UI setting). The sheet
+ * follows the nearest one; an explicit per-document dark choice beats a light body.
+ */
+.ccs-sheet.theme-light,
+.theme-light .ccs-sheet:not(.theme-dark),
+.ccs-popover.theme-light {
+  --ccs-bg: #e9edf2;
+  --ccs-panel: rgba(255, 255, 255, 0.94);
+  --ccs-panel-2: rgba(246, 248, 251, 0.97);
+  --ccs-input: rgba(20, 30, 45, 0.05);
+  --ccs-line: #cdd5df;
+  --ccs-line-strong: #a7b3c2;
+  --ccs-text: #1c2430;
+  --ccs-muted: #525e6c;
+  --ccs-accent: #8f6410;
+  --ccs-accent-soft: rgba(143, 100, 16, 0.13);
+  --ccs-info: #1b6f8c;
+  --ccs-danger: #b3362f;
+  --ccs-danger-soft: rgba(179, 54, 47, 0.1);
+  --ccs-focus: #1c64c8;
+  --ccs-shadow: rgba(20, 30, 45, 0.18);
+  --ccs-portrait-bg: rgba(20, 30, 45, 0.06);
+  --ccs-badge-bg: rgba(255, 255, 255, 0.92);
+  --ccs-scheme: light;
+
+  --ccs-tr-inability: #b1403a;
+  --ccs-tr-practiced: #8a5824;
+  --ccs-tr-trained: #56687c;
+  --ccs-tr-specialized: #9c7400;
+
+  --ccs-fam-skills: #1a7d66;
+  --ccs-fam-combat: #b3521c;
+  --ccs-fam-abilities: #6a48c2;
+  --ccs-fam-equipment: #1b6f8c;
+
+  --ccs-pool-might: #b8452c;
+  --ccs-pool-speed: #2c8452;
+  --ccs-pool-intellect: #2f64b3;
 }
 
 /* --------------------------------------------------------------------------
@@ -58,7 +110,7 @@
   height: 100%;
   min-height: 0;
   isolation: isolate;
-  color-scheme: dark;
+  color-scheme: var(--ccs-scheme);
   background: var(--ccs-bg);
   color: var(--ccs-text);
 }
@@ -274,7 +326,7 @@
   object-fit: cover;
   border: 1px solid var(--ccs-accent);
   border-radius: var(--ccs-radius);
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--ccs-portrait-bg);
 }
 
 .ccs-portrait[role="button"] {
@@ -297,7 +349,7 @@
   padding: 0;
   border: 1px solid var(--ccs-accent);
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.75);
+  background: var(--ccs-badge-bg);
   color: var(--ccs-accent);
   font-size: 0.7rem;
 }
@@ -410,9 +462,9 @@
   background: var(--ccs-panel-2);
 }
 
-.ccs-pool.pool-might { --ccs-pool-color: #e0694f; }
-.ccs-pool.pool-speed { --ccs-pool-color: #5fc38c; }
-.ccs-pool.pool-intellect { --ccs-pool-color: #6aa6f0; }
+.ccs-pool.pool-might { --ccs-pool-color: var(--ccs-pool-might); }
+.ccs-pool.pool-speed { --ccs-pool-color: var(--ccs-pool-speed); }
+.ccs-pool.pool-intellect { --ccs-pool-color: var(--ccs-pool-intellect); }
 .ccs-pool.pool-additional { --ccs-pool-color: var(--ccs-accent); }
 
 .ccs-pool-head {
@@ -571,7 +623,7 @@
   padding: 3px 2px;
   border: 1px solid var(--ccs-line-strong);
   border-radius: var(--ccs-radius);
-  background: linear-gradient(180deg, rgba(98, 201, 230, 0.16), rgba(98, 201, 230, 0.04));
+  background: linear-gradient(180deg, color-mix(in srgb, var(--ccs-info) 16%, transparent), color-mix(in srgb, var(--ccs-info) 4%, transparent));
   color: var(--ccs-info);
   transition: filter 120ms, opacity 120ms, border-color 120ms;
 }
@@ -593,7 +645,7 @@
 
 .ccs-recovery-slot.is-next {
   border-color: var(--ccs-accent);
-  box-shadow: 0 0 8px rgba(220, 182, 94, 0.45);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--ccs-accent) 45%, transparent);
 }
 
 .ccs-recovery-slot.is-spent {
@@ -704,8 +756,13 @@
   border-bottom-color: var(--ccs-accent);
 }
 
-.ccs-scroll {
+/* Core themes paint some section/form backgrounds; the sheet's own tokens own every surface. */
+.ccs-sheet .ccs-scroll,
+.ccs-sheet .ccs-panel {
   background: transparent;
+}
+
+.ccs-scroll {
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
@@ -969,7 +1026,7 @@
   background:
     radial-gradient(120% 60% at 50% 0%, color-mix(in srgb, var(--frame) 18%, transparent), transparent 70%),
     linear-gradient(180deg, var(--ccs-panel-2), var(--ccs-panel));
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 2px 6px var(--ccs-shadow);
   transition: transform 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
 }
 
@@ -984,11 +1041,11 @@
 
 .ccs-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45), 0 0 0 1px color-mix(in srgb, var(--frame) 60%, transparent);
+  box-shadow: 0 4px 14px var(--ccs-shadow), 0 0 0 1px color-mix(in srgb, var(--frame) 60%, transparent);
 }
 
 .ccs-card.is-open {
-  box-shadow: 0 0 0 2px var(--ccs-accent), 0 4px 14px rgba(0, 0, 0, 0.45);
+  box-shadow: 0 0 0 2px var(--ccs-accent), 0 4px 14px var(--ccs-shadow);
 }
 
 .ccs-card.is-archived {
@@ -1221,7 +1278,8 @@
   background: var(--ccs-panel-2);
   color: var(--ccs-text);
   font-family: var(--ccs-font);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  color-scheme: var(--ccs-scheme);
+  box-shadow: 0 10px 30px var(--ccs-shadow);
 }
 
 .ccs-popover[popover]:not(:popover-open) {
@@ -1344,7 +1402,7 @@
 
 .ccs-popover .ccs-danger:hover {
   border-color: var(--ccs-danger);
-  background: rgba(227, 106, 106, 0.12);
+  background: var(--ccs-danger-soft);
 }
 
 @media (prefers-reduced-motion: reduce) {
