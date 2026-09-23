@@ -287,7 +287,13 @@ export async function resetStress(actor) {
 export function armorTotals(actor) {
   if (!actor.system.settings.combat.armor.active) return null;
   const a = isTeen(actor) ? actor.system.teen.combat.armor : actor.system.combat.armor;
-  return {rating: a.ratingTotal, cost: a.costTotal};
+  return {
+    rating: a.ratingTotal,
+    cost: a.costTotal,
+    // Per-actor image (module flag), defaulting to the system's armor icon.
+    img: actor.getFlag(MODULE_ID, "armorImage") || "systems/cyphersystem/icons/items/armor.svg",
+    imgPath: `flags.${MODULE_ID}.armorImage`
+  };
 }
 
 /* -------------------------------------------- */

@@ -25,13 +25,6 @@
         </button>
       {{/each}}
       <div class="ccs-tabs-extra">
-        {{#if armor}}
-          <span class="ccs-armor" title="{{localize 'CYPHERSYSTEM.Armor'}}">
-            <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
-            {{localize 'CYPHERSYSTEM.Armor'}} <strong>{{armor.rating}}</strong>
-            {{#if armor.cost}}<span class="ccs-muted">· {{localize 'CYPHERSYSTEM.SpeedCost'}}</span> <strong>{{armor.cost}}</strong>{{/if}}
-          </span>
-        {{/if}}
         {{#if (and dice editable)}}
           <span class="ccs-dice" role="group" aria-label="{{localize 'CCS.Status.Dice'}}">
             {{#each dice}}<button type="button" class="ccs-chip-btn" data-action="rollDice" data-dice="{{this}}">{{this}}</button>{{/each}}

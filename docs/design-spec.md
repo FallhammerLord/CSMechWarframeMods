@@ -239,7 +239,9 @@ Choices made while building the module, following the "UX/UI standards first, tr
 - **Frame colour** comes from the training level when the item has one, otherwise from its family (skills, combat, abilities, equipment).
 - **Small cards** are 140px tall with the item image full-bleed. Name, training and type are overlaid in light text on a dark shade, which stays dark in both themes for contrast. The only button is the centred d20; archive moved to the popover. The system's SVG icons are shown contained rather than cropped.
 - **Card sub-line removed.** Secondary facts such as attack range, armor speed cost and item level appear only in the popover. Temporary power shifts and permanent damage show as small icons next to the favorite star.
-- **Popover header** is centred, over the item image as a faint (16%) banner. There is no close button: clicking the card again, clicking outside, or pressing Escape closes it.
+- **Popover placement.** The large card covers the small one, with its bottom edge just above the small card's d20 so the d20 stays clickable. It grows upward, or downward from below the d20 when there's no room above. It unfolds from the card when opening and folds back when closing (170ms / 120ms; off with reduced motion).
+- **Popover layout.** Centred title over the item image as a faint (16%) banner. Clicking the title, clicking outside, or pressing Escape closes it; there is no close button. The actions are one row of icon buttons with tooltips, running right to left from a small archive button in the bottom-right corner.
+- **Delete** is Alt-click on the archive button, always with a confirmation, matching the system's default sheet. There is no separate delete button.
 - **Popover** has a fixed size: 360px wide, since card width is too narrow to read rules text, and 420px tall. The height shrinks only when the viewport can't fit it. It also closes on an outside click and when its card scrolls out of view. Keyboard opening moves focus into the popover, and Escape returns focus to the card.
 - **Toolbar** additions:
   - A family filter (All / Skills / Combat / Abilities / Equipment), which replaces the default sheet's item tabs.
@@ -253,6 +255,8 @@ Choices made while building the module, following the "UX/UI standards first, tr
 - **World sheet design is not used for backgrounds.** Its default (`cypher-blue`, a light gradient) was built for the system's light sheet and showed through this sheet's panels. Backgrounds and icons come only from the actor's own Custom Sheet Design, under a theme-coloured scrim of at least 60%. The world logo is still used, and the black logo is inverted on the dark theme.
 - **Tags** keep the system's model: four tag categories, each holding any number of tags.
 - **Features tab.** The card tab is called "Features" by default and can be renamed per actor in the settings tab.
-- **Minimum sheet width** is 840px, so the advancement row stays on one line.
+- **Minimum sheet width** is 840px, enforced when resizing, so the advancement row stays on one line and the header never overlaps.
+- **Armor** shows in the damage track panel: an image (per actor, click to change) with the armor total overlaid and the speed cost below.
+- **Recovery slots** glow on hover only.
 - **Default grouping** is a client setting, "Default card grouping". The sheet remembers the chosen mode per actor for the rest of the session.
 - **Untested in a live Foundry client.** The adapter and templates were exercised against the system's `template.json` in a Node harness, and the layout was checked in Chromium. The AppV2 lifecycle hooks (`_onChangeForm`, drag/drop wiring, `<prose-mirror>` saving) need a first in-client test.

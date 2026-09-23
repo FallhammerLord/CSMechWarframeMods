@@ -43,7 +43,9 @@
       "StressLevels": "Levels",
       "Supernatural": "Supernatural",
       "AltThree": "Alt-click: 3 at a time",
-      "Dice": "Dice"
+      "Dice": "Dice",
+      "ArmorImage": "Armor: click to change image",
+      "SpeedCostShort": "Speed cost {n}"
     },
     "Family": {
       "all": "All",
@@ -101,7 +103,9 @@
       "RollLevel": "Roll level",
       "CycleCypherType": "Click: change type. Alt-click: toggle fantastic.",
       "ArmorActive": "Worn",
-      "Favorite": "Pin to top"
+      "Favorite": "Pin to top",
+      "ArchiveAltDelete": "Archive (Alt-click: delete)",
+      "UnarchiveAltDelete": "Unarchive (Alt-click: delete)"
     },
     "Popover": {
       "Close": "Close",

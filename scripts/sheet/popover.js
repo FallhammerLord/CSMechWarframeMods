@@ -35,6 +35,17 @@ const ACTIONS = {
 /** Actions an observer (non-editable sheet) may still use, as on the default sheet. */
 const READ_ONLY_ACTIONS = new Set(["sendToChat"]);
 
+const reducedMotion = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+/** Play the close animation, then remove. The manager has already forgotten this element. */
+function animateOut(el) {
+  el.removeEventListener("click", el._ccsClick);
+  if (reducedMotion()) return el.remove();
+  el.classList.add("is-closing");
+  el.addEventListener("animationend", () => el.remove(), {once: true});
+  setTimeout(() => el.remove(), 300);
+}
+
 /**
  * The popover lives on document.body, outside the sheet, so it can't inherit the sheet's
  * theme. Copy the effective theme: the nearest `.themed` ancestor of the sheet (a per-document
@@ -76,9 +87,14 @@ class CardPopoverManager {
 
   #onClick = event => {
     const button = event.target.closest("[data-popover-action]");
-    if (!button || button.disabled) return;
-    event.preventDefault();
-    this.#runAction(button.dataset.popoverAction);
+    if (button) {
+      if (button.disabled) return;
+      event.preventDefault();
+      this.#runAction(button.dataset.popoverAction);
+      return;
+    }
+    // The large card sits over the small one, so its title acts as the card: click to close.
+    if (event.target.closest(".ccs-pop-header")) this.close({restoreFocus: event.detail === 0});
   };
 
   get isOpen() {
@@ -110,6 +126,7 @@ class CardPopoverManager {
     if ("popover" in HTMLElement.prototype) el.setAttribute("popover", "manual");
     el.innerHTML = html;
     el.addEventListener("click", this.#onClick);
+    el._ccsClick = this.#onClick;
     document.body.append(el);
     el.showPopover?.();
 
@@ -133,7 +150,7 @@ class CardPopoverManager {
     window.removeEventListener("keydown", this.#onKeyDown, {capture: true});
     document.removeEventListener("pointerdown", this.#onPointerDown, {capture: true});
     window.removeEventListener("resize", this.#onResize);
-    this.#el.remove();
+    animateOut(this.#el);
     const anchor = this.#anchor;
     this.#setAnchor(null);
     this.#el = this.#sheet = this.#itemId = this.#groupKey = null;
@@ -195,6 +212,11 @@ class CardPopoverManager {
     }
   }
 
+  /**
+   * Cover the small card with the large one, keeping the small card's d20 visible: the popover's
+   * bottom edge sits just above the d20 and it grows upward. When there isn't room above (card
+   * near the top of the screen), it opens downward from just below the d20 instead.
+   */
   #position() {
     const el = this.#el;
     const anchor = this.#anchor;
@@ -205,26 +227,26 @@ class CardPopoverManager {
     const viewport = anchor.closest(".ccs-scroll")?.getBoundingClientRect();
     if (!a.width || (viewport && (a.bottom < viewport.top || a.top > viewport.bottom))) return this.close();
 
+    const d20 = anchor.querySelector(".ccs-card-d20")?.getBoundingClientRect() ?? {top: a.bottom, bottom: a.bottom};
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const width = Math.min(WIDTH, vw - (2 * MARGIN));
     const left = Math.clamp(a.left + (a.width / 2) - (width / 2), MARGIN, vw - width - MARGIN);
-    const below = vh - a.bottom - GAP - MARGIN;
-    const above = a.top - GAP - MARGIN;
-    const placeBelow = below >= HEIGHT || below >= above;
-    const space = placeBelow ? below : above;
+    const above = d20.top - GAP - MARGIN;
+    const below = vh - d20.bottom - GAP - MARGIN;
+    const growUp = above >= MIN_HEIGHT || above >= below;
 
     el.style.width = `${width}px`;
     el.style.left = `${left}px`;
-    el.style.height = `${Math.max(Math.min(HEIGHT, space), MIN_HEIGHT)}px`;
-    if (placeBelow) {
-      el.style.top = `${a.bottom + GAP}px`;
-      el.style.bottom = "auto";
-    } else {
+    el.style.height = `${Math.max(Math.min(HEIGHT, growUp ? above : below), MIN_HEIGHT)}px`;
+    if (growUp) {
       el.style.top = "auto";
-      el.style.bottom = `${vh - a.top + GAP}px`;
+      el.style.bottom = `${vh - d20.top + GAP}px`;
+    } else {
+      el.style.top = `${d20.bottom + GAP}px`;
+      el.style.bottom = "auto";
     }
-    el.dataset.placement = placeBelow ? "below" : "above";
+    el.dataset.placement = growUp ? "up" : "down";
   }
 
   async #runAction(action) {
@@ -234,6 +256,8 @@ class CardPopoverManager {
     if (!item) return this.close();
     if (!sheet.isEditable && !READ_ONLY_ACTIONS.has(action)) return;
 
+    // Alt-click on archive deletes, as on the system's default sheet. Always confirmed.
+    if (action === "archiveItem" && game.keyboard.isModifierActive("Alt")) action = "deleteItem";
     if (action === "deleteItem") {
       const confirmed = await foundry.applications.api.DialogV2.confirm({
         window: {title: t("Popover.DeleteTitle")},

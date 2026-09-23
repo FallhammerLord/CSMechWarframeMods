@@ -245,7 +245,11 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   /*  Window lifecycle                            */
   /* -------------------------------------------- */
 
+  /** Narrowest width that keeps the header (advancement row, Tier/Effort/XP) from overlapping. */
+  static MIN_WIDTH = 840;
+
   setPosition(position) {
+    if (position?.width) position.width = Math.max(position.width, CypherCardSheet.MIN_WIDTH);
     const result = super.setPosition(position);
     CardPopover.reposition();
     return result;

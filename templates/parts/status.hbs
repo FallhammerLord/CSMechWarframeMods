@@ -51,7 +51,19 @@
   </div>
 
   <div class="ccs-strip">
-    <div class="ccs-panel-box ccs-damage">
+    <div class="ccs-panel-box ccs-damage{{#if armor}} has-armor{{/if}}">
+      {{#if armor}}
+        <div class="ccs-armor-tile">
+          <button type="button" class="ccs-armor-art" data-action="editImage" data-edit="{{armor.imgPath}}"
+                  data-tooltip="{{localize 'CCS.Status.ArmorImage'}}" aria-label="{{localize 'CCS.Status.ArmorImage'}}"
+                  {{#unless editable}}disabled{{/unless}}>
+            <img src="{{armor.img}}" alt="">
+            <span class="ccs-armor-rating" aria-label="{{localize 'CYPHERSYSTEM.Armor'}}">{{armor.rating}}</span>
+          </button>
+          <span class="ccs-armor-cost">{{localize 'CCS.Status.SpeedCostShort' n=armor.cost}}</span>
+        </div>
+      {{/if}}
+      <div class="ccs-damage-main">
       <label class="ccs-box-title" for="{{actor.id}}-damage">{{localize 'CCS.Status.DamageTrack'}}</label>
       <div class="ccs-damage-row">
         <select id="{{actor.id}}-damage" name="{{damageTrack.path}}">
@@ -68,6 +80,7 @@
       {{#if damageTrack.effects.length}}
         <p class="ccs-damage-effect" title="{{#each damageTrack.effects}}{{this}} {{/each}}">{{#each damageTrack.effects}}{{this}} {{/each}}</p>
       {{/if}}
+      </div>
     </div>
 
     <div class="ccs-panel-box ccs-recovery">

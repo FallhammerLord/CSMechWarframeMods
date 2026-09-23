@@ -9,23 +9,19 @@
   {{/if}}
 </header>
 <div class="ccs-pop-desc">{{{description}}}</div>
-{{#if controls.length}}
-  <div class="ccs-pop-controls">
-    {{#each controls}}
-      <button type="button" data-popover-action="{{action}}" title="{{title}}"{{#if pressed}} aria-pressed="true" class="is-on"{{/if}}>
-        <i class="{{icon}}"{{#if color}} style="color: {{color}};"{{/if}} aria-hidden="true"></i> {{label}}
-      </button>
-    {{/each}}
-  </div>
-{{/if}}
-{{#if editable}}
-  <footer class="ccs-pop-footer">
-    <button type="button" data-popover-action="archiveItem">
+{{!-- One row, stacked right to left: archive in the corner, then the item's controls. --}}
+<footer class="ccs-pop-bar">
+  {{#if editable}}
+    <button type="button" class="ccs-pop-archive" data-popover-action="archiveItem"
+            data-tooltip="{{#if card.archived}}{{localize 'CCS.Action.UnarchiveAltDelete'}}{{else}}{{localize 'CCS.Action.ArchiveAltDelete'}}{{/if}}"
+            aria-label="{{#if card.archived}}{{localize 'CCS.Action.Unarchive'}}{{else}}{{localize 'CCS.Action.Archive'}}{{/if}}">
       <i class="fa-solid {{#if card.archived}}fa-box-open{{else}}fa-box-archive{{/if}}" aria-hidden="true"></i>
-      {{#if card.archived}}{{localize 'CCS.Action.Unarchive'}}{{else}}{{localize 'CCS.Action.Archive'}}{{/if}}
     </button>
-    <button type="button" class="ccs-danger" data-popover-action="deleteItem">
-      <i class="fa-solid fa-trash" aria-hidden="true"></i> {{localize 'CCS.Action.Delete'}}
+  {{/if}}
+  {{#each controls}}
+    <button type="button" class="ccs-pop-control{{#if pressed}} is-on{{/if}}" data-popover-action="{{action}}"
+            data-tooltip="{{label}}{{#if (ne title label)}}: {{title}}{{/if}}" aria-label="{{label}}"{{#if pressed}} aria-pressed="true"{{/if}}>
+      <i class="{{icon}}"{{#if color}} style="color: {{color}};"{{/if}} aria-hidden="true"></i>
     </button>
-  </footer>
-{{/if}}
+  {{/each}}
+</footer>
