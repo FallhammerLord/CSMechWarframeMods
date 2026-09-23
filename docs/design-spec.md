@@ -228,3 +228,21 @@ Only the look changes.
 ## 11. Principles
 
 - **Leave the system's roll engine alone.** The All-in-One roller and the recovery roll macro are called with the same arguments the default sheet uses. They are never wrapped, patched or reimplemented. Where our UI and their chat output disagree (for example, custom recovery labels), the system's output wins.
+
+---
+
+## 12. Implementation notes (v0.1.0)
+
+Choices made while building the module, following the "UX/UI standards first, troubleshoot after" rule.
+
+- **Card layout.** The value slot sits top-left, marks (cypher type, spell, favorite) top-right, then the image, name, sub-line, and a footer with training and type. The action bar has archive on the left and the d20 in the centre. Non-rolling items keep the d20 in a dashed style, and its tooltip reads "Send to chat".
+- **Frame colour** comes from the training level when the item has one, otherwise from its family (skills, combat, abilities, equipment).
+- **Popover** is 360px wide, since card width is too narrow to read rules text. It also closes on an outside click and when its card scrolls out of view. Keyboard opening moves focus into the popover, and Escape returns focus to the card.
+- **Toolbar** additions:
+  - A family filter (All / Skills / Combat / Abilities / Equipment), which replaces the default sheet's item tabs.
+  - A client-side search.
+  - "Hide archived", bound to the actor's existing `hideArchive` setting.
+- **Armor totals and the dice tray** sit at the right end of the tab bar, to keep the header short.
+- **Unknown category values** (for example, a skill whose `sorting` matches no category) fall back to the type's first category instead of disappearing.
+- **Default grouping** is a client setting, "Default card grouping". The sheet remembers the chosen mode per actor for the rest of the session.
+- **Untested in a live Foundry client.** The adapter and templates were exercised against the system's `template.json` in a Node harness, and the layout was checked in Chromium. The AppV2 lifecycle hooks (`_onChangeForm`, drag/drop wiring, `<prose-mirror>` saving) need a first in-client test.

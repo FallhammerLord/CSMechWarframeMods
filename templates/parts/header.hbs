@@ -1,0 +1,80 @@
+<header class="ccs-header">
+  <div class="ccs-portrait-wrap">
+    <img class="ccs-portrait" src="{{identity.img}}" alt="{{identity.name}}"
+         {{#if editable}}data-action="editImage" data-edit="{{identity.imgPath}}" role="button" tabindex="0" title="{{localize 'CCS.Header.EditImage'}}"{{/if}}>
+    <div class="ccs-portrait-badges">
+      {{#if state.exclusiveTag}}
+        <span class="ccs-badge" title="{{localize 'CYPHERSYSTEM.ExclusiveTag'}}: {{state.exclusiveTag}}"><i class="fa-solid fa-hashtag"></i></span>
+      {{/if}}
+      {{#if state.staticStatsLocked}}
+        <span class="ccs-badge" title="{{localize 'CCS.Header.StatsLocked'}}"><i class="fa-solid fa-lock"></i></span>
+      {{/if}}
+      {{#if state.multiRoll}}
+        <button type="button" class="ccs-badge ccs-badge-action" data-action="endMultiRoll" title="{{localize 'CYPHERSYSTEM.MultiRollInProgress'}}"
+                {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-dice"></i></button>
+      {{/if}}
+    </div>
+  </div>
+
+  <div class="ccs-identity">
+    <div class="ccs-row">
+      <input class="ccs-name" type="text" name="{{identity.namePath}}" value="{{identity.name}}"
+             placeholder="{{localize 'CYPHERSYSTEM.Name'}}" aria-label="{{localize 'CYPHERSYSTEM.Name'}}">
+      {{#if identity.showFormSelect}}
+        <select name="system.basic.unmaskedForm" aria-label="{{localize 'CCS.Header.Form'}}">
+          {{selectOptions settings.choices.unmaskedForm selected=system.basic.unmaskedForm}}
+        </select>
+      {{/if}}
+    </div>
+    <div class="ccs-sentence">
+      <span class="ccs-joiner">{{identity.isLabel}}</span>
+      <input type="text" name="{{identity.descriptorPath}}" value="{{identity.descriptor}}"
+             placeholder="{{localize 'CYPHERSYSTEM.Descriptor'}}" aria-label="{{localize 'CYPHERSYSTEM.Descriptor'}}">
+      {{#unless identity.teen}}
+        <input type="text" name="system.basic.type" value="{{identity.type}}"
+               placeholder="{{localize 'CYPHERSYSTEM.Type'}}" aria-label="{{localize 'CYPHERSYSTEM.Type'}}">
+        <span class="ccs-joiner">{{localize 'CYPHERSYSTEM.Who'}}</span>
+        <input type="text" name="system.basic.focus" value="{{identity.focus}}" {{#if identity.focusLocked}}disabled{{/if}}
+               placeholder="{{localize 'CYPHERSYSTEM.Focus'}}" aria-label="{{localize 'CYPHERSYSTEM.Focus'}}">
+        {{#if identity.showSentence}}
+          <input type="text" name="system.basic.additionalSentence" value="{{identity.sentence}}" {{#if identity.focusLocked}}disabled{{/if}}
+                 placeholder="{{identity.sentencePlaceholder}}" aria-label="{{identity.sentencePlaceholder}}">
+        {{/if}}
+      {{/unless}}
+    </div>
+    <div class="ccs-advancement">
+      <span class="ccs-label">{{localize 'CCS.Header.Advancement'}}</span>
+      {{#each identity.advancement}}
+        <label class="ccs-check">
+          <input type="checkbox" name="{{path}}" {{checked checked}} {{#if @root.locked}}disabled{{/if}}> {{label}}
+        </label>
+      {{/each}}
+      <button type="button" class="ccs-icon-btn" data-action="resetAdvancement" title="{{localize 'CYPHERSYSTEM.ResetAdvancement'}}"
+              aria-label="{{localize 'CYPHERSYSTEM.ResetAdvancement'}}" {{#unless editable}}disabled{{/unless}}>
+        <i class="fa-solid fa-rotate"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="ccs-vitals">
+    <label class="ccs-vital">
+      <span>{{localize 'CYPHERSYSTEM.Tier'}}</span>
+      <input type="number" name="system.basic.tier" value="{{identity.tier}}" {{#if locked}}disabled{{/if}}>
+    </label>
+    <label class="ccs-vital">
+      <span>{{localize 'CYPHERSYSTEM.Effort'}}</span>
+      <input type="number" name="system.basic.effort" value="{{identity.effort}}" {{#if locked}}disabled{{/if}}
+             class="{{#if state.multiRollEffort}}is-changed{{/if}}">
+    </label>
+    <div class="ccs-vital">
+      <label for="{{actor.id}}-xp">{{localize 'CYPHERSYSTEM.XP'}}</label>
+      <div class="ccs-stepper">
+        <button type="button" class="ccs-icon-btn" data-action="xpAdjust" data-dir="-1" aria-label="{{localize 'CCS.Header.XpDown'}}"
+                title="{{localize 'CCS.Action.AltTen'}}" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-minus"></i></button>
+        <input id="{{actor.id}}-xp" type="number" name="system.basic.xp" value="{{identity.xp}}">
+        <button type="button" class="ccs-icon-btn" data-action="xpAdjust" data-dir="1" aria-label="{{localize 'CCS.Header.XpUp'}}"
+                title="{{localize 'CCS.Action.AltTen'}}" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-plus"></i></button>
+      </div>
+    </div>
+  </div>
+</header>

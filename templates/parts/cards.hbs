@@ -1,0 +1,101 @@
+{{#*inline "ccsChip"}}
+  <span class="ccs-chip{{#if active}} is-active{{/if}}{{#if exclusive}} is-exclusive{{/if}}{{#if archived}} is-archived{{/if}}" data-item-id="{{id}}">
+    <button type="button" class="ccs-chip-toggle" data-action="toggleTag" aria-pressed="{{active}}"
+            title="{{#if exclusive}}{{localize 'CYPHERSYSTEM.ExclusiveTag'}}{{/if}}" {{#unless @root.editable}}disabled{{/unless}}>
+      {{#if (eq type "recursion")}}@{{else}}#{{/if}}{{name}}
+    </button>
+    {{#if @root.editable}}
+      <button type="button" class="ccs-chip-btn" data-action="editTag" title="{{localize 'CCS.Action.Edit'}}" aria-label="{{localize 'CCS.Action.Edit'}} {{name}}"><i class="fa-solid fa-pen"></i></button>
+      <button type="button" class="ccs-chip-btn" data-action="deleteTag" title="{{localize 'CCS.Action.Delete'}}" aria-label="{{localize 'CCS.Action.Delete'}} {{name}}"><i class="fa-solid fa-trash"></i></button>
+    {{/if}}
+  </span>
+{{/inline}}
+
+<div class="ccs-toolbar">
+  <div class="ccs-segment" role="group" aria-label="{{localize 'CCS.Grid.Filter'}}">
+    {{#each families}}
+      <button type="button" class="{{#if active}}active{{/if}}" data-action="setFamily" data-family="{{id}}" aria-pressed="{{active}}">{{label}}</button>
+    {{/each}}
+  </div>
+  <label class="ccs-field">
+    <span>{{localize 'CCS.Grid.GroupBy'}}</span>
+    <select data-ccs-local data-ccs-group-mode>{{selectOptions groupModes selected=view.mode}}</select>
+  </label>
+  <label class="ccs-field ccs-search">
+    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+    <input type="search" data-ccs-local data-ccs-search placeholder="{{localize 'CCS.Grid.Search'}}" aria-label="{{localize 'CCS.Grid.Search'}}">
+  </label>
+  <label class="ccs-check">
+    <input type="checkbox" name="system.settings.general.hideArchive" {{checked hideArchive}}> {{localize 'CCS.Grid.HideArchived'}}
+  </label>
+  {{#if editable}}
+    <button type="button" class="ccs-btn" data-action="createItem"><i class="fa-solid fa-plus"></i> {{localize 'CCS.Grid.AddItem'}}</button>
+  {{/if}}
+</div>
+
+{{#if tagBar.show}}
+  <div class="ccs-tagbar">
+    {{#if tagBar.recursions}}
+      <div class="ccs-tag-cat">
+        <span class="ccs-tag-cat-label">{{tagBar.recursions.label}}</span>
+        {{#each tagBar.recursions.chips}}{{> ccsChip}}{{/each}}
+        {{#if @root.editable}}
+          <button type="button" class="ccs-icon-btn" data-action="createItem" data-types="recursion"
+                  title="{{localize 'CCS.Grid.AddRecursion'}}" aria-label="{{localize 'CCS.Grid.AddRecursion'}}"><i class="fa-solid fa-plus"></i></button>
+        {{/if}}
+      </div>
+    {{/if}}
+    {{#each tagBar.categories}}
+      <div class="ccs-tag-cat">
+        <span class="ccs-tag-cat-label">{{label}}</span>
+        {{#each chips}}{{> ccsChip}}{{/each}}
+        {{#if @root.editable}}
+          <button type="button" class="ccs-icon-btn" data-action="createItem" data-types="tag" data-sorting="{{sorting}}"
+                  title="{{localize 'CCS.Grid.AddTag'}}" aria-label="{{localize 'CCS.Grid.AddTag'}}"><i class="fa-solid fa-plus"></i></button>
+        {{/if}}
+      </div>
+    {{/each}}
+  </div>
+{{/if}}
+
+{{#if currency}}
+  <div class="ccs-currency">
+    <i class="fa-solid fa-coins" aria-hidden="true"></i>
+    {{#each currency.fields}}
+      <label class="ccs-field">
+        {{#if label}}<span>{{label}}</span>{{/if}}
+        <input type="number" name="{{path}}" value="{{value}}" aria-label="{{#if label}}{{label}}{{else}}{{localize 'CYPHERSYSTEM.Currency'}}{{/if}}">
+      </label>
+    {{/each}}
+  </div>
+{{/if}}
+
+{{#each groups}}
+  <section class="ccs-group{{#if family}} fam-{{family}}{{/if}}" {{#if sorting}}id="{{sorting}}"{{/if}} data-group="{{key}}">
+    <header class="ccs-group-head">
+      <h3>{{label}}</h3>
+      <span class="ccs-count" title="{{localize 'CCS.Grid.Count'}}">{{count}}</span>
+      {{#if cypherLimit}}
+        <label class="ccs-limit">
+          <span>{{localize 'CCS.Grid.CypherLimit'}}</span>
+          <input type="text" name="{{cypherLimit.path}}" value="{{cypherLimit.value}}" {{#if @root.locked}}disabled{{/if}}>
+        </label>
+      {{/if}}
+      {{#if @root.editable}}
+        <button type="button" class="ccs-icon-btn ccs-group-add" data-action="createItem" data-types="{{createTypes}}" data-sorting="{{createSorting}}"
+                title="{{localize 'CCS.Grid.AddTo' group=label}}" aria-label="{{localize 'CCS.Grid.AddTo' group=label}}">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      {{/if}}
+    </header>
+    <div class="ccs-grid">
+      {{#each items}}
+        {{> "modules/cypher-card-sheet/templates/parts/card.hbs" card=this groupKey=../key editable=@root.editable}}
+      {{else}}
+        <div class="ccs-empty">{{localize 'CCS.Grid.Empty'}}</div>
+      {{/each}}
+    </div>
+  </section>
+{{else}}
+  <p class="ccs-empty-all">{{localize 'CCS.Grid.NoItems'}}</p>
+{{/each}}

@@ -1,0 +1,35 @@
+<article class="ccs-card fam-{{card.family}} type-{{card.type}}{{#if card.training}} tr-{{card.training.key}}{{/if}}{{#if card.archived}} is-archived{{/if}}{{#if card.inactive}} is-inactive{{/if}}"
+         data-item-id="{{card.id}}" data-group-key="{{groupKey}}" data-search="{{card.searchText}}" {{#if editable}}draggable="true"{{/if}}>
+  <button type="button" class="ccs-card-body" data-action="togglePopover" aria-expanded="false" aria-haspopup="dialog">
+    <span class="ccs-card-top">
+      <span class="ccs-card-value">{{card.value}}</span>
+      <span class="ccs-card-marks">
+        {{#if card.cypherType}}<i class="{{card.cypherType.icon}}" style="color: {{card.cypherType.color}};" title="{{card.cypherType.title}}"></i>{{/if}}
+        {{#if card.spell}}<i class="fa-solid fa-book-sparkles" title="{{localize 'CYPHERSYSTEM.Spells'}}"></i>{{/if}}
+        {{#if card.favorite}}<i class="fa-solid fa-star ccs-fav" title="{{localize 'CCS.Action.Favorite'}}"></i>{{/if}}
+      </span>
+    </span>
+    <span class="ccs-card-art"><img src="{{card.img}}" alt="" loading="lazy"></span>
+    <span class="ccs-card-name">{{card.name}}</span>
+    <span class="ccs-card-sub">{{card.sub}}</span>
+    <span class="ccs-card-foot">
+      <span class="ccs-card-training">{{card.training.label}}</span>
+      <span class="ccs-card-type"><i class="{{card.typeIcon}}" aria-hidden="true"></i> {{card.typeLabel}}</span>
+    </span>
+  </button>
+  <div class="ccs-card-actions">
+    <button type="button" class="ccs-card-archive" data-action="archiveItem"
+            title="{{#if card.archived}}{{localize 'CCS.Action.Unarchive'}}{{else}}{{localize 'CCS.Action.Archive'}}{{/if}}"
+            aria-label="{{#if card.archived}}{{localize 'CCS.Action.Unarchive'}}{{else}}{{localize 'CCS.Action.Archive'}}{{/if}}: {{card.name}}"
+            {{#unless editable}}disabled{{/unless}}>
+      <i class="fa-solid {{#if card.archived}}fa-box-open{{else}}fa-box-archive{{/if}}"></i>
+    </button>
+    <button type="button" class="ccs-card-d20{{#unless card.canRoll}} is-chat{{/unless}}" data-action="rollItem"
+            title="{{#if card.canRoll}}{{localize 'CCS.Action.Roll'}}{{else}}{{localize 'CCS.Action.SendToChat'}}{{/if}}"
+            aria-label="{{#if card.canRoll}}{{localize 'CCS.Action.Roll'}}{{else}}{{localize 'CCS.Action.SendToChat'}}{{/if}}: {{card.name}}"
+            {{#if card.canRoll}}{{#unless editable}}disabled{{/unless}}{{/if}}>
+      <i class="fa-solid fa-dice-d20"></i>
+    </button>
+    <span class="ccs-card-actions-spacer" aria-hidden="true"></span>
+  </div>
+</article>

@@ -1,0 +1,136 @@
+<section class="ccs-status">
+  <div class="ccs-pools">
+    {{#each pools}}
+      <div class="ccs-pool pool-{{key}}">
+        <div class="ccs-pool-head">
+          <span class="ccs-pool-label">{{label}}</span>
+          {{#if rollable}}
+            <button type="button" class="ccs-icon-btn ccs-pool-roll" data-action="statRoll" data-pool="{{key}}"
+                    title="{{localize 'CCS.Pool.Roll' pool=label}}" aria-label="{{localize 'CCS.Pool.Roll' pool=label}}"
+                    {{#unless @root.editable}}disabled{{/unless}}>
+              <i class="fa-solid fa-dice-d20"></i>
+            </button>
+          {{/if}}
+        </div>
+        <div class="ccs-pool-values">
+          <input class="ccs-pool-value" type="number" name="{{valuePath}}" value="{{value}}" aria-label="{{label}}">
+          <span class="ccs-pool-sep" aria-hidden="true">{{@root.poolSeparator}}</span>
+          <input class="ccs-pool-max" type="number" name="{{maxPath}}" value="{{max}}" aria-label="{{localize 'CCS.Pool.Max' pool=label}}"
+                 {{#if @root.locked}}disabled{{/if}}>
+        </div>
+        <div class="ccs-pool-foot">
+          <div class="ccs-pool-controls">
+            <button type="button" class="ccs-icon-btn" data-action="poolAdjust" data-pool="{{key}}" data-dir="-1"
+                    title="{{localize 'CCS.Action.AltTen'}}" aria-label="{{localize 'CCS.Pool.Down' pool=label}}" {{#unless @root.editable}}disabled{{/unless}}>
+              <i class="fa-solid fa-minus"></i>
+            </button>
+            <button type="button" class="ccs-icon-btn" data-action="poolAdjust" data-pool="{{key}}" data-dir="1"
+                    title="{{localize 'CCS.Action.AltTen'}}" aria-label="{{localize 'CCS.Pool.Up' pool=label}}" {{#unless @root.editable}}disabled{{/unless}}>
+              <i class="fa-solid fa-plus"></i>
+            </button>
+            <button type="button" class="ccs-icon-btn" data-action="poolReset" data-pool="{{key}}"
+                    title="{{localize 'CCS.Pool.Reset' pool=label}}" aria-label="{{localize 'CCS.Pool.Reset' pool=label}}" {{#unless @root.editable}}disabled{{/unless}}>
+              <i class="fa-solid fa-rotate"></i>
+            </button>
+          </div>
+          {{#if hasEdge}}
+            <label class="ccs-edge">
+              <span>{{localize 'CYPHERSYSTEM.Edge'}}</span>
+              <input type="number" name="{{edgePath}}" value="{{edge}}" class="{{#if edgeChanged}}is-changed{{/if}}"
+                     {{#if @root.locked}}disabled{{/if}}>
+            </label>
+          {{/if}}
+        </div>
+      </div>
+    {{/each}}
+    {{#if logo}}
+      <div class="ccs-pool ccs-logo-slot" aria-hidden="true">
+        <img src="{{logo.src}}" style="opacity: {{logo.opacity}};" alt="">
+      </div>
+    {{/if}}
+  </div>
+
+  <div class="ccs-strip">
+    <div class="ccs-panel-box ccs-damage">
+      <label class="ccs-box-title" for="{{actor.id}}-damage">{{localize 'CCS.Status.DamageTrack'}}</label>
+      <div class="ccs-damage-row">
+        <select id="{{actor.id}}-damage" name="{{damageTrack.path}}">
+          {{selectOptions damageTrack.choices selected=damageTrack.state}}
+        </select>
+        {{#if damageTrack.apply}}
+          <button type="button" class="ccs-toggle{{#if damageTrack.apply.on}} is-on{{/if}}" data-action="toggleDamageApply"
+                  data-kind="{{damageTrack.apply.kind}}" aria-pressed="{{damageTrack.apply.on}}"
+                  title="{{localize 'CYPHERSYSTEM.ApplyStatusToRoll'}}" {{#unless editable}}disabled{{/unless}}>
+            <i class="fa-solid fa-check"></i> {{localize 'CCS.Status.ApplyToRolls'}}
+          </button>
+        {{/if}}
+      </div>
+      {{#if damageTrack.effects.length}}
+        <p class="ccs-damage-effect" title="{{#each damageTrack.effects}}{{this}} {{/each}}">{{#each damageTrack.effects}}{{this}} {{/each}}</p>
+      {{/if}}
+    </div>
+
+    <div class="ccs-panel-box ccs-recovery">
+      <div class="ccs-box-title-row">
+        <span class="ccs-box-title">{{localize 'CCS.Status.Recovery'}}</span>
+        <label class="ccs-formula">
+          <span class="ccs-visually-hidden">{{localize 'CCS.Status.RecoveryFormula'}}</span>
+          <input type="text" name="{{recovery.formula.path}}" value="{{recovery.formula.value}}" placeholder="1d6+1"
+                 title="{{localize 'CCS.Status.RecoveryFormula'}}" {{#if locked}}disabled{{/if}}>
+        </label>
+        <button type="button" class="ccs-icon-btn" data-action="recoveryReset" title="{{localize 'CCS.Status.RecoveryReset'}}"
+                aria-label="{{localize 'CCS.Status.RecoveryReset'}}" {{#unless editable}}disabled{{/unless}}>
+          <i class="fa-solid fa-rotate"></i>
+        </button>
+      </div>
+      <div class="ccs-recovery-row">
+        {{#each recovery.slots}}
+          <button type="button" class="ccs-recovery-slot{{#if spent}} is-spent{{/if}}{{#if next}} is-next{{/if}}"
+                  data-action="recoverySlot" data-key="{{key}}" data-spent="{{spent}}"
+                  title="{{#if spent}}{{localize 'CCS.Status.RecoveryUnspend' label=label}}{{else}}{{localize 'CCS.Status.RecoveryRoll' label=label}}{{/if}}"
+                  aria-label="{{label}}: {{#if spent}}{{localize 'CCS.Status.Spent'}}{{else}}{{localize 'CCS.Status.Available'}}{{/if}}"
+                  {{#unless @root.editable}}disabled{{/unless}}>
+            <i class="{{icon}}" aria-hidden="true"></i>
+            <span class="ccs-recovery-label">{{label}}</span>
+            {{#if spent}}<i class="ccs-recovery-check fa-solid fa-check" aria-hidden="true"></i>{{/if}}
+          </button>
+        {{/each}}
+      </div>
+    </div>
+
+    {{#if stress}}
+      <div class="ccs-panel-box ccs-stress">
+        <div class="ccs-box-title-row">
+          <span class="ccs-box-title">{{stress.label}}</span>
+          <button type="button" class="ccs-icon-btn" data-action="stressReset" title="{{localize 'CYPHERSYSTEM.ResetStress'}}"
+                  aria-label="{{localize 'CYPHERSYSTEM.ResetStress'}}" {{#unless editable}}disabled{{/unless}}>
+            <i class="fa-solid fa-rotate"></i>
+          </button>
+        </div>
+        <div class="ccs-counter-row">
+          <div class="ccs-counter">
+            <span class="ccs-counter-label">{{localize 'CCS.Status.Stress'}}</span>
+            <button type="button" class="ccs-icon-btn" data-action="stressAdjust" data-field="quantity" data-dir="-1" title="{{localize 'CCS.Status.AltThree'}}" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-minus"></i></button>
+            <span class="ccs-counter-value">{{stress.quantity}}</span>
+            <button type="button" class="ccs-icon-btn" data-action="stressAdjust" data-field="quantity" data-dir="1" title="{{localize 'CCS.Status.AltThree'}}" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-plus"></i></button>
+          </div>
+          <div class="ccs-counter">
+            <span class="ccs-counter-label">{{localize 'CCS.Status.StressLevels'}}</span>
+            <button type="button" class="ccs-icon-btn" data-action="stressAdjust" data-field="levels" data-dir="-1" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-minus"></i></button>
+            <span class="ccs-counter-value">{{stress.levels}}</span>
+            <button type="button" class="ccs-icon-btn" data-action="stressAdjust" data-field="levels" data-dir="1" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-plus"></i></button>
+          </div>
+          {{#if stress.supernatural}}
+            <div class="ccs-counter" title="{{stress.supernatural.label}}">
+              <span class="ccs-counter-label">{{localize 'CCS.Status.Supernatural'}}</span>
+              <button type="button" class="ccs-icon-btn" data-action="stressAdjust" data-field="supernatural" data-dir="-1" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-minus"></i></button>
+              <span class="ccs-counter-value">{{stress.supernatural.levels}}</span>
+              <button type="button" class="ccs-icon-btn" data-action="stressAdjust" data-field="supernatural" data-dir="1" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-plus"></i></button>
+            </div>
+          {{/if}}
+        </div>
+      </div>
+    {{/if}}
+
+  </div>
+</section>

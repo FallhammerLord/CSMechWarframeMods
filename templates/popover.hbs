@@ -1,0 +1,36 @@
+<header class="ccs-pop-header">
+  <img class="ccs-pop-img" src="{{card.img}}" alt="">
+  <div class="ccs-pop-title">
+    <h3>{{card.name}}</h3>
+    <span class="ccs-pop-type"><i class="{{card.typeIcon}}" aria-hidden="true"></i> {{card.typeLabel}}</span>
+  </div>
+  <button type="button" class="ccs-icon-btn" data-popover-action="close" title="{{localize 'CCS.Popover.Close'}}" aria-label="{{localize 'CCS.Popover.Close'}}">
+    <i class="fa-solid fa-xmark"></i>
+  </button>
+</header>
+{{#if facts.length}}
+  <ul class="ccs-pop-facts">
+    {{#each facts}}<li>{{this}}</li>{{/each}}
+  </ul>
+{{/if}}
+<div class="ccs-pop-desc">{{{description}}}</div>
+{{#if controls.length}}
+  <div class="ccs-pop-controls">
+    {{#each controls}}
+      <button type="button" data-popover-action="{{action}}" title="{{title}}"{{#if pressed}} aria-pressed="true" class="is-on"{{/if}}>
+        <i class="{{icon}}"{{#if color}} style="color: {{color}};"{{/if}} aria-hidden="true"></i> {{label}}
+      </button>
+    {{/each}}
+  </div>
+{{/if}}
+{{#if editable}}
+  <footer class="ccs-pop-footer">
+    <button type="button" data-popover-action="archiveItem">
+      <i class="fa-solid {{#if card.archived}}fa-box-open{{else}}fa-box-archive{{/if}}" aria-hidden="true"></i>
+      {{#if card.archived}}{{localize 'CCS.Action.Unarchive'}}{{else}}{{localize 'CCS.Action.Archive'}}{{/if}}
+    </button>
+    <button type="button" class="ccs-danger" data-popover-action="deleteItem">
+      <i class="fa-solid fa-trash" aria-hidden="true"></i> {{localize 'CCS.Action.Delete'}}
+    </button>
+  </footer>
+{{/if}}

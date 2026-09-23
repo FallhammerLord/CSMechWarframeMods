@@ -1,0 +1,65 @@
+<div class="ccs-root{{#if identity.teen}} is-teen{{/if}}{{#unless editable}} is-readonly{{/unless}}">
+  {{#if design.background}}<div class="ccs-backdrop" style="background: {{design.background}};"></div>{{/if}}
+  {{#if design.scrim}}<div class="ccs-scrim" style="opacity: {{design.scrim}};"></div>{{/if}}
+  {{#if design.icon}}<img class="ccs-bg-icon" src="{{design.icon.src}}" style="opacity: {{design.icon.opacity}};" alt="">{{/if}}
+
+  {{#if limited}}
+    <header class="ccs-header ccs-header-limited">
+      <img class="ccs-portrait" src="{{identity.img}}" alt="">
+      <h1 class="ccs-limited-name">{{identity.name}}</h1>
+    </header>
+    <div class="ccs-scroll">
+      <section class="ccs-panel ccs-text-panel">
+        <div class="ccs-enriched">{{{description}}}</div>
+      </section>
+    </div>
+  {{else}}
+    {{> "modules/cypher-card-sheet/templates/parts/header.hbs"}}
+    {{> "modules/cypher-card-sheet/templates/parts/status.hbs"}}
+
+    <nav class="ccs-tabs" role="tablist" aria-label="{{localize 'CCS.Tab.Label'}}">
+      {{#each tabs}}
+        <button type="button" class="ccs-tab{{#if active}} active{{/if}}" data-action="setTab" data-tab="{{id}}"
+                role="tab" aria-selected="{{active}}" title="{{label}}">
+          <i class="{{icon}}" aria-hidden="true"></i><span>{{label}}</span>
+        </button>
+      {{/each}}
+      <div class="ccs-tabs-extra">
+        {{#if armor}}
+          <span class="ccs-armor" title="{{localize 'CYPHERSYSTEM.Armor'}}">
+            <i class="fa-solid fa-shield-halved" aria-hidden="true"></i>
+            {{localize 'CYPHERSYSTEM.Armor'}} <strong>{{armor.rating}}</strong>
+            {{#if armor.cost}}<span class="ccs-muted">· {{localize 'CYPHERSYSTEM.SpeedCost'}}</span> <strong>{{armor.cost}}</strong>{{/if}}
+          </span>
+        {{/if}}
+        {{#if (and dice editable)}}
+          <span class="ccs-dice" role="group" aria-label="{{localize 'CCS.Status.Dice'}}">
+            {{#each dice}}<button type="button" class="ccs-chip-btn" data-action="rollDice" data-dice="{{this}}">{{this}}</button>{{/each}}
+          </span>
+        {{/if}}
+      </div>
+    </nav>
+
+    <div class="ccs-scroll">
+      <section class="ccs-panel" data-tab="cards" role="tabpanel" {{#unless (eq view.tab "cards")}}hidden{{/unless}}>
+        {{> "modules/cypher-card-sheet/templates/parts/cards.hbs"}}
+      </section>
+
+      {{#each text as |entry key|}}
+        <section class="ccs-panel ccs-text-panel" data-tab="{{key}}" role="tabpanel" {{#unless (eq @root.view.tab key)}}hidden{{/unless}}>
+          {{#if (or (ne key "gmNotes") @root.isGM)}}
+            {{#if @root.editable}}
+              <prose-mirror name="{{entry.path}}" value="{{entry.source}}" document-uuid="{{@root.actor.uuid}}"></prose-mirror>
+            {{else}}
+              <div class="ccs-enriched">{{{entry.enriched}}}</div>
+            {{/if}}
+          {{/if}}
+        </section>
+      {{/each}}
+
+      <section class="ccs-panel" data-tab="settings" role="tabpanel" {{#unless (eq view.tab "settings")}}hidden{{/unless}}>
+        {{> "modules/cypher-card-sheet/templates/parts/settings.hbs"}}
+      </section>
+    </div>
+  {{/if}}
+</div>

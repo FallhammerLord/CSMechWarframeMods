@@ -1,0 +1,33 @@
+{
+  "id": "cypher-card-sheet",
+  "title": "Cypher Card Sheet",
+  "description": "An alternative Cypher System character sheet that shows abilities, skills, attacks, equipment, cyphers and every other item as a grid of uniform cards, inspired by Warframe's Mods screen. Click a card for its full rules text; the d20 on each card uses the system's own roller.",
+  "version": "0.1.0",
+  "authors": [
+    {"name": "FallhammerLord"}
+  ],
+  "compatibility": {
+    "minimum": "14",
+    "verified": "14"
+  },
+  "relationships": {
+    "systems": [
+      {
+        "id": "cyphersystem",
+        "type": "system",
+        "compatibility": {
+          "minimum": "3.5.0",
+          "verified": "3.5.2"
+        }
+      }
+    ]
+  },
+  "esmodules": ["scripts/main.js"],
+  "styles": ["styles/card-sheet.css"],
+  "languages": [
+    {"lang": "en", "name": "English", "path": "lang/en.json"}
+  ],
+  "url": "https://github.com/FallhammerLord/CSMechWarframeMods",
+  "manifest": "https://raw.githubusercontent.com/FallhammerLord/CSMechWarframeMods/main/module.json",
+  "bugs": "https://github.com/FallhammerLord/CSMechWarframeMods/issues"
+}

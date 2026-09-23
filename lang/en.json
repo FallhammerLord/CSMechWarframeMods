@@ -1,0 +1,123 @@
+{
+  "CCS": {
+    "SheetLabel": "Cypher Card Sheet",
+    "Setting": {
+      "DefaultGroupMode": {
+        "Name": "Default card grouping",
+        "Hint": "How the card grid groups items when you first open a sheet. You can change it on the sheet at any time."
+      }
+    },
+    "Error": {
+      "MissingApi": "Cypher Card Sheet: the Cypher System function \"{name}\" was not found. The system may have been updated."
+    },
+    "Tab": {
+      "Label": "Sheet sections",
+      "Cards": "Cards"
+    },
+    "Header": {
+      "EditImage": "Change portrait",
+      "StatsLocked": "Static stats are locked",
+      "Form": "Form",
+      "Advancement": "Advancement",
+      "XpDown": "Remove XP",
+      "XpUp": "Add XP"
+    },
+    "Pool": {
+      "Roll": "Roll {pool}",
+      "Max": "{pool} maximum",
+      "Down": "Lower {pool}",
+      "Up": "Raise {pool}",
+      "Reset": "Reset {pool}"
+    },
+    "Status": {
+      "DamageTrack": "Damage track",
+      "ApplyToRolls": "Apply",
+      "Recovery": "Recovery rolls",
+      "RecoveryFormula": "Recovery roll formula",
+      "RecoveryReset": "Reset recovery rolls",
+      "RecoveryRoll": "{label}: roll a recovery (Alt: roll without spending)",
+      "RecoveryUnspend": "{label}: spent. Click to mark available.",
+      "Spent": "spent",
+      "Available": "available",
+      "Stress": "Stress",
+      "StressLevels": "Levels",
+      "Supernatural": "Supernatural",
+      "AltThree": "Alt-click: 3 at a time",
+      "Dice": "Dice"
+    },
+    "Family": {
+      "all": "All",
+      "skills": "Skills",
+      "combat": "Combat",
+      "abilities": "Abilities",
+      "equipment": "Equipment"
+    },
+    "Grid": {
+      "Filter": "Show",
+      "GroupBy": "Group by",
+      "Mode": {
+        "category": "Category",
+        "type": "Type",
+        "tag": "Tag"
+      },
+      "Search": "Search cards",
+      "HideArchived": "Hide archived",
+      "AddItem": "Add item",
+      "AddTo": "Add to {group}",
+      "AddTag": "Add tag",
+      "AddRecursion": "Add recursion",
+      "Count": "Cards in this group",
+      "CypherLimit": "Limit",
+      "Empty": "Empty. Drop an item here or press +.",
+      "NoItems": "No cards to show.",
+      "Untagged": "Untagged"
+    },
+    "Card": {
+      "Damage": "{n} dmg",
+      "Armor": "Armor {n}",
+      "SpeedCost": "Speed cost {n}",
+      "Level": "Lvl {n}",
+      "Shifts": "{n} shifts",
+      "Temporary": "Temporary",
+      "Permanent": "Permanent",
+      "Inactive": "Inactive"
+    },
+    "Action": {
+      "Roll": "Roll",
+      "SendToChat": "Send to chat",
+      "Archive": "Archive",
+      "Unarchive": "Unarchive",
+      "Delete": "Delete",
+      "Edit": "Edit",
+      "Pay": "Pay points",
+      "Cast": "Cast spell",
+      "QuantityDown": "Quantity −1",
+      "QuantityUp": "Quantity +1",
+      "DamageDown": "Damage −1",
+      "DamageUp": "Damage +1",
+      "AltTen": "Alt-click: 10 at a time",
+      "Identify": "Identify",
+      "RollLevel": "Roll level",
+      "CycleCypherType": "Click: change type. Alt-click: toggle fantastic.",
+      "ArmorActive": "Worn",
+      "Favorite": "Pin to top"
+    },
+    "Popover": {
+      "Close": "Close",
+      "Unidentified": "This item has not been identified yet.",
+      "DeleteTitle": "Delete item",
+      "DeleteConfirm": "Delete <strong>{name}</strong> permanently? This cannot be undone. Archive it instead to keep it."
+    },
+    "Settings": {
+      "General": "General",
+      "SheetDesign": "Sheet design",
+      "Combat": "Combat",
+      "Label": "Label",
+      "ImagePath": "Image path",
+      "Browse": "Browse files",
+      "CurrencyCount": "Number of currencies",
+      "RecoveryLabels": "Recovery roll labels",
+      "RecoveryLabelsHint": "Rename the recovery timings on this sheet. Chat messages keep the system's standard wording."
+    }
+  }
+}
