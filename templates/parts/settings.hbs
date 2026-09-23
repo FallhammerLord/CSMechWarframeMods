@@ -78,6 +78,25 @@
     {{/if}}
   </fieldset>
 
+  {{!-- Pool names (module flags; sheet only) --}}
+  <fieldset class="ccs-fieldset">
+    <legend>{{localize 'CCS.Settings.PoolNames'}}</legend>
+    <p class="ccs-hint">{{localize 'CCS.Settings.PoolNamesHint'}}</p>
+    {{#each @root.settings.poolNames}}
+      {{> ccsText name=path value=value label=placeholder placeholder=placeholder}}
+    {{/each}}
+  </fieldset>
+
+  {{!-- Movement per action (module flag; used by the token ruler) --}}
+  <fieldset class="ccs-fieldset">
+    <legend>{{localize 'CCS.Settings.Movement'}}</legend>
+    <p class="ccs-hint">{{localize 'CCS.Settings.MovementHint'}}</p>
+    <label class="ccs-field"><span>{{localize 'CCS.Settings.MovePerAction'}}</span>
+      <input type="number" name="{{@root.settings.movement.path}}" value="{{@root.settings.movement.value}}" min="0" step="any"
+             placeholder="{{localize 'CCS.Settings.MovePerActionPlaceholder'}}">
+    </label>
+  </fieldset>
+
   {{!-- Sheet design --}}
   {{#if @root.identity.teen}}
     {{#if @root.settings.teenGeneral.customSheetDesign}}{{> ccsDesign base="system.teen.settings.general" data=@root.settings.teenGeneral}}{{/if}}

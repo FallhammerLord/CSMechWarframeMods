@@ -133,11 +133,12 @@ export function pools(actor) {
   const base = poolBase(actor);
   const state = actorState(actor);
   const statRolls = (systemSetting("rollButtons") ?? 1) >= 1;
+  const names = poolNames(actor);
   const list = STAT_POOLS.map(key => {
     const p = get(actor, `${base}.${key}`);
     return {
       key,
-      label: L(capitalize(key)),
+      label: names[key].label,
       value: p.value,
       max: p.max,
       edge: p.edge,
@@ -358,6 +359,15 @@ export async function resetRecoveries(actor) {
 }
 
 /* -------------------------------------------- */
+/*  Movement per action (module flag)           */
+/* -------------------------------------------- */
+
+export function movementSetting(actor) {
+  const value = actor.getFlag(MODULE_ID, "movePerAction");
+  return {path: `flags.${MODULE_ID}.movePerAction`, value: Number(value) > 0 ? Number(value) : ""};
+}
+
+/* -------------------------------------------- */
 /*  Currency                                    */
 /* -------------------------------------------- */
 
@@ -450,8 +460,21 @@ export function displayName(item) {
     || L(item.type === "cypher" ? "UnidentifiedCypher" : "UnidentifiedArtifact");
 }
 
-function poolLabel(pool) {
-  if (["Might", "Speed", "Intellect", "XP"].includes(pool)) return L(pool);
+/** Per-actor pool names (module flags), falling back to the system's names. */
+export function poolNames(actor) {
+  const custom = actor?.getFlag(MODULE_ID, "poolLabels") ?? {};
+  return Object.fromEntries(STAT_POOLS.map(key => [key, {
+    key,
+    path: `flags.${MODULE_ID}.poolLabels.${key}`,
+    value: custom[key] ?? "",
+    placeholder: L(capitalize(key)),
+    label: custom[key] || L(capitalize(key))
+  }]));
+}
+
+function poolLabel(pool, actor) {
+  if (["Might", "Speed", "Intellect"].includes(pool)) return poolNames(actor)[pool.toLowerCase()].label;
+  if (pool === "XP") return L("XP");
   return L("AnyPool");
 }
 
@@ -474,28 +497,28 @@ function keyValue(item, actor) {
   const b = item.system.basic ?? {};
   switch (item.type) {
     case "ability":
-      return {value: isZeroCost(b.cost) ? "" : `${b.cost} ${poolLabel(b.pool)}`};
+      return {value: isZeroCost(b.cost) ? "" : `${b.cost} ${poolLabel(b.pool, actor)}`};
     case "attack":
-      return {value: t("Card.Damage", {n: b.damage}), sub: b.range || ""};
+      return {value: t("Card.Damage", {n: b.damage}), detail: b.range || ""};
     case "armor":
-      return {value: t("Card.Armor", {n: b.rating}), sub: b.cost ? t("Card.SpeedCost", {n: b.cost}) : ""};
+      return {value: t("Card.Armor", {n: b.rating}), detail: b.cost ? t("Card.SpeedCost", {n: b.cost}) : ""};
     case "cypher":
     case "artifact":
       if (b.identified === false) return {value: "?"};
       return {value: b.level !== "" && b.level != null ? t("Card.Level", {n: b.level}) : ""};
     case "equipment":
     case "ammo":
-      return {value: b.quantity != null ? `×${b.quantity}` : "", sub: b.level ? t("Card.Level", {n: b.level}) : ""};
+      return {value: b.quantity != null ? `×${b.quantity}` : "", detail: b.level ? t("Card.Level", {n: b.level}) : ""};
     case "material": {
       const byLevel = actor.system.settings.equipment.materials.displayMode === "level";
-      return {value: b.quantity != null ? `×${b.quantity}` : "", sub: byLevel && b.level ? t("Card.Level", {n: b.level}) : ""};
+      return {value: b.quantity != null ? `×${b.quantity}` : "", detail: byLevel && b.level ? t("Card.Level", {n: b.level}) : ""};
     }
     case "oddity":
       return {value: b.level ? t("Card.Level", {n: b.level}) : ""};
     case "power-shift":
-      return {value: t("Card.Shifts", {n: b.shifts}), sub: b.temporary ? t("Card.Temporary") : ""};
+      return {value: t("Card.Shifts", {n: b.shifts}), detail: b.temporary ? t("Card.Temporary") : ""};
     case "lasting-damage":
-      return {value: `${b.damage} ${poolLabel(b.pool)}`, sub: b.type === "Permanent" ? t("Card.Permanent") : ""};
+      return {value: `${b.damage} ${poolLabel(b.pool, actor)}`, detail: b.type === "Permanent" ? t("Card.Permanent") : ""};
     default:
       return {value: ""};
   }
@@ -530,7 +553,10 @@ export function cardData(item, actor) {
     typeIcon: meta.icon,
     training: trainingOf(item),
     value: kv.value,
-    sub: kv.sub ?? "",
+    // Secondary facts (range, speed cost, level) live in the popover, not on the card.
+    detail: kv.detail ?? "",
+    temporary: item.type === "power-shift" && !!b.temporary,
+    permanent: item.type === "lasting-damage" && b.type === "Permanent",
     archived: !!item.system.archived,
     favorite: !!item.system.favorite && !actor.system.settings.general.hideFavoriteButton,
     inactive: item.type === "armor" && item.system.active === false,
@@ -957,7 +983,7 @@ export async function itemDetail(actor, item) {
   const facts = [];
   if (card.training) facts.push(card.training.label);
   if (card.value) facts.push(card.value);
-  if (card.sub) facts.push(card.sub);
+  if (card.detail) facts.push(card.detail);
   if (item.type === "attack" && b.type) facts.push(b.type);
   if (item.type === "armor" && b.type) facts.push(b.type);
   if (item.type === "armor" && item.system.active === false) facts.push(t("Card.Inactive"));

@@ -231,18 +231,22 @@ Only the look changes.
 
 ---
 
-## 12. Implementation notes (v0.1.0)
+## 12. Implementation notes (v0.1.x)
 
 Choices made while building the module, following the "UX/UI standards first, troubleshoot after" rule.
 
 - **Card layout.** The value slot sits top-left, marks (cypher type, spell, favorite) top-right, then the image, name, sub-line, and a footer with training and type. The action bar has archive on the left and the d20 in the centre. Non-rolling items keep the d20 in a dashed style, and its tooltip reads "Send to chat".
 - **Frame colour** comes from the training level when the item has one, otherwise from its family (skills, combat, abilities, equipment).
-- **Popover** is 360px wide, since card width is too narrow to read rules text. It also closes on an outside click and when its card scrolls out of view. Keyboard opening moves focus into the popover, and Escape returns focus to the card.
+- **Card sub-line removed.** Secondary facts such as attack range, armor speed cost and item level appear only in the popover. Temporary power shifts and permanent damage show as small icons next to the favorite star.
+- **Popover** has a fixed size: 360px wide, since card width is too narrow to read rules text, and 420px tall. The height shrinks only when the viewport can't fit it. It also closes on an outside click and when its card scrolls out of view. Keyboard opening moves focus into the popover, and Escape returns focus to the card.
 - **Toolbar** additions:
   - A family filter (All / Skills / Combat / Abilities / Equipment), which replaces the default sheet's item tabs.
   - A client-side search.
   - "Hide archived", bound to the actor's existing `hideArchive` setting.
 - **Armor totals and the dice tray** sit at the right end of the tab bar, to keep the header short.
 - **Unknown category values** (for example, a skill whose `sorting` matches no category) fall back to the type's first category instead of disappearing.
+- **Dark theme** is forced on the sheet, including the tab panels, whatever Foundry's light/dark UI setting is.
+- **Pool names** can be renamed per actor in the settings tab (`flags.cypher-card-sheet.poolLabels`). The names apply on the sheet only; system chat messages keep the standard names.
+- **Movement per action** is a per-actor distance (`flags.cypher-card-sheet.movePerAction`) in scene units. When it is set, the system's token ruler label also shows how many move actions the path costs. The system's range bands and colours are unchanged, and actors without the setting are untouched. This is done by wrapping the ruler's label method, because the system's Token class creates its ruler class directly.
 - **Default grouping** is a client setting, "Default card grouping". The sheet remembers the chosen mode per actor for the rest of the session.
 - **Untested in a live Foundry client.** The adapter and templates were exercised against the system's `template.json` in a Node harness, and the layout was checked in Chromium. The AppV2 lifecycle hooks (`_onChangeForm`, drag/drop wiring, `<prose-mirror>` saving) need a first in-client test.

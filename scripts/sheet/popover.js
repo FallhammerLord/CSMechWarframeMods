@@ -9,8 +9,9 @@ import * as cs from "../adapter/cypher.js";
 const GAP = 6;
 const MARGIN = 8;
 const WIDTH = 360;
-const MAX_HEIGHT = 480;
-const MIN_HEIGHT = 160;
+/** Fixed popover size; the height shrinks only when the viewport can't fit it. */
+const HEIGHT = 420;
+const MIN_HEIGHT = 200;
 
 /** Popover actions. Each receives (actor, item). */
 const ACTIONS = {
@@ -196,12 +197,12 @@ class CardPopoverManager {
     const left = Math.clamp(a.left + (a.width / 2) - (width / 2), MARGIN, vw - width - MARGIN);
     const below = vh - a.bottom - GAP - MARGIN;
     const above = a.top - GAP - MARGIN;
-    const placeBelow = below >= MAX_HEIGHT || below >= above;
+    const placeBelow = below >= HEIGHT || below >= above;
     const space = placeBelow ? below : above;
 
     el.style.width = `${width}px`;
     el.style.left = `${left}px`;
-    el.style.maxHeight = `${Math.max(Math.min(MAX_HEIGHT, space), MIN_HEIGHT)}px`;
+    el.style.height = `${Math.max(Math.min(HEIGHT, space), MIN_HEIGHT)}px`;
     if (placeBelow) {
       el.style.top = `${a.bottom + GAP}px`;
       el.style.bottom = "auto";

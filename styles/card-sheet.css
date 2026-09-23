@@ -35,7 +35,7 @@
 
   --ccs-radius: 6px;
   --ccs-card-w: 148px;
-  --ccs-card-h: 212px;
+  --ccs-card-h: 196px;
   --ccs-font: var(--font-primary, "Signika", sans-serif);
 }
 
@@ -58,6 +58,9 @@
   height: 100%;
   min-height: 0;
   isolation: isolate;
+  color-scheme: dark;
+  background: var(--ccs-bg);
+  color: var(--ccs-text);
 }
 
 .ccs-root > :not(.ccs-backdrop, .ccs-scrim, .ccs-bg-icon) {
@@ -702,6 +705,7 @@
 }
 
 .ccs-scroll {
+  background: transparent;
   flex: 1 1 auto;
   min-height: 0;
   overflow-y: auto;
@@ -1067,15 +1071,6 @@
   min-height: 2.4em;
   font-size: 0.95rem;
   font-weight: 600;
-}
-
-.ccs-card-sub {
-  height: 1.2em;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  color: var(--ccs-muted);
-  font-size: 0.78rem;
 }
 
 .ccs-card-foot {

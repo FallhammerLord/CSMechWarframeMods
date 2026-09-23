@@ -5,13 +5,14 @@
       <span class="ccs-card-value">{{card.value}}</span>
       <span class="ccs-card-marks">
         {{#if card.cypherType}}<i class="{{card.cypherType.icon}}" style="color: {{card.cypherType.color}};" title="{{card.cypherType.title}}"></i>{{/if}}
+        {{#if card.temporary}}<i class="fa-solid fa-clock" title="{{localize 'CCS.Card.Temporary'}}"></i>{{/if}}
+        {{#if card.permanent}}<i class="fa-solid fa-infinity" title="{{localize 'CCS.Card.Permanent'}}"></i>{{/if}}
         {{#if card.spell}}<i class="fa-solid fa-book-sparkles" title="{{localize 'CYPHERSYSTEM.Spells'}}"></i>{{/if}}
         {{#if card.favorite}}<i class="fa-solid fa-star ccs-fav" title="{{localize 'CCS.Action.Favorite'}}"></i>{{/if}}
       </span>
     </span>
     <span class="ccs-card-art"><img src="{{card.img}}" alt="" loading="lazy"></span>
     <span class="ccs-card-name">{{card.name}}</span>
-    <span class="ccs-card-sub">{{card.sub}}</span>
     <span class="ccs-card-foot">
       <span class="ccs-card-training">{{card.training.label}}</span>
       <span class="ccs-card-type"><i class="{{card.typeIcon}}" aria-hidden="true"></i> {{card.typeLabel}}</span>

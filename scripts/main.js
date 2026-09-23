@@ -7,6 +7,7 @@ import {MODULE_ID, SYSTEM_ID, TEMPLATE_PATH} from "./constants.js";
 import {CypherCardSheet, PARTIALS} from "./sheet/card-sheet.js";
 import {preloadSystemImports} from "./adapter/system-imports.js";
 import {GROUP_MODES} from "./adapter/cypher.js";
+import {registerMovementRuler} from "./adapter/ruler.js";
 
 Hooks.once("init", () => {
   if (game.system.id !== SYSTEM_ID) {
@@ -31,6 +32,9 @@ Hooks.once("init", () => {
   });
 
   foundry.applications.handlebars.loadTemplates([...PARTIALS, `${TEMPLATE_PATH}/popover.hbs`]);
+
+  // The system sets its ruler class during its own init, which runs before module init.
+  registerMovementRuler();
 });
 
 Hooks.once("ready", () => {

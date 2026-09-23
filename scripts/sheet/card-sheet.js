@@ -166,6 +166,8 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return {
       choices: cs.settingsChoices(),
       recoveryLabels: Object.values(cs.recoveryLabels(actor)),
+      poolNames: Object.values(cs.poolNames(actor)),
+      movement: cs.movementSetting(actor),
       cyphersheetsActive: cs.cyphersheetsActive(),
       general: actor.system.settings.general,
       teenGeneral: actor.system.teen.settings.general
@@ -175,6 +177,11 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   async _onRender(context, options) {
     await super._onRender(context, options);
     const root = this.element;
+
+    // The sheet is always dark. Core adds a light/dark theme class from the UI setting;
+    // override it so core-styled elements inside (prose-mirror, checkboxes) match.
+    root.classList.remove("theme-light");
+    root.classList.add("themed", "theme-dark");
 
     // The portrait is an <img> acting as a button; give it keyboard activation.
     root.querySelector(".ccs-portrait[data-action]")?.addEventListener("keydown", event => {
