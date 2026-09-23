@@ -179,15 +179,19 @@ We delegate drops to `game.cyphersystem.CypherActorSheet.prototype._onDropItem.c
 
 ## 8. Recovery rolls
 
-- **The row:** four images in fixed order, bound to `system.combat.recoveries.{oneAction, tenMinutes, oneHour, tenHours}`.
+- **The row:** one image per recovery slot, in the system's spend order: one-action slots, then ten-minute slots, then one hour, then ten hours.
+  - Default: four images, one per timing.
+  - Extra slots come from the system's existing settings, `settings.combat.numberOneActionRecoveries` (1–7) and `numberTenMinuteRecoveries` (0–2). These appear in our settings tab under sheet controls. No new data is needed.
+  - The slots bind to `system.combat.recoveries.{oneAction…oneAction7, tenMinutes, tenMinutes2, oneHour, tenHours}`.
+  - If a character has many slots, the images shrink or wrap so the row stays one line wide.
 - **Two states:** available and spent (desaturated with a check overlay).
-- **Clicking an available image** calls `recoveryRollMacro(actor, "", true)`. The system spends recoveries in order, so the next available image is highlighted as the primary target.
+- **Clicking an available image** calls `recoveryRollMacro(actor, "", true)`, unmodified. The system spends slots in order, so the next available image is highlighted as the primary target.
 - **Clicking a spent image** un-spends it, the same as the default sheet's checkbox.
 - **Row controls:** a reset button and the roll formula field (`system.combat.recoveries.roll`).
-- **Custom timings:** four editable labels in the sheet's settings tab.
-  - Stored at `flags.<module-id>.recoveryLabels.{1..4}`. The system schema has no field for them.
+- **Custom timings:** four editable labels in the settings tab, one per timing group.
+  - Stored at `flags.<module-id>.recoveryLabels.{action, tenMinutes, oneHour, tenHours}`.
   - Defaults: Action / 10 min / 1 hour / 10 hours.
-  - The labels are cosmetic. The system's chat card still names the standard timing.
+  - The labels are cosmetic and sheet-only. The system's chat card keeps its standard wording (see §1, "leave the roll engine alone").
 
 ---
 
@@ -221,9 +225,6 @@ Only the look changes.
 
 ---
 
-## 11. Open questions
+## 11. Principles
 
-1. **Extra recoveries.** The system supports 1–7 one-action and 0–2 ten-minute recoveries (`settings.combat.numberOneActionRecoveries`, `numberTenMinuteRecoveries`), and the default sheet exposes those settings.
-   - With a fixed row of four, any extras have no visible slot, although `useRecoveries` still spends them.
-   - Proposal: show pips on images 1–2 when the counts exceed one.
-2. **Custom labels in chat.** Should the custom recovery labels also rewrite the chat card? That would mean our own chat message instead of `recoveryRollMacro`, which adds maintenance.
+- **Leave the system's roll engine alone.** The All-in-One roller and the recovery roll macro are called with the same arguments the default sheet uses. They are never wrapped, patched or reimplemented. Where our UI and their chat output disagree (for example, custom recovery labels), the system's output wins.
