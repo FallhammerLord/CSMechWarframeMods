@@ -12,7 +12,7 @@
     },
     "Tab": {
       "Label": "Sheet sections",
-      "Cards": "Cards"
+      "Cards": "Features"
     },
     "Header": {
       "EditImage": "Change portrait",
@@ -80,7 +80,8 @@
       "Shifts": "{n} shifts",
       "Temporary": "Temporary",
       "Permanent": "Permanent",
-      "Inactive": "Inactive"
+      "Inactive": "Inactive",
+      "Archived": "Archived"
     },
     "Action": {
       "Roll": "Roll",
@@ -120,14 +121,11 @@
       "RecoveryLabelsHint": "Rename the recovery timings on this sheet. Chat messages keep the system's standard wording.",
       "PoolNames": "Pool names",
       "PoolNamesHint": "Rename Might, Speed and Intellect on this sheet. Leave empty to use the standard names. Chat messages from the system keep the standard names.",
-      "Movement": "Movement",
-      "MovementHint": "How far this character moves with one action, in the scene's distance units (ft or m). When set, the token ruler also shows how many move actions a path costs. Leave empty for the standard ruler.",
-      "MovePerAction": "Movement per action",
-      "MovePerActionPlaceholder": "Standard"
-    },
-    "Ruler": {
-      "Action": "{n} action",
-      "Actions": "{n} actions"
+      "Movement": "Movement ranges",
+      "MovementHint": "Distances for this character's token ruler, in the scene's units (ft or m). Each one sets where that range band ends, so keep each larger than the one before. Leave a field empty to keep the standard distance.",
+      "Layout": "Sheet layout",
+      "CardsTabName": "Card tab name",
+      "TagCategoriesHint": "Tags are grouped into four categories, as on the standard sheet. Each category holds any number of tags; add them with + in the tag bar on the Features tab."
     }
   }
 }

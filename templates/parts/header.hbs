@@ -57,24 +57,18 @@
   </div>
 
   <div class="ccs-vitals">
-    <label class="ccs-vital">
-      <span>{{localize 'CYPHERSYSTEM.Tier'}}</span>
-      <input type="number" name="system.basic.tier" value="{{identity.tier}}" {{#if locked}}disabled{{/if}}>
-    </label>
-    <label class="ccs-vital">
-      <span>{{localize 'CYPHERSYSTEM.Effort'}}</span>
-      <input type="number" name="system.basic.effort" value="{{identity.effort}}" {{#if locked}}disabled{{/if}}
-             class="{{#if state.multiRollEffort}}is-changed{{/if}}">
-    </label>
-    <div class="ccs-vital">
-      <label for="{{actor.id}}-xp">{{localize 'CYPHERSYSTEM.XP'}}</label>
-      <div class="ccs-stepper">
-        <button type="button" class="ccs-icon-btn" data-action="xpAdjust" data-dir="-1" aria-label="{{localize 'CCS.Header.XpDown'}}"
-                title="{{localize 'CCS.Action.AltTen'}}" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-minus"></i></button>
-        <input id="{{actor.id}}-xp" type="number" name="system.basic.xp" value="{{identity.xp}}">
-        <button type="button" class="ccs-icon-btn" data-action="xpAdjust" data-dir="1" aria-label="{{localize 'CCS.Header.XpUp'}}"
-                title="{{localize 'CCS.Action.AltTen'}}" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-plus"></i></button>
-      </div>
-    </div>
+    <label class="ccs-vital-label" for="{{actor.id}}-tier">{{localize 'CYPHERSYSTEM.Tier'}}</label>
+    <input class="ccs-vital-input" id="{{actor.id}}-tier" type="number" name="system.basic.tier" value="{{identity.tier}}" {{#if locked}}disabled{{/if}}>
+
+    <label class="ccs-vital-label" for="{{actor.id}}-effort">{{localize 'CYPHERSYSTEM.Effort'}}</label>
+    <input class="ccs-vital-input{{#if state.multiRollEffort}} is-changed{{/if}}" id="{{actor.id}}-effort" type="number"
+           name="system.basic.effort" value="{{identity.effort}}" {{#if locked}}disabled{{/if}}>
+
+    <label class="ccs-vital-label" for="{{actor.id}}-xp">{{localize 'CYPHERSYSTEM.XP'}}</label>
+    <button type="button" class="ccs-icon-btn ccs-vital-down" data-action="xpAdjust" data-dir="-1" aria-label="{{localize 'CCS.Header.XpDown'}}"
+            title="{{localize 'CCS.Action.AltTen'}}" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-minus"></i></button>
+    <input class="ccs-vital-input" id="{{actor.id}}-xp" type="number" name="system.basic.xp" value="{{identity.xp}}">
+    <button type="button" class="ccs-icon-btn ccs-vital-up" data-action="xpAdjust" data-dir="1" aria-label="{{localize 'CCS.Header.XpUp'}}"
+            title="{{localize 'CCS.Action.AltTen'}}" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-plus"></i></button>
   </div>
 </header>

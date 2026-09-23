@@ -1,18 +1,13 @@
 <header class="ccs-pop-header">
-  <img class="ccs-pop-img" src="{{card.img}}" alt="">
-  <div class="ccs-pop-title">
-    <h3>{{card.name}}</h3>
-    <span class="ccs-pop-type"><i class="{{card.typeIcon}}" aria-hidden="true"></i> {{card.typeLabel}}</span>
-  </div>
-  <button type="button" class="ccs-icon-btn" data-popover-action="close" title="{{localize 'CCS.Popover.Close'}}" aria-label="{{localize 'CCS.Popover.Close'}}">
-    <i class="fa-solid fa-xmark"></i>
-  </button>
+  <img class="ccs-pop-banner{{#if card.imgIsIcon}} is-icon{{/if}}" src="{{card.img}}" alt="">
+  <h3>{{card.name}}</h3>
+  <span class="ccs-pop-type"><i class="{{card.typeIcon}}" aria-hidden="true"></i> {{card.typeLabel}}</span>
+  {{#if facts.length}}
+    <ul class="ccs-pop-facts">
+      {{#each facts}}<li>{{this}}</li>{{/each}}
+    </ul>
+  {{/if}}
 </header>
-{{#if facts.length}}
-  <ul class="ccs-pop-facts">
-    {{#each facts}}<li>{{this}}</li>{{/each}}
-  </ul>
-{{/if}}
 <div class="ccs-pop-desc">{{{description}}}</div>
 {{#if controls.length}}
   <div class="ccs-pop-controls">

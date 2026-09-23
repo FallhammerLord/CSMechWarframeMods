@@ -362,9 +362,29 @@ export async function resetRecoveries(actor) {
 /*  Movement per action (module flag)           */
 /* -------------------------------------------- */
 
-export function movementSetting(actor) {
-  const value = actor.getFlag(MODULE_ID, "movePerAction");
-  return {path: `flags.${MODULE_ID}.movePerAction`, value: Number(value) > 0 ? Number(value) : ""};
+/** Per-actor ruler range bands. Empty fields keep the system's distances. */
+export const MOVEMENT_BANDS = [
+  {key: "immediate", label: "Immediate", ft: 10, m: 3},
+  {key: "short", label: "Short", ft: 50, m: 15},
+  {key: "long", label: "Long", ft: 100, m: 30},
+  {key: "veryLong", label: "VeryLong", ft: 500, m: 150}
+];
+
+export function movementRanges(actor) {
+  const saved = actor.getFlag(MODULE_ID, "movementRanges") ?? {};
+  return MOVEMENT_BANDS.map(band => ({
+    key: band.key,
+    path: `flags.${MODULE_ID}.movementRanges.${band.key}`,
+    label: L(band.label),
+    value: Number(saved[band.key]) > 0 ? Number(saved[band.key]) : "",
+    placeholder: `${band.ft} ft / ${band.m} m`
+  }));
+}
+
+/** Name of the card grid tab (module flag). */
+export function cardsTab(actor) {
+  const value = actor.getFlag(MODULE_ID, "cardsTabLabel") ?? "";
+  return {path: `flags.${MODULE_ID}.cardsTabLabel`, value, placeholder: t("Tab.Cards"), label: value || t("Tab.Cards")};
 }
 
 /* -------------------------------------------- */
@@ -549,6 +569,8 @@ export function cardData(item, actor) {
     name: displayName(item),
     searchText: `${displayName(item)} ${typeLabel(item.type)}`.toLowerCase(),
     img: item.img,
+    // SVG icons (the system's defaults) are line art: shown contained, not cropped full-bleed.
+    imgIsIcon: /\.svg(?:$|\?)/i.test(item.img ?? ""),
     typeLabel: typeLabel(item.type),
     typeIcon: meta.icon,
     training: trainingOf(item),
@@ -1058,33 +1080,46 @@ function worldDesign() {
   };
 }
 
+/**
+ * Background, icon, and logo.
+ *
+ * Backgrounds and icons come only from the actor's own "Custom Sheet Design". The world-level
+ * design (default "cypher-blue", a light gradient) was made for the system's light sheet and
+ * showed through this sheet's themed panels, so it is not used here. The logo still follows
+ * the world setting when the actor has no custom design.
+ */
 export function sheetDesign(actor) {
   const teen = isTeen(actor);
   const s = actor.system;
-  let source;
-  if (teen && s.teen.settings.general.customSheetDesign) source = s.teen.settings.general;
-  else if (!teen && s.settings.general.customSheetDesign) source = s.settings.general;
-  else source = worldDesign();
+  let custom = null;
+  if (teen && s.teen.settings.general.customSheetDesign) custom = s.teen.settings.general;
+  else if (!teen && s.settings.general.customSheetDesign) custom = s.settings.general;
 
-  const bg = source.background ?? {};
-  const logo = source.logo ?? {};
+  const bg = custom?.background ?? {};
+  const logo = (custom ?? worldDesign()).logo ?? {};
   const design = {background: "", scrim: 0, icon: null, logo: null};
 
   if (!game.modules.get("cyphersheets")?.active) {
+    // The scrim is the theme's background colour laid over the image. A floor of 0.6 keeps
+    // text that sits directly on the background (toolbar, group titles) readable.
     if (bg.image === "custom" && bg.imagePath) {
       design.background = `center / cover url("${bg.imagePath}")`;
-      design.scrim = Number(bg.overlayOpacity ?? 0.75);
+      design.scrim = Math.max(Number(bg.overlayOpacity ?? 0.75), 0.6);
     } else if (BACKGROUNDS[bg.image]) {
       design.background = BACKGROUNDS[bg.image];
-      design.scrim = String(bg.image).startsWith("plain") ? 0.75 : 0;
+      design.scrim = 0.75;
     }
     if (bg.icon === "custom" && bg.iconPath) design.icon = {src: bg.iconPath, opacity: Number(bg.iconOpacity ?? 0.5)};
     else if (bg.icon && bg.icon !== "none" && bg.icon !== "custom") design.icon = {src: `${BG_ROOT}/icon-${bg.icon}.svg`, opacity: 0.5};
   }
 
-  if (logo.image === "custom" && logo.imagePath) design.logo = {src: logo.imagePath, opacity: Number(logo.imageOpacity ?? 1)};
+  if (logo.image === "custom" && logo.imagePath) design.logo = {src: logo.imagePath, opacity: Number(logo.imageOpacity ?? 1), variant: "custom"};
   else if (logo.image && !["none", "custom"].includes(logo.image)) {
-    design.logo = {src: `${BG_ROOT}/compatible-cypher-system-${logo.image}.webp`, opacity: Number(logo.imageOpacity ?? 1)};
+    design.logo = {
+      src: `${BG_ROOT}/compatible-cypher-system-${logo.image}.webp`,
+      opacity: Number(logo.imageOpacity ?? 1),
+      variant: logo.image
+    };
   }
   return design;
 }

@@ -1,44 +1,101 @@
 /**
- * Movement per action on the token ruler.
+ * Per-actor movement ranges on the token ruler.
  *
- * The Cypher System ruler labels each waypoint with a fixed range band (immediate, short,
- * long). When an actor has a "movement per action" value set on this sheet, the label also
- * shows how many move actions the path costs, e.g. "Short (40 ft) · 2 actions".
+ * The Cypher System ruler colours and labels each waypoint by range band (immediate, short,
+ * long, very long) using fixed distances (token-ruler.js `getCategory`: 10/50/100/500 ft or
+ * 3/15/30/150 m). When an actor has custom ranges set on this sheet, the same bands are
+ * recomputed with that actor's distances. Band names, colours, rounding, and when the ruler
+ * shows at all stay the system's. Actors without custom ranges are untouched.
  *
- * The system's Token class constructs its own ruler class directly, so CONFIG.Token.rulerClass
- * can't be swapped. Instead the label method on the active ruler class is wrapped. Bands,
- * colours, and everything else stay the system's. Actors without the setting are untouched.
+ * The system's Token class constructs its ruler class directly, so CONFIG.Token.rulerClass
+ * can't be swapped. The four style/label methods on the active ruler class are wrapped instead.
+ *
+ * Baseline: cyphersystem v3.5.2.
  */
 
-import {MODULE_ID, t} from "../constants.js";
+import {MODULE_ID} from "../constants.js";
+import {MOVEMENT_BANDS} from "./cypher.js";
 
 const WRAPPED = Symbol.for(`${MODULE_ID}.rulerWrapped`);
 
-function appendActions(token, context) {
-  if (!context?.cyphersystemLabel) return;
-  const perAction = Number(token?.actor?.getFlag(MODULE_ID, "movePerAction"));
-  if (!(perAction > 0)) return;
-  const cost = parseFloat(context.cost?.total);
-  if (!(cost > 0)) return;
-  // Small tolerance so exact multiples (e.g. 30 / 15) aren't rounded up by float error.
-  const actions = Math.max(1, Math.ceil((cost / perAction) - 1e-6));
-  context.cyphersystemLabel += ` · ${t(actions === 1 ? "Ruler.Action" : "Ruler.Actions", {n: actions})}`;
+/** System defaults per unit family (mirrors token-ruler.js getCategory). */
+const DEFAULTS = {
+  m: {rounding: 0.5, ...Object.fromEntries(MOVEMENT_BANDS.map(b => [b.key, b.m]))},
+  ft: {rounding: 1, ...Object.fromEntries(MOVEMENT_BANDS.map(b => [b.key, b.ft]))}
+};
+
+/** Band label keys and colours, in order (mirrors token-ruler.js getCategory). */
+const BANDS = [
+  {key: "immediate", label: "CYPHERSYSTEM.Immediate", color: 0x0000ff},
+  {key: "short", label: "CYPHERSYSTEM.Short", color: 0x008000},
+  {key: "long", label: "CYPHERSYSTEM.Long", color: 0xffa500},
+  {key: "veryLong", label: "CYPHERSYSTEM.VeryLong", color: 0xff0000}
+];
+const BEYOND_COLOR = 0x808080;
+
+function unitFamily(unit) {
+  if (["m", "meter", "metre", game.i18n.format("CYPHERSYSTEM.UnitDistanceMeter")].includes(unit)) return "m";
+  if (["ft", game.i18n.format("CYPHERSYSTEM.UnitDistanceFeet")].includes(unit)) return "ft";
+  return null;
+}
+
+/** The actor's custom distances, or null when none are set. */
+function customRanges(token) {
+  const saved = token?.actor?.getFlag(MODULE_ID, "movementRanges");
+  if (!saved) return null;
+  const ranges = {};
+  for (const {key} of MOVEMENT_BANDS) {
+    const value = Number(saved[key]);
+    if (value > 0) ranges[key] = value;
+  }
+  return Object.keys(ranges).length ? ranges : null;
+}
+
+function category(token, cost, unit, ranges) {
+  const base = DEFAULTS[unitFamily(unit)] ?? {};
+  const limits = {...base, ...ranges};
+  if (token.scene.grid.type === 0 && base.rounding) cost = cost.toNearest(base.rounding);
+  const band = BANDS.find(b => limits[b.key] !== undefined && cost <= limits[b.key]);
+  return {cost, label: band ? game.i18n.format(band.label) : undefined, color: band?.color ?? BEYOND_COLOR};
+}
+
+function wrap(proto, name, adjust) {
+  const original = proto?.[name];
+  if (typeof original !== "function" || original[WRAPPED]) return;
+  const wrapped = function(...args) {
+    const result = original.apply(this, args);
+    try {
+      const ranges = customRanges(this.token);
+      if (ranges && result) adjust.call(this, result, ranges, ...args);
+    } catch (err) {
+      console.warn(`${MODULE_ID} | Could not apply custom movement ranges (${name})`, err);
+    }
+    return result;
+  };
+  wrapped[WRAPPED] = true;
+  proto[name] = wrapped;
+}
+
+/** Recolour a style result, leaving hidden results (no colour key) alone. */
+function recolour(style, ranges, waypoint) {
+  if (!("color" in style)) return;
+  const cost = parseFloat(waypoint.measurement.cost);
+  style.color = category(this.token, cost, this.token.scene.grid.units, ranges).color;
 }
 
 export function registerMovementRuler() {
   const proto = CONFIG.Token.rulerClass?.prototype;
-  const original = proto?._getWaypointLabelContext;
-  if (typeof original !== "function" || original[WRAPPED]) return;
+  if (!proto) return;
 
-  const wrapped = function(waypoint, state) {
-    const context = original.call(this, waypoint, state);
-    try {
-      appendActions(this.token, context);
-    } catch (err) {
-      console.warn(`${MODULE_ID} | Could not add move actions to ruler label`, err);
-    }
-    return context;
-  };
-  wrapped[WRAPPED] = true;
-  proto._getWaypointLabelContext = wrapped;
+  wrap(proto, "_getWaypointLabelContext", function(context, ranges) {
+    if (!context.cyphersystemLabel) return;
+    const unit = context.cost.units;
+    const cat = category(this.token, parseFloat(context.cost.total), unit, ranges);
+    context.cyphersystemLabel = cat.label
+      ? game.i18n.format("CYPHERSYSTEM.DistanceLabelCategory", {category: cat.label, distance: cat.cost, unit})
+      : game.i18n.format("CYPHERSYSTEM.DistanceLabel", {distance: cat.cost, unit});
+  });
+  wrap(proto, "_getWaypointStyle", recolour);
+  wrap(proto, "_getSegmentStyle", recolour);
+  wrap(proto, "_getGridHighlightStyle", recolour);
 }

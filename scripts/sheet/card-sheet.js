@@ -111,7 +111,7 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const view = this.view;
     const state = cs.actorState(actor);
     const tabs = [
-      {id: "cards", icon: "fa-solid fa-layer-group", label: t("Tab.Cards")},
+      {id: "cards", icon: "fa-solid fa-layer-group", label: cs.cardsTab(actor).label},
       {id: "notes", icon: "fa-regular fa-file-pen", label: game.i18n.localize("CYPHERSYSTEM.Notes")},
       {id: "description", icon: "fa-regular fa-file-lines", label: game.i18n.localize("CYPHERSYSTEM.Description")}
     ];
@@ -167,7 +167,8 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       choices: cs.settingsChoices(),
       recoveryLabels: Object.values(cs.recoveryLabels(actor)),
       poolNames: Object.values(cs.poolNames(actor)),
-      movement: cs.movementSetting(actor),
+      movement: cs.movementRanges(actor),
+      cardsTab: cs.cardsTab(actor),
       cyphersheetsActive: cs.cyphersheetsActive(),
       general: actor.system.settings.general,
       teenGeneral: actor.system.teen.settings.general

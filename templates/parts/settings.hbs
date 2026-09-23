@@ -23,8 +23,8 @@
   </div>
 {{/inline}}
 {{#*inline "ccsDesign"}}
-  <fieldset class="ccs-fieldset">
-    <legend>{{localize 'CCS.Settings.SheetDesign'}}</legend>
+  <section class="ccs-fieldset">
+    <h4 class="ccs-fieldset-title">{{localize 'CCS.Settings.SheetDesign'}}</h4>
     {{#unless @root.settings.cyphersheetsActive}}
       {{> ccsSelect name=(concat base ".background.image") value=data.background.image choices=@root.settings.choices.backgroundImage label=(localize "CYPHERSYSTEM.BackgroundImage")}}
       {{#if (eq data.background.image "custom")}}
@@ -44,15 +44,15 @@
         {{> ccsRange name=(concat base ".logo.imageOpacity") value=data.logo.imageOpacity label=(localize "CYPHERSYSTEM.CSLogoOpacity")}}
       {{/if}}
     {{/unless}}
-  </fieldset>
+  </section>
 {{/inline}}
 
 {{#with system.settings as |s|}}
 <div class="ccs-settings">
 
   {{!-- General --}}
-  <fieldset class="ccs-fieldset">
-    <legend>{{localize 'CCS.Settings.General'}}</legend>
+  <section class="ccs-fieldset">
+    <h4 class="ccs-fieldset-title">{{localize 'CCS.Settings.General'}}</h4>
     {{#if @root.identity.teen}}
       {{> ccsCheck name="system.teen.settings.general.rollTwoD20" value=@root.settings.teenGeneral.rollTwoD20 label=(localize "CYPHERSYSTEM.RollTwoD20")}}
       {{> ccsCheck name="system.teen.settings.general.additionalPool.active" value=@root.settings.teenGeneral.additionalPool.active label=(localize "CYPHERSYSTEM.AdditionalPoolSetting")}}
@@ -76,26 +76,34 @@
     {{else}}
       {{> ccsCheck name="system.settings.general.customSheetDesign" value=s.general.customSheetDesign label=(localize "CYPHERSYSTEM.CustomSheetDesign")}}
     {{/if}}
-  </fieldset>
+  </section>
+
+  {{!-- Sheet layout (module flags) --}}
+  <section class="ccs-fieldset">
+    <h4 class="ccs-fieldset-title">{{localize 'CCS.Settings.Layout'}}</h4>
+    {{> ccsText name=@root.settings.cardsTab.path value=@root.settings.cardsTab.value label=(localize "CCS.Settings.CardsTabName")
+        placeholder=@root.settings.cardsTab.placeholder}}
+  </section>
 
   {{!-- Pool names (module flags; sheet only) --}}
-  <fieldset class="ccs-fieldset">
-    <legend>{{localize 'CCS.Settings.PoolNames'}}</legend>
+  <section class="ccs-fieldset">
+    <h4 class="ccs-fieldset-title">{{localize 'CCS.Settings.PoolNames'}}</h4>
     <p class="ccs-hint">{{localize 'CCS.Settings.PoolNamesHint'}}</p>
     {{#each @root.settings.poolNames}}
       {{> ccsText name=path value=value label=placeholder placeholder=placeholder}}
     {{/each}}
-  </fieldset>
+  </section>
 
-  {{!-- Movement per action (module flag; used by the token ruler) --}}
-  <fieldset class="ccs-fieldset">
-    <legend>{{localize 'CCS.Settings.Movement'}}</legend>
+  {{!-- Movement ranges (module flags; used by the token ruler) --}}
+  <section class="ccs-fieldset">
+    <h4 class="ccs-fieldset-title">{{localize 'CCS.Settings.Movement'}}</h4>
     <p class="ccs-hint">{{localize 'CCS.Settings.MovementHint'}}</p>
-    <label class="ccs-field"><span>{{localize 'CCS.Settings.MovePerAction'}}</span>
-      <input type="number" name="{{@root.settings.movement.path}}" value="{{@root.settings.movement.value}}" min="0" step="any"
-             placeholder="{{localize 'CCS.Settings.MovePerActionPlaceholder'}}">
-    </label>
-  </fieldset>
+    {{#each @root.settings.movement}}
+      <label class="ccs-field"><span>{{label}}</span>
+        <input type="number" name="{{path}}" value="{{value}}" min="0" step="any" placeholder="{{placeholder}}">
+      </label>
+    {{/each}}
+  </section>
 
   {{!-- Sheet design --}}
   {{#if @root.identity.teen}}
@@ -106,23 +114,24 @@
 
   {{!-- Tags --}}
   {{#unless @root.identity.teen}}
-    <fieldset class="ccs-fieldset">
-      <legend>{{localize 'CYPHERSYSTEM.Tags'}}</legend>
+    <section class="ccs-fieldset">
+      <h4 class="ccs-fieldset-title">{{localize 'CYPHERSYSTEM.Tags'}}</h4>
       {{> ccsCheck name="system.settings.general.tags.active" value=s.general.tags.active
           label=(localize (ifThen (eq s.general.gameMode "Strange") "CYPHERSYSTEM.ShowTagsInRecursionTab" "CYPHERSYSTEM.ShowTagsTab"))}}
       {{#if s.general.tags.active}}
         <span class="ccs-label">{{localize 'CYPHERSYSTEM.TagCategories'}}</span>
+        <p class="ccs-hint">{{localize 'CCS.Settings.TagCategoriesHint'}}</p>
         {{> ccsText name="system.settings.general.tags.labelCategory1" value=s.general.tags.labelCategory1 label="1" placeholder=(localize "CYPHERSYSTEM.Tags")}}
         {{> ccsText name="system.settings.general.tags.labelCategory2" value=s.general.tags.labelCategory2 label="2" placeholder=(localize "CYPHERSYSTEM.TagCategoryTwo")}}
         {{> ccsText name="system.settings.general.tags.labelCategory3" value=s.general.tags.labelCategory3 label="3" placeholder=(localize "CYPHERSYSTEM.TagCategoryThree")}}
         {{> ccsText name="system.settings.general.tags.labelCategory4" value=s.general.tags.labelCategory4 label="4" placeholder=(localize "CYPHERSYSTEM.TagCategoryFour")}}
       {{/if}}
-    </fieldset>
+    </section>
   {{/unless}}
 
   {{!-- Skills --}}
-  <fieldset class="ccs-fieldset">
-    <legend>{{localize 'CYPHERSYSTEM.Skills'}}</legend>
+  <section class="ccs-fieldset">
+    <h4 class="ccs-fieldset-title">{{localize 'CYPHERSYSTEM.Skills'}}</h4>
     {{#unless @root.identity.teen}}
       <span class="ccs-label">{{localize 'CYPHERSYSTEM.SkillCategories'}}</span>
       {{> ccsText name="system.settings.skills.labelCategory1" value=s.skills.labelCategory1 label="1" placeholder=(localize "CYPHERSYSTEM.Skills")}}
@@ -135,11 +144,11 @@
       {{> ccsCheck name="system.settings.skills.powerShifts.active" value=s.skills.powerShifts.active label=(localize "CYPHERSYSTEM.PowerShifts")}}
       {{> ccsText name="system.settings.skills.powerShifts.label" value=s.skills.powerShifts.label label=(localize "CCS.Settings.Label") placeholder=(localize "CYPHERSYSTEM.PowerShifts")}}
     {{/unless}}
-  </fieldset>
+  </section>
 
   {{!-- Combat and recovery --}}
-  <fieldset class="ccs-fieldset">
-    <legend>{{localize 'CCS.Settings.Combat'}}</legend>
+  <section class="ccs-fieldset">
+    <h4 class="ccs-fieldset-title">{{localize 'CCS.Settings.Combat'}}</h4>
     {{#unless @root.identity.teen}}
       {{> ccsCheck name="system.settings.combat.stress.active" value=s.combat.stress.active label=(localize "CYPHERSYSTEM.Stress")}}
       {{> ccsText name="system.settings.combat.stress.label" value=s.combat.stress.label label=(localize "CCS.Settings.Label") placeholder=(localize "CYPHERSYSTEM.Stress")}}
@@ -155,32 +164,32 @@
     {{> ccsCheck name="system.settings.combat.lastingDamage.active" value=s.combat.lastingDamage.active label=(localize "CYPHERSYSTEM.LastingAndPermanentDamageSetting")}}
     {{> ccsCheck name="system.settings.combat.ammo.active" value=s.combat.ammo.active label=(localize "CYPHERSYSTEM.AmmoList")}}
     {{> ccsCheck name="system.settings.combat.armor.active" value=s.combat.armor.active label=(localize "CYPHERSYSTEM.ArmorList")}}
-  </fieldset>
+  </section>
 
-  <fieldset class="ccs-fieldset">
-    <legend>{{localize 'CCS.Settings.RecoveryLabels'}}</legend>
+  <section class="ccs-fieldset">
+    <h4 class="ccs-fieldset-title">{{localize 'CCS.Settings.RecoveryLabels'}}</h4>
     <p class="ccs-hint">{{localize 'CCS.Settings.RecoveryLabelsHint'}}</p>
     {{#each @root.settings.recoveryLabels}}
       {{> ccsText name=path value=value label=placeholder placeholder=placeholder}}
     {{/each}}
-  </fieldset>
+  </section>
 
   {{!-- Abilities --}}
   {{#unless @root.identity.teen}}
-    <fieldset class="ccs-fieldset">
-      <legend>{{localize 'CYPHERSYSTEM.Abilities'}}</legend>
+    <section class="ccs-fieldset">
+      <h4 class="ccs-fieldset-title">{{localize 'CYPHERSYSTEM.Abilities'}}</h4>
       <span class="ccs-label">{{localize 'CYPHERSYSTEM.AbilityCategories'}}</span>
       {{> ccsText name="system.settings.abilities.labelCategory1" value=s.abilities.labelCategory1 label="1" placeholder=(localize "CYPHERSYSTEM.Abilities")}}
       {{> ccsText name="system.settings.abilities.labelCategory2" value=s.abilities.labelCategory2 label="2" placeholder=(localize "CYPHERSYSTEM.AbilityCategoryTwo")}}
       {{> ccsText name="system.settings.abilities.labelCategory3" value=s.abilities.labelCategory3 label="3" placeholder=(localize "CYPHERSYSTEM.AbilityCategoryThree")}}
       {{> ccsText name="system.settings.abilities.labelCategory4" value=s.abilities.labelCategory4 label="4" placeholder=(localize "CYPHERSYSTEM.AbilityCategoryFour")}}
       {{> ccsText name="system.settings.abilities.labelSpells" value=s.abilities.labelSpells label=(localize "CYPHERSYSTEM.Spells") placeholder=(localize "CYPHERSYSTEM.Spells")}}
-    </fieldset>
+    </section>
   {{/unless}}
 
   {{!-- Equipment --}}
-  <fieldset class="ccs-fieldset">
-    <legend>{{localize 'CYPHERSYSTEM.Equipment'}}</legend>
+  <section class="ccs-fieldset">
+    <h4 class="ccs-fieldset-title">{{localize 'CYPHERSYSTEM.Equipment'}}</h4>
     <span class="ccs-label">{{localize 'CYPHERSYSTEM.EquipmentCategories'}}</span>
     {{> ccsText name="system.settings.equipment.labelCategory1" value=s.equipment.labelCategory1 label="1" placeholder=(localize "CYPHERSYSTEM.Equipment")}}
     {{> ccsText name="system.settings.equipment.labelCategory2" value=s.equipment.labelCategory2 label="2" placeholder=(localize "CYPHERSYSTEM.EquipmentCategoryTwo")}}
@@ -215,6 +224,6 @@
       {{> ccsCheck name="system.settings.equipment.materials.sortByLevel" value=s.equipment.materials.sortByLevel
           label=(localize (ifThen (eq s.equipment.materials.displayMode "price") "CYPHERSYSTEM.SortMaterialsByPrice" "CYPHERSYSTEM.SortMaterialsByLevel"))}}
     {{/if}}
-  </fieldset>
+  </section>
 </div>
 {{/with}}
