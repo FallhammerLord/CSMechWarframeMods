@@ -46,7 +46,7 @@
 
   --ccs-radius: 6px;
   --ccs-card-w: 148px;
-  --ccs-card-h: 80px;
+  --ccs-card-h: 92px;
   --ccs-font: var(--font-primary, "Signika", sans-serif);
 }
 
@@ -144,6 +144,10 @@
   border: none;
   pointer-events: none;
   object-fit: contain;
+}
+
+.ccs-root img.is-broken {
+  visibility: hidden;
 }
 
 .ccs-root [hidden] {
@@ -308,29 +312,28 @@
    -------------------------------------------------------------------------- */
 
 .ccs-top {
-  --ccs-portrait-w: 94px;
+  --ccs-portrait-w: 84px;
   display: grid;
   grid-template-columns: var(--ccs-portrait-w) minmax(min-content, 1fr);
   grid-template-areas:
     "portrait head"
     "pools pools";
-  gap: 6px 10px;
-  padding: 7px 12px 6px;
+  align-items: start;
+  gap: 5px 8px;
+  padding: 6px 10px 5px;
   background: linear-gradient(180deg, var(--ccs-panel-2), var(--ccs-panel));
   border-bottom: 1px solid var(--ccs-line);
 }
 
 /* Double-tall portrait (2:3-ish): spans the header and the pools; the pools narrow to fit. */
 .ccs-top.is-tall {
-  --ccs-portrait-w: 132px;
+  --ccs-portrait-w: 118px;
   grid-template-areas:
     "portrait head"
     "portrait pools";
 }
 
-.ccs-top > .ccs-portrait-wrap {
-  align-self: stretch;
-  min-height: 0; grid-area: portrait; }
+.ccs-top > .ccs-portrait-wrap { grid-area: portrait; }
 .ccs-top > .ccs-header { grid-area: head; }
 .ccs-top > .ccs-pools { grid-area: pools; }
 
@@ -341,18 +344,21 @@
   align-items: start;
 }
 
+/* The image is absolutely positioned so its intrinsic size never stretches the grid rows;
+   the box takes its height from the header (square) or header + pools (tall). */
 .ccs-portrait-wrap {
-  align-self: stretch;
-  min-height: 0;
   position: relative;
+  align-self: stretch;
+  min-height: 72px;
 }
 
 /* Fills its cell: square beside the header, or tall across header and pools. */
 .ccs-portrait {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
   height: 100%;
-  min-height: 76px;
   object-fit: cover;
   border: 1px solid var(--ccs-accent);
   border-radius: var(--ccs-radius);
@@ -387,7 +393,7 @@
 .ccs-identity {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   min-width: 0;
 }
 
@@ -402,7 +408,7 @@
 
 .ccs-root .ccs-name {
   flex: 1 1 220px;
-  height: 32px;
+  height: 30px;
   font-size: 1.35rem;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -420,13 +426,13 @@
 
 .ccs-advancement {
   flex-wrap: nowrap;
-  font-size: 0.85rem;
-  gap: 10px;
+  font-size: 0.82rem;
+  gap: 7px;
 }
 
 /* Wide enough for the advancement row on one line (measured in Chromium). */
 .ccs-sheet {
-  min-width: var(--ccs-sheet-min-width, 840px);
+  min-width: var(--ccs-sheet-min-width, 800px);
 }
 
 .ccs-vitals {
@@ -485,15 +491,15 @@
 
 .ccs-pools {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(136px, 1fr));
+  gap: 6px;
 }
 
 .ccs-pool {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 4px 8px 6px;
+  gap: 1px;
+  padding: 3px 6px 4px;
   border: 1px solid var(--ccs-line);
   border-top: 3px solid var(--ccs-pool-color, var(--ccs-accent));
   border-radius: var(--ccs-radius);
@@ -506,7 +512,7 @@
 .ccs-pool.pool-additional { --ccs-pool-color: var(--ccs-accent); }
 
 .ccs-pool-head {
-  min-height: 26px;
+  min-height: 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -718,8 +724,8 @@
 .ccs-panel-box {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 5px 8px 6px;
+  gap: 3px;
+  padding: 4px 7px 5px;
   border: 1px solid var(--ccs-line);
   border-radius: var(--ccs-radius);
   background: var(--ccs-panel-2);
@@ -1235,7 +1241,7 @@
   width: 100%;
   height: 100%;
   margin: 0;
-  padding: 19px 7px 30px;
+  padding: 17px 7px 30px;
   border: none;
   border-radius: 0;
   background: transparent;
@@ -1309,11 +1315,16 @@
 }
 
 .ccs-card-name {
-  display: block;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  width: 100%;
+  min-width: 0;
   overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  font-size: 0.88rem;
+  white-space: normal;
+  overflow-wrap: break-word;
+  line-height: 1.2;
+  font-size: 0.8rem;
   font-weight: 700;
   color: var(--ccs-on-art);
 }
@@ -1366,6 +1377,28 @@
 
 .ccs-card-actions > button {
   pointer-events: auto;
+}
+
+/* Core button styles add padding, gaps and icon margins; reset them so icons sit dead centre. */
+.ccs-card-actions > button,
+.ccs-icon-btn,
+.ccs-pop-control,
+.ccs-pop-archive {
+  gap: 0;
+  min-width: 0;
+  min-height: 0;
+  line-height: 1;
+  justify-content: center;
+  align-items: center;
+}
+
+.ccs-card-actions > button > i,
+.ccs-icon-btn > i,
+.ccs-pop-control > i,
+.ccs-pop-archive > i {
+  margin: 0;
+  width: auto;
+  line-height: 1;
 }
 
 .ccs-card-d20,

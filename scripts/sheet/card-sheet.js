@@ -232,6 +232,11 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     // Also re-anchors an open popover to its re-rendered card.
     this.#applySearch();
 
+    // Hide card art that fails to load instead of showing a broken-image icon.
+    for (const img of root.querySelectorAll(".ccs-card-img, .ccs-armor-art img, .ccs-portrait")) {
+      img.addEventListener("error", () => img.classList.add("is-broken"), {once: true});
+    }
+
     // Card drag for hotbar macros and for moving items between categories / actors.
     if (this.isEditable) {
       for (const card of root.querySelectorAll(".ccs-card[draggable='true']")) {
@@ -279,14 +284,20 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
    * Narrowest widths that keep the header (advancement row, Tier/Effort/XP) from overlapping,
    * measured in Chromium. The double-tall portrait takes a wider column.
    */
-  static MIN_WIDTH = {square: 840, tall: 880};
+  static MIN_WIDTH = {square: 800, tall: 835};
 
   get minWidth() {
     return cs.portraitTall(this.actor).value ? CypherCardSheet.MIN_WIDTH.tall : CypherCardSheet.MIN_WIDTH.square;
   }
 
+  /** Every move and resize (including dragging the resize handle) passes through here. */
+  _updatePosition(position) {
+    const pos = super._updatePosition(position);
+    if (typeof pos.width === "number") pos.width = Math.max(pos.width, this.minWidth);
+    return pos;
+  }
+
   setPosition(position) {
-    if (position?.width) position.width = Math.max(position.width, this.minWidth);
     const result = super.setPosition(position);
     CardPopover.reposition();
     return result;

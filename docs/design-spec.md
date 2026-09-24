@@ -237,7 +237,7 @@ Choices made while building the module, following the "UX/UI standards first, tr
 
 - **Card layout.** The value slot sits top-left, marks (cypher type, spell, favorite) top-right, then the image, name, sub-line, and a footer with training and type. The action bar has archive on the left and the d20 in the centre. Non-rolling items keep the d20 in a dashed style, and its tooltip reads "Send to chat".
 - **Frame colour** comes from the training level when the item has one, otherwise from its family (skills, combat, abilities, equipment).
-- **Small cards** are 80px tall with the item image full-bleed. Name, training and type are overlaid in light text on a dark shade, which stays dark in both themes for contrast. The bottom button row holds the d20, plus a Worn toggle on armor cards, centred together; archive moved to the popover. Names are one line; the full name is in the tooltip and popover. The system's SVG icons are shown contained rather than cropped.
+- **Small cards** are 92px tall with the item image full-bleed. Name, training and type are overlaid in light text on a dark shade, which stays dark in both themes for contrast. The bottom button row holds the d20, plus a Worn toggle on armor cards, centred together; archive moved to the popover. Names wrap at word boundaries to two lines, then end with an ellipsis; the full name is in the tooltip and popover. Art that fails to load is hidden rather than shown as a broken image. The system's SVG icons are shown contained rather than cropped.
 - **Card sub-line removed.** Secondary facts such as attack range, armor speed cost and item level appear only in the popover. Temporary power shifts and permanent damage show as small icons next to the favorite star.
 - **Popover placement.** The large card covers the small one, with its bottom edge just above the small card's d20 so the d20 stays clickable. It grows upward, or downward from below the d20 when there's no room above. It unfolds from the card when opening and folds back when closing (170ms / 120ms; off with reduced motion).
 - **Popover layout.** Centred title over the item image as a faint (16%) banner. Clicking the title, clicking outside, or pressing Escape closes it; there is no close button. The actions are one row of icon buttons with tooltips, running right to left from a small archive button in the bottom-right corner.
@@ -255,10 +255,75 @@ Choices made while building the module, following the "UX/UI standards first, tr
 - **World sheet design is not used for backgrounds.** Its default (`cypher-blue`, a light gradient) was built for the system's light sheet and showed through this sheet's panels. Backgrounds and icons come only from the actor's own Custom Sheet Design, under a theme-coloured scrim of at least 60%. The world logo is still used, and the black logo is inverted on the dark theme.
 - **Tags** keep the system's model: four tag categories, each holding any number of tags.
 - **Features tab.** The card tab is called "Features" by default and can be renamed per actor in the settings tab.
-- **Minimum sheet width** is 840px (880px with the tall portrait), enforced when resizing, so the advancement row stays on one line and the header never overlaps.
+- **Minimum sheet width** is 800px (835px with the tall portrait), enforced in `_updatePosition` so it holds while dragging the resize handle, so the advancement row stays on one line and the header never overlaps.
 - **Armor** shows in the damage track panel: an image with the armor total overlaid and the speed cost below. Clicking it opens a menu of the character's armor items with a Worn toggle for each (the system totals worn, unarchived armor items only). The image is set in Settings → Sheet layout (`flags.cypher-card-sheet.armorImage`).
 - **Portrait** fills the height of the name/sentence/advancement block. A "Tall portrait" setting (`flags.cypher-card-sheet.portraitTall`) makes it span the header and the pools, for portrait-shaped images; the pools narrow and the minimum width rises from 840px to 880px.
 - **Badge** is the low-opacity image in the lower-right corner, set in its own settings panel. It uses the system's own background-icon fields for the actor, so the same badge shows on the default sheet.
 - **Recovery slots** glow on hover only.
 - **Default grouping** is a client setting, "Default card grouping". The sheet remembers the chosen mode per actor for the rest of the session.
 - **Untested in a live Foundry client.** The adapter and templates were exercised against the system's `template.json` in a Node harness, and the layout was checked in Chromium. The AppV2 lifecycle hooks (`_onChangeForm`, drag/drop wiring, `<prose-mirror>` saving) need a first in-client test.
+
+---
+
+## 13. Scoping: custom card frames (not built)
+
+**Goal:** Warframe-style frame art on the small and large cards. Each card gets a top cap and a bottom cap, with frame sets that vary by rarity or theme.
+
+### What a frame set is
+
+A frame set holds up to four images, each a file path chosen with Foundry's FilePicker:
+
+| Slot | Used on | Notes |
+|---|---|---|
+| Small top | small card, above the art | ~12–16px of the card's 92px height |
+| Small bottom | small card, behind the name/d20 row | must leave the d20 row readable and clickable |
+| Large top | large card header | sits behind the centred title |
+| Large bottom | large card action bar | sits behind the icon row |
+
+- **Colour mode:**
+  - *tinted:* the image is used as a CSS mask, and its colour comes from the card's frame colour (training level or family). One asset then covers every rarity.
+  - *full-colour:* the image is drawn as-is.
+- **Stretch mode:** frames should work at any card width.
+  - `border-image` 9-slice: ends stay fixed and the middle stretches. Best for ornate caps.
+  - Stretched to the full width. Best for simple bars.
+
+### Where frame sets come from
+
+1. **Built-in defaults:** a few SVG sets shipped in `assets/frames/`, drawn for the module so the licence is clean. SVG keeps them sharp, and tinted mode lets one set cover all four training levels.
+2. **World library:** a GM-only settings menu (an AppV2 form) to add, edit and remove frame sets, stored as a world setting. Every sheet in the world can use them.
+
+### Which card gets which frame
+
+Checked in order; the first match wins:
+
+1. **Per item:** `flags.cypher-card-sheet.frame` on the item. This needs a picker in the large card, a new icon in its action bar. It's the first piece of inline editing, which was deferred in §10.
+2. **Per tag:** a frame set assigned to a tag (#Stealth cards glow differently). This needs a tag→frame mapping in the actor's settings.
+3. **Per training level:** Inability / Practiced / Trained / Specialized, which matches Warframe's bronze/silver/gold rarity.
+4. **Per family or type:** skills, combat, abilities, equipment.
+5. **Default frame.**
+
+Levels 3–5 fit in the sheet's Settings tab as a small grid of dropdowns.
+
+### Build notes
+
+- **Rendering:** two decorative layers per card (`::before` / `::after`, or two `<span aria-hidden>`), using CSS `background-image` or `mask-image` from custom properties set per card, e.g. `--ccs-frame-top: url(...)`. The browser then caches each image once, which matters with 50+ cards.
+- **Height budget:** at 92px there's little room. The caps should overlay the art (the art is already full-bleed) rather than add height. Name and d20 contrast must survive a busy bottom cap, so keep the dark shade under the text.
+- **The large card's placement** is measured from the small card's button row. A bottom cap must not move that row.
+- **Themes:** tinted frames follow both light and dark automatically. Full-colour frames look the same in both, which is the user's choice.
+- **Accessibility:** frames are decorative, so they're hidden from screen readers and never carry meaning that isn't also in text.
+- **Coupling:** none with the Cypher System. This is purely module data (world setting plus module flags).
+
+### Suggested phases
+
+| Phase | Scope | Size |
+|---|---|---|
+| 1 | Tinted built-in SVG frame sets; choose one set per actor; the frame colour already follows training level | small |
+| 2 | World frame library (GM menu) with full-colour images; per-actor mapping by training and family | medium |
+| 3 | Per-tag and per-item frames, including the large-card picker | medium |
+| 4 | Large-card caps and optional animated effects (shimmer on Specialized) | small–medium |
+
+### Decisions needed before building
+
+- Should frames be chosen per actor (each player styles their own sheet), world-wide (GM sets the look), or both, with the actor overriding the world?
+- Is per-item frame choice wanted in phase 1, given that it means starting inline editing?
+- Should the module ship default art? Drawing a few tasteful SVG sets is part of the work.
