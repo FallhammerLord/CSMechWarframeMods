@@ -70,7 +70,7 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   #armorMenuAbort = null;
 
-  /** Drop events already handled, so core's DragDrop and our fallback listener never double-handle. */
+  /** Drops already handled, so core's DragDrop and the fallback listener never both act. */
   #handledDrops = new WeakSet();
 
   get title() {
@@ -87,9 +87,7 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return state;
   }
 
-  /* -------------------------------------------- */
-  /*  Rendering                                   */
-  /* -------------------------------------------- */
+  /* Rendering */
 
   async _prepareContext(options) {
     const context = await super._prepareContext(options);
@@ -291,9 +289,9 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   async _onFirstRender(context, options) {
     await super._onFirstRender(context, options);
     const root = this.element;
-    // Record Alt from each click so Alt-click variants work even if Foundry's keyboard tracker misses Alt.
+    // Alt-click variants read Alt from the click (Foundry's key tracker can miss it).
     root.addEventListener("click", event => cs.noteClick(event), {capture: true});
-    // Name and sentence fields show their full text as a tooltip; keep it current while typing.
+    // Name and sentence tooltips show the full text; keep them current while typing.
     root.addEventListener("input", event => {
       if (event.target.matches?.("input[data-tooltip-value]")) event.target.dataset.tooltip = event.target.value;
     });
@@ -325,20 +323,15 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return super._onChangeForm(formConfig, event);
   }
 
-  /* -------------------------------------------- */
-  /*  Window lifecycle                            */
-  /* -------------------------------------------- */
+  /* Window lifecycle */
 
-  /**
-   * Narrowest widths that keep the header (advancement row, Tier/Effort/XP) from overlapping,
-   * measured in Chromium. The double-tall portrait takes a wider column.
-   */
+  /** Width floors (measured in Chromium). The measured width below normally governs. */
   static MIN_WIDTH = {square: 800, tall: 835};
 
-  /** Floors for the compact layout; the measured width normally governs. */
+  /** Floors for the compact layout. */
   static MIN_WIDTH_COMPACT = {square: 520, tall: 560};
 
-  /** Minimum width measured from the rendered header in the live client (fonts included). */
+  /** Measured in the live client, since Foundry's fonts and button styles vary. */
   #measuredMinWidth = 0;
 
   get minWidth() {
@@ -347,11 +340,7 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return Math.max(tall ? floors.tall : floors.square, this.#measuredMinWidth);
   }
 
-  /**
-   * Measure the narrowest window that fits the header: portrait column + the header at its
-   * min-content width (advancement row on one line, Tier/Effort/XP) + padding + window chrome.
-   * Measured in the client because Foundry's fonts and button styles differ from any fixed guess.
-   */
+  /** Narrowest window that fits the header: portrait + header at min-content + padding + chrome. */
   #measureMinWidth() {
     const top = this.element?.querySelector(".ccs-top");
     const header = top?.querySelector(".ccs-header");
@@ -374,10 +363,7 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     if (this.position.width < this.minWidth) this.setPosition({width: this.minWidth});
   }
 
-  /**
-   * Compact: the header sits on the pools' three equal columns. The narrowest top row is the one
-   * where a third still fits Tier/Effort/XP and the identity block fits its two-thirds share.
-   */
+  /** Compact: the narrowest top row where each third fits its contents. */
   #compactTopWidth(top, portrait, gap) {
     const minContent = el => {
       if (!el) return 0;
@@ -426,9 +412,7 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return super.close(options);
   }
 
-  /* -------------------------------------------- */
-  /*  Drag and drop                               */
-  /* -------------------------------------------- */
+  /* Drag and drop */
 
   #onCardDragStart(event) {
     const item = this.actor.items.get(event.currentTarget.dataset.itemId);
@@ -458,18 +442,14 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     return cs.dropItem(this.actor, event, data);
   }
 
-  /* -------------------------------------------- */
-  /*  Action helpers                              */
-  /* -------------------------------------------- */
+  /* Action helpers */
 
   #itemFrom(target) {
     const id = target.closest("[data-item-id]")?.dataset.itemId;
     return id ? this.actor.items.get(id) : null;
   }
 
-  /* -------------------------------------------- */
-  /*  Actions (this = sheet)                      */
-  /* -------------------------------------------- */
+  /* Actions (this = sheet) */
 
   static #onSetTab(event, target) {
     const tab = target.dataset.tab;
@@ -593,7 +573,7 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     if (this.isEditable) return cs.resetStress(this.actor);
   }
 
-  /** Available slot: roll (the system spends the next free slot). Spent slot: un-spend it. */
+  /** Free slot: spend it and roll. Spent slot: free it. */
   static #onRecoverySlot(event, target) {
     if (!this.isEditable) return;
     if (target.dataset.spent === "true") return cs.unspendRecovery(this.actor, target.dataset.key);

@@ -1,16 +1,9 @@
 /**
- * Per-actor movement ranges on the token ruler.
- *
- * The Cypher System ruler colours and labels each waypoint by range band (immediate, short,
- * long, very long) using fixed distances (token-ruler.js `getCategory`: 10/50/100/500 ft or
- * 3/15/30/150 m). When an actor has custom ranges set on this sheet, the same bands are
- * recomputed with that actor's distances. Band names, colours, rounding, and when the ruler
- * shows at all stay the system's. Actors without custom ranges are untouched.
- *
- * The system's Token class constructs its ruler class directly, so CONFIG.Token.rulerClass
- * can't be swapped. The four style/label methods on the active ruler class are wrapped instead.
- *
- * Baseline: cyphersystem v3.5.2.
+ * Per-actor movement ranges on the token ruler. The system bands waypoints by fixed distances
+ * (token-ruler.js getCategory); for an actor with custom ranges, the same bands are recomputed
+ * with its distances. Everything else stays the system's.
+ * The system's Token class builds its ruler class directly, so the ruler's four label and style
+ * methods are wrapped instead of replacing the class. Baseline: cyphersystem v3.5.2.
  */
 
 import {MODULE_ID} from "../constants.js";

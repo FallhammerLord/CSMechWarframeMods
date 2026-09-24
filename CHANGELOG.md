@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.4.1 — code tidy-up
+
+No intended visual or behaviour change except the first item.
+
+- **Frames settings window:** its preview cards now use the sheet's own card template, so they always match real cards. They had drifted to an older layout.
+- **Stylesheet consolidated:** override layers merged back into one rule per element, dead rules removed (unused classes, the tag-chip hover reveal that never applied), repeated text outline and dark-window palettes shared. About 300 lines shorter, 15 → 10 `!important` (the rest beat inline, system or core styles).
+- **Adapter split** into topic files (`shared`, `actor`, `options`, `items`, `item-actions`) behind the same `cypher.js` import, so no caller changed.
+- **Comments shortened** throughout; stale ones corrected.
+- **Test harness committed** in `tools/harness/`, with a visual regression check (`snapshot.mjs`) that compares every element's computed style, including forced hover and focus, against a baseline.
+
 ## 0.4.0-alpha.2
 
 - **Fix:** at the compact minimum width the pools' Edge field was squeezed. The −/+/reset buttons and Edge no longer shrink, and the compact minimum width now counts that row as well as Tier/Effort/XP, so the window stops before anything is crushed.

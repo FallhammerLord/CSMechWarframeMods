@@ -1,7 +1,4 @@
-/**
- * Cypher Card Sheet: entry point.
- * Registers an alternative PC sheet for the Cypher System. Players choose it per actor.
- */
+/** Cypher Card Sheet: an alternative Cypher System PC sheet, chosen per actor. */
 
 import {MODULE_ID, SYSTEM_ID, TEMPLATE_PATH} from "./constants.js";
 import {CypherCardSheet, PARTIALS} from "./sheet/card-sheet.js";

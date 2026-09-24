@@ -1,13 +1,9 @@
 /**
- * Adjustments to Cypher System UI for actors using the card sheet, applied from the outside:
- * the system's roll dialog and chat cards are never modified at the source.
- *
- * - All-in-One roll dialog: follows the card sheet's dark theme, and shows custom pool names.
- * - Item sheets of the actor's items: follow the card sheet's dark theme.
- * - Roll chat cards: show the rolling actor's custom pool names at display time. The stored
- *   message keeps the system's wording, so other sheets and modules see the original text.
- *
- * Baseline: cyphersystem v3.5.2 (forms/roll-engine-dialog-sheet.js, roll-engine-output.js).
+ * System UI for actors using the card sheet, adjusted at render time; the system's code and
+ * stored messages are unchanged.
+ * - All-in-One roll dialog and item sheets follow the sheet's dark theme.
+ * - The roll dialog and roll chat cards show custom pool names.
+ * Baseline: cyphersystem v3.5.2.
  */
 
 import {MODULE_ID} from "../constants.js";
@@ -24,9 +20,8 @@ function usesCardSheet(actor) {
 }
 
 /**
- * Put a system (AppV1) window into the card sheet's dark theme, or take it out again.
- * Backgrounds are set inline with priority: the system paints its forms with an !important
- * gradient and core themes paint the window, so stylesheet rules alone were not enough.
+ * Put a system (AppV1) window into the sheet's dark theme, or take it out. Backgrounds are set
+ * inline with priority, since the system paints its forms with an !important gradient.
  */
 function applySystemDark(root, dark, cls) {
   root.classList.add(cls);
@@ -59,15 +54,11 @@ function onRenderRollDialog(app, html) {
   const root = rootOf(app, html);
   if (!root) return;
   const dark = effectiveTheme(actor.sheet) !== "theme-light";
-  root.classList.toggle("ccs-aio-dark", dark);
   applySystemDark(root, dark, "ccs-aio");
   applyPoolNames(root.querySelector(".window-content") ?? root, actor, {skip: null});
 }
 
-/**
- * Item sheets (the system's AppV1 CypherItemSheet, every item type) of items owned by an actor
- * using the card sheet follow that sheet's theme, so opening a card's editor stays dark.
- */
+/** Item sheets (every type) of items owned by a card-sheet actor follow that sheet's theme. */
 function onRenderItemSheet(app, html) {
   const actor = app.document?.parent ?? app.object?.parent;
   if (!usesCardSheet(actor)) return;

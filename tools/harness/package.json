@@ -1,0 +1,10 @@
+{
+  "name": "cypher-card-sheet-harness",
+  "private": true,
+  "type": "module",
+  "description": "Renders the sheet outside Foundry and checks refactors for visual changes.",
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^6.7.2",
+    "handlebars": "^4.7.9"
+  }
+}

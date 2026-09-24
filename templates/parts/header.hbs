@@ -1,31 +1,32 @@
+{{!-- Fields shared by the full and compact layouts --}}
 {{#*inline "ccsName"}}
-<input class="ccs-name" type="text" name="{{identity.namePath}}" value="{{identity.name}}" data-tooltip="{{identity.name}}" data-tooltip-value
-             placeholder="{{localize 'CYPHERSYSTEM.Name'}}" aria-label="{{localize 'CYPHERSYSTEM.Name'}}">
+  <input class="ccs-name" type="text" name="{{identity.namePath}}" value="{{identity.name}}" data-tooltip="{{identity.name}}" data-tooltip-value
+         placeholder="{{localize 'CYPHERSYSTEM.Name'}}" aria-label="{{localize 'CYPHERSYSTEM.Name'}}">
 {{/inline}}
 {{#*inline "ccsForm"}}
-{{#if identity.showFormSelect}}
-        <select name="system.basic.unmaskedForm" aria-label="{{localize 'CCS.Header.Form'}}">
-          {{selectOptions settings.choices.unmaskedForm selected=system.basic.unmaskedForm}}
-        </select>
-      {{/if}}
+  {{#if identity.showFormSelect}}
+    <select name="system.basic.unmaskedForm" aria-label="{{localize 'CCS.Header.Form'}}">
+      {{selectOptions settings.choices.unmaskedForm selected=system.basic.unmaskedForm}}
+    </select>
+  {{/if}}
 {{/inline}}
 {{#*inline "ccsDescriptor"}}
-<input type="text" name="{{identity.descriptorPath}}" value="{{identity.descriptor}}" data-tooltip="{{identity.descriptor}}" data-tooltip-value
-             placeholder="{{localize 'CYPHERSYSTEM.Descriptor'}}" aria-label="{{localize 'CYPHERSYSTEM.Descriptor'}}">
+  <input type="text" name="{{identity.descriptorPath}}" value="{{identity.descriptor}}" data-tooltip="{{identity.descriptor}}" data-tooltip-value
+         placeholder="{{localize 'CYPHERSYSTEM.Descriptor'}}" aria-label="{{localize 'CYPHERSYSTEM.Descriptor'}}">
 {{/inline}}
 {{#*inline "ccsType"}}
-<input type="text" name="system.basic.type" value="{{identity.type}}" data-tooltip="{{identity.type}}" data-tooltip-value
-               placeholder="{{localize 'CYPHERSYSTEM.Type'}}" aria-label="{{localize 'CYPHERSYSTEM.Type'}}">
+  <input type="text" name="system.basic.type" value="{{identity.type}}" data-tooltip="{{identity.type}}" data-tooltip-value
+         placeholder="{{localize 'CYPHERSYSTEM.Type'}}" aria-label="{{localize 'CYPHERSYSTEM.Type'}}">
 {{/inline}}
 {{#*inline "ccsFocus"}}
-<input type="text" name="system.basic.focus" value="{{identity.focus}}" data-tooltip="{{identity.focus}}" data-tooltip-value {{#if identity.focusLocked}}disabled{{/if}}
-               placeholder="{{localize 'CYPHERSYSTEM.Focus'}}" aria-label="{{localize 'CYPHERSYSTEM.Focus'}}">
+  <input type="text" name="system.basic.focus" value="{{identity.focus}}" data-tooltip="{{identity.focus}}" data-tooltip-value {{#if identity.focusLocked}}disabled{{/if}}
+         placeholder="{{localize 'CYPHERSYSTEM.Focus'}}" aria-label="{{localize 'CYPHERSYSTEM.Focus'}}">
 {{/inline}}
 {{#*inline "ccsSentenceField"}}
-{{#if identity.showSentence}}
-  <input type="text" name="system.basic.additionalSentence" value="{{identity.sentence}}" data-tooltip="{{identity.sentence}}" data-tooltip-value {{#if identity.focusLocked}}disabled{{/if}}
-         placeholder="{{identity.sentencePlaceholder}}" aria-label="{{identity.sentencePlaceholder}}">
-{{/if}}
+  {{#if identity.showSentence}}
+    <input type="text" name="system.basic.additionalSentence" value="{{identity.sentence}}" data-tooltip="{{identity.sentence}}" data-tooltip-value {{#if identity.focusLocked}}disabled{{/if}}
+           placeholder="{{identity.sentencePlaceholder}}" aria-label="{{identity.sentencePlaceholder}}">
+  {{/if}}
 {{/inline}}
 <div class="ccs-top{{#if layout.portraitTall}} is-tall{{/if}}{{#if layout.compact}} is-compact{{/if}}">
   <div class="ccs-portrait-wrap">

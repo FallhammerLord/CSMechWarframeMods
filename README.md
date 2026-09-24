@@ -28,10 +28,15 @@ Enable **Cypher Card Sheet** in your world. Then, on a PC's sheet, open **Sheet*
 
 | Path | Purpose |
 |---|---|
-| `scripts/adapter/cypher.js` | The only code that reads Cypher System data or calls the system. Fix data-path changes here. |
+| `scripts/adapter/` | The only code that reads Cypher System data or calls the system; fix data-path changes here. `cypher.js` re-exports `actor.js`, `options.js` (per-actor settings, sheet design), `items.js` (cards, sorting, grouping) and `item-actions.js`. |
 | `scripts/adapter/system-imports.js` | Imports of system functions that are not on `game.cyphersystem`. Highest coupling risk. |
+| `scripts/adapter/system-ui.js` | Dark theme and pool names for the system's roll dialog, item sheets and chat cards. |
+| `scripts/adapter/ruler.js` | Per-actor movement ranges on the token ruler. |
 | `scripts/sheet/card-sheet.js` | The AppV2 sheet. |
-| `scripts/sheet/popover.js` | The single detail popover. |
+| `scripts/sheet/popover.js` | The large card. |
+| `scripts/frames/` | Card frames: generated CSS and the GM settings window. |
 | `templates/` | Handlebars templates. |
 | `styles/card-sheet.css` | Theme and layout. |
+| `tools/harness/` | Renders the sheet outside Foundry and checks refactors for visual changes (see its README). |
+| `tools/make-frames.py` | Generates the default frame images. |
 | `docs/design-spec.md` | Design specification. |

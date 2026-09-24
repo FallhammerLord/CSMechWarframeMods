@@ -1,9 +1,9 @@
-/* ==========================================================================
-   Cypher Card Sheet
-   A dark "mod screen" theme. Every card has the same shape; frame colour
-   carries meaning (training level, else item family) so the eye can
-   pattern-match without reading.
-   ========================================================================== */
+/* Cypher Card Sheet: a dark "mod screen" theme. Frame colour carries meaning (training level,
+   else item family), so cards read at a glance.
+   Where a rule is scoped more tightly than it needs to be (`.ccs-sheet …`), it is to outrank
+   core's `.application button` styles. */
+
+/* Tokens ------------------------------------------------------------------- */
 
 .ccs-sheet,
 .ccs-popover,
@@ -29,7 +29,6 @@
   --ccs-badge-bg: rgba(0, 0, 0, 0.75);
   --ccs-scheme: dark;
 
-  /* Pools */
   --ccs-pool-might: #e0694f;
   --ccs-pool-speed: #5fc38c;
   --ccs-pool-intellect: #6aa6f0;
@@ -40,7 +39,6 @@
   --ccs-tr-trained: #c7d0da;
   --ccs-tr-specialized: #e8c55e;
 
-  /* Item families */
   --ccs-fam-skills: #4fc3a7;
   --ccs-fam-combat: #e5854f;
   --ccs-fam-abilities: #ad90f1;
@@ -50,13 +48,16 @@
   --ccs-card-w: 148px;
   --ccs-card-h: 114px;
   --ccs-font: var(--font-primary, "Signika", sans-serif);
+
+  /* Medium black outline for light text over art */
+  --ccs-outline:
+    -1px -1px 0 #000, 0 -1px 0 #000, 1px -1px 0 #000,
+    -1px 0 0 #000, 1px 0 0 #000,
+    -1px 1px 0 #000, 0 1px 0 #000, 1px 1px 0 #000,
+    0 1px 3px rgba(0, 0, 0, 0.9);
 }
 
-/*
- * Light theme. Foundry marks the theme with `theme-light` / `theme-dark` on the application
- * (per-document choice in Sheet Configuration) or on <body> (the global UI setting). The sheet
- * follows the nearest one; an explicit per-document dark choice beats a light body.
- */
+/* Light theme: the nearest theme-light/theme-dark class decides (per document, else <body>). */
 .ccs-sheet.theme-light,
 .theme-light .ccs-sheet:not(.theme-dark),
 .ccs-popover.theme-light {
@@ -96,9 +97,20 @@
   --ccs-pool-intellect: #2f64b3;
 }
 
-/* --------------------------------------------------------------------------
-   Window
-   -------------------------------------------------------------------------- */
+/* High-contrast frames for colour-blind players (Okabe-Ito based; every pair CIELAB ΔE ≥ 31
+   under protan, deutan and tritan simulation). Rank pips on the caps add a non-colour cue. */
+.ccs-hc {
+  --ccs-tr-inability: #d9621a;
+  --ccs-tr-practiced: #f0a800;
+  --ccs-tr-trained: #10a877;
+  --ccs-tr-specialized: #9ad7fa;
+}
+
+/* Window ------------------------------------------------------------------- */
+
+.ccs-sheet {
+  min-width: var(--ccs-sheet-min-width, 800px);
+}
 
 .ccs-sheet .window-content {
   padding: 0;
@@ -157,9 +169,7 @@
   display: none !important;
 }
 
-/* --------------------------------------------------------------------------
-   Form controls
-   -------------------------------------------------------------------------- */
+/* Form controls ------------------------------------------------------------ */
 
 .ccs-root input[type="text"],
 .ccs-root input[type="number"],
@@ -211,6 +221,47 @@
   outline-offset: 1px;
 }
 
+.ccs-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.ccs-field {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ccs-field > span,
+.ccs-label {
+  color: var(--ccs-muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.ccs-hint {
+  margin: 0;
+  color: var(--ccs-muted);
+  font-size: 0.85rem;
+}
+
+.ccs-visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.ccs-muted {
+  color: var(--ccs-muted);
+}
+
+/* Buttons ------------------------------------------------------------------ */
+
 .ccs-root button,
 .ccs-popover button {
   font-family: inherit;
@@ -224,18 +275,43 @@
   opacity: 0.45;
 }
 
-.ccs-icon-btn {
-  display: inline-grid;
+/* Icon buttons: no core padding, gaps or icon margins, so the icon sits dead centre. */
+.ccs-icon-btn,
+.ccs-pop-control,
+.ccs-pop-archive,
+.ccs-card-actions > button,
+.ccs-sheet .ccs-icon-btn,
+.ccs-sheet .ccs-card-actions > button,
+.ccs-popover .ccs-pop-control,
+.ccs-popover .ccs-pop-archive {
+  display: grid;
   place-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  gap: 0;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  line-height: 1;
+}
+
+.ccs-sheet .ccs-card-actions > button > i,
+.ccs-sheet .ccs-icon-btn > i,
+.ccs-popover .ccs-pop-control > i,
+.ccs-popover .ccs-pop-archive > i {
+  margin: 0;
+  width: 1.25em;
+  line-height: 1;
+  text-align: center;
+}
+
+.ccs-icon-btn {
   width: 26px;
   height: 26px;
-  min-width: 26px;
-  padding: 0;
   border: 1px solid transparent;
   border-radius: 4px;
   background: transparent;
   color: var(--ccs-muted);
-  line-height: 1;
   flex: 0 0 auto;
 }
 
@@ -262,6 +338,19 @@
   flex: 0 0 auto;
 }
 
+/* Text buttons: labels stay centred under core button styles. */
+.ccs-sheet .ccs-segment button,
+.ccs-sheet .ccs-chip-toggle,
+.ccs-sheet .ccs-chip-btn,
+.ccs-sheet .ccs-btn,
+.ccs-sheet .ccs-toggle,
+.ccs-sheet .ccs-tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
 .ccs-btn:not(:disabled):hover,
 .ccs-toggle:not(:disabled):hover {
   border-color: var(--ccs-accent);
@@ -277,42 +366,7 @@
   background: var(--ccs-accent-soft);
 }
 
-.ccs-check {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-}
-
-.ccs-field {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.ccs-field > span,
-.ccs-label {
-  color: var(--ccs-muted);
-  font-size: 0.85rem;
-  white-space: nowrap;
-}
-
-.ccs-visually-hidden {
-  position: absolute !important;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-}
-
-.ccs-muted {
-  color: var(--ccs-muted);
-}
-
-/* --------------------------------------------------------------------------
-   Header
-   -------------------------------------------------------------------------- */
+/* Header ------------------------------------------------------------------- */
 
 .ccs-top {
   --ccs-portrait-w: 84px;
@@ -328,7 +382,7 @@
   border-bottom: 1px solid var(--ccs-line);
 }
 
-/* Double-tall portrait (2:3-ish): spans the header and the pools; the pools narrow to fit. */
+/* Tall portrait spans the header and the pools. */
 .ccs-top.is-tall {
   --ccs-portrait-w: 118px;
   grid-template-areas:
@@ -347,15 +401,13 @@
   align-items: start;
 }
 
-/* The image is absolutely positioned so its intrinsic size never stretches the grid rows;
-   the box takes its height from the header (square) or header + pools (tall). */
+/* The image is positioned absolutely so its intrinsic size never stretches the grid rows. */
 .ccs-portrait-wrap {
   position: relative;
   align-self: stretch;
   min-height: 72px;
 }
 
-/* Fills its cell: square beside the header, or tall across header and pools. */
 .ccs-portrait {
   position: absolute;
   inset: 0;
@@ -401,8 +453,7 @@
 }
 
 .ccs-row,
-.ccs-sentence,
-.ccs-advancement {
+.ccs-sentence {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -428,14 +479,10 @@
 }
 
 .ccs-advancement {
-  flex-wrap: nowrap;
-  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
   gap: 7px;
-}
-
-/* Wide enough for the advancement row on one line (measured in Chromium). */
-.ccs-sheet {
-  min-width: var(--ccs-sheet-min-width, 800px);
+  font-size: 0.82rem;
 }
 
 .ccs-vitals {
@@ -474,23 +521,7 @@
   font-size: 1.6rem;
 }
 
-/* --------------------------------------------------------------------------
-   Status: pools and strip
-   -------------------------------------------------------------------------- */
-
-/* Above the tab bar and grid, so the armor menu can open over them. */
-.ccs-root > .ccs-status {
-  z-index: 3;
-}
-
-.ccs-status {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  padding: 5px 12px 6px;
-  background: var(--ccs-panel);
-  border-bottom: 1px solid var(--ccs-line);
-}
+/* Pools -------------------------------------------------------------------- */
 
 .ccs-pools {
   display: grid;
@@ -559,13 +590,16 @@
   gap: 4px;
 }
 
+/* The buttons and Edge never shrink; the sheet's minimum width grows instead. */
 .ccs-pool-controls {
   display: flex;
+  flex: 0 0 auto;
   gap: 2px;
 }
 
 .ccs-edge {
   display: flex;
+  flex: 0 0 auto;
   align-items: center;
   gap: 4px;
   color: var(--ccs-muted);
@@ -574,7 +608,9 @@
 }
 
 .ccs-root .ccs-edge input {
+  flex: 0 0 34px;
   width: 34px;
+  min-width: 34px;
   height: 24px;
 }
 
@@ -583,6 +619,11 @@
   justify-content: center;
   border-top-width: 1px;
   background: transparent;
+}
+
+.ccs-logo-slot img {
+  max-height: 70px;
+  border: none;
 }
 
 .ccs-sheet:not(.theme-light) .ccs-logo-slot img.logo-black {
@@ -594,9 +635,146 @@
   filter: none;
 }
 
-.ccs-logo-slot img {
-  max-height: 70px;
-  border: none;
+/* Compact layout ----------------------------------------------------------- */
+/* The header sits on the pools' three columns: identity over the first two (less the square
+   portrait), Tier/Effort/XP over the third. --ccs-third resolves against .ccs-top's width. */
+
+.ccs-top.is-compact {
+  --ccs-gap: 6px;
+  --ccs-third: calc((100% - 2 * var(--ccs-gap)) / 3);
+  column-gap: var(--ccs-gap);
+  grid-template-columns: var(--ccs-portrait-w) calc(2 * var(--ccs-third) - var(--ccs-portrait-w)) var(--ccs-third);
+  grid-template-areas:
+    "portrait identity vitals"
+    "pools pools pools";
+}
+
+.ccs-top.is-compact.is-tall {
+  --ccs-third: calc((100% - var(--ccs-portrait-w) - 3 * var(--ccs-gap)) / 3);
+  grid-template-columns: var(--ccs-portrait-w) calc(2 * var(--ccs-third) + var(--ccs-gap)) var(--ccs-third);
+  grid-template-areas:
+    "portrait identity vitals"
+    "portrait pools pools";
+}
+
+.ccs-top.is-compact > .ccs-header { display: contents; }
+.ccs-top.is-compact .ccs-identity { grid-area: identity; }
+
+.ccs-top.is-compact .ccs-vitals {
+  grid-area: vitals;
+  grid-template-columns: auto 26px minmax(36px, 1fr) 26px;
+}
+
+.ccs-top.is-compact .ccs-vital-input { width: 100%; }
+
+.ccs-top.is-compact .ccs-pools {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--ccs-gap);
+}
+
+.ccs-top.is-compact .ccs-pool {
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.ccs-top.is-compact .ccs-pool-foot,
+.ccs-top.is-compact .ccs-edge {
+  gap: 3px;
+}
+
+/* 24px: the minimum target size */
+.ccs-sheet .ccs-top.is-compact .ccs-pool-controls .ccs-icon-btn {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+}
+
+.ccs-sentence-compact {
+  flex-wrap: nowrap;
+  gap: 5px;
+}
+
+/* width sets the intrinsic size (inputs report ~150px otherwise); flex-grow fills the row. */
+.ccs-sentence-compact > input,
+.ccs-sentence-compact > select {
+  flex: 1 1 0;
+  width: 56px;
+  min-width: 56px;
+}
+
+.ccs-root .ccs-sentence-compact .ccs-name {
+  flex: 1 1 0;
+  width: 56px;
+  min-width: 56px;
+  height: auto;
+  font-size: inherit;
+  letter-spacing: normal;
+}
+
+/* Advancement icons: outlined when open, filled when taken. */
+.ccs-adv-icon {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--ccs-line-strong);
+  border-radius: 5px;
+  color: var(--ccs-muted);
+  cursor: pointer;
+}
+
+.ccs-adv-icon > input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
+}
+
+.ccs-adv-icon > .ccs-ico {
+  width: 15px;
+  height: 15px;
+  pointer-events: none;
+}
+
+.ccs-adv-icon:has(input:checked) {
+  border-color: var(--ccs-accent);
+  background: var(--ccs-accent);
+  color: var(--ccs-on-accent);
+}
+
+.ccs-adv-icon:has(input:focus-visible) {
+  outline: 2px solid var(--ccs-focus);
+  outline-offset: 1px;
+}
+
+.ccs-adv-icon:has(input:disabled) {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.ccs-adv-icon:not(:has(input:disabled)):hover {
+  border-color: var(--ccs-accent);
+}
+
+/* Status: damage, armor, recovery, stress ---------------------------------- */
+
+/* Above the tab bar and grid, so the armor menu can open over them. */
+.ccs-root > .ccs-status {
+  z-index: 3;
+}
+
+.ccs-status {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 5px 12px 6px;
+  background: var(--ccs-panel);
+  border-bottom: 1px solid var(--ccs-line);
 }
 
 .ccs-strip {
@@ -607,6 +785,38 @@
 
 .ccs-strip .ccs-damage { flex: 1 1 190px; }
 .ccs-strip .ccs-damage.has-armor { flex: 1.3 1 260px; flex-direction: row; gap: 8px; }
+.ccs-strip .ccs-recovery { flex: 2 1 300px; }
+.ccs-strip .ccs-stress { flex: 1 1 250px; }
+
+.ccs-panel-box {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 4px 7px 5px;
+  border: 1px solid var(--ccs-line);
+  border-radius: var(--ccs-radius);
+  background: var(--ccs-panel-2);
+  min-width: 0;
+}
+
+.ccs-box-title {
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ccs-muted);
+}
+
+.ccs-box-title-row,
+.ccs-damage-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ccs-box-title-row .ccs-box-title {
+  flex: 1;
+}
 
 .ccs-damage-main {
   display: flex;
@@ -614,6 +824,22 @@
   gap: 4px;
   flex: 1 1 auto;
   min-width: 0;
+}
+
+.ccs-damage-row select {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.ccs-damage-effect {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin: 0;
+  font-size: 0.8rem;
+  line-height: 1.3;
+  color: var(--ccs-muted);
 }
 
 .ccs-armor-tile {
@@ -660,6 +886,12 @@
   text-shadow: 0 0 4px var(--ccs-bg), 0 0 2px var(--ccs-bg);
 }
 
+.ccs-armor-cost {
+  font-size: 0.7rem;
+  color: var(--ccs-muted);
+  white-space: nowrap;
+}
+
 .ccs-armor-menu {
   position: absolute;
   top: calc(100% + 4px);
@@ -676,6 +908,10 @@
   border-radius: var(--ccs-radius);
   background: var(--ccs-surface);
   box-shadow: 0 8px 24px var(--ccs-shadow);
+}
+
+.ccs-armor-menu .ccs-hint {
+  padding: 6px;
 }
 
 .ccs-armor-piece {
@@ -712,65 +948,6 @@
   font-size: 0.8rem;
 }
 
-.ccs-armor-menu .ccs-hint {
-  padding: 6px;
-}
-
-.ccs-armor-cost {
-  font-size: 0.7rem;
-  color: var(--ccs-muted);
-  white-space: nowrap;
-}
-.ccs-strip .ccs-recovery { flex: 2 1 300px; }
-.ccs-strip .ccs-stress { flex: 1 1 250px; }
-
-.ccs-panel-box {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: 4px 7px 5px;
-  border: 1px solid var(--ccs-line);
-  border-radius: var(--ccs-radius);
-  background: var(--ccs-panel-2);
-  min-width: 0;
-}
-
-.ccs-box-title,
-.ccs-box-title-row .ccs-box-title {
-  font-size: 0.8rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--ccs-muted);
-}
-
-.ccs-box-title-row,
-.ccs-damage-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.ccs-box-title-row .ccs-box-title {
-  flex: 1;
-}
-
-.ccs-damage-row select {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-.ccs-damage-effect {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  margin: 0;
-  font-size: 0.8rem;
-  line-height: 1.3;
-  color: var(--ccs-muted);
-}
-
 .ccs-root .ccs-formula input {
   width: 80px;
   height: 24px;
@@ -804,6 +981,16 @@
   font-size: 1rem;
 }
 
+.ccs-recovery-slot:not(.is-spent, :disabled):hover {
+  border-color: var(--ccs-accent);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--ccs-accent) 45%, transparent);
+}
+
+.ccs-recovery-slot.is-spent {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+
 .ccs-recovery-label {
   max-width: 100%;
   overflow: hidden;
@@ -813,16 +1000,6 @@
   line-height: 1.1;
   color: var(--ccs-text);
   text-align: center;
-}
-
-.ccs-recovery-slot:not(.is-spent, :disabled):hover {
-  border-color: var(--ccs-accent);
-  box-shadow: 0 0 8px color-mix(in srgb, var(--ccs-accent) 45%, transparent);
-}
-
-.ccs-recovery-slot.is-spent {
-  filter: grayscale(1);
-  opacity: 0.45;
 }
 
 .ccs-recovery-check {
@@ -857,50 +1034,15 @@
   font-weight: 700;
 }
 
-.ccs-tabs-extra {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-left: auto;
-  font-size: 0.9rem;
-}
-
-.ccs-armor {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-}
-
-.ccs-armor strong {
-  color: var(--ccs-accent);
-}
-
-.ccs-dice {
-  display: inline-flex;
-  gap: 3px;
-}
-
-.ccs-dice .ccs-chip-btn {
-  height: 24px;
-  padding: 0 7px;
-  font-size: 0.8rem;
-}
-
-/* --------------------------------------------------------------------------
-   Tabs and panels
-   -------------------------------------------------------------------------- */
+/* Tabs and panels ---------------------------------------------------------- */
 
 .ccs-tabs {
   display: flex;
+  align-items: center;
   gap: 2px;
   padding: 0 14px;
   background: var(--ccs-panel);
   border-bottom: 1px solid var(--ccs-line);
-}
-
-.ccs-tabs {
-  align-items: center;
 }
 
 .ccs-tab {
@@ -928,7 +1070,26 @@
   border-bottom-color: var(--ccs-accent);
 }
 
-/* Core themes paint some section/form backgrounds; the sheet's own tokens own every surface. */
+.ccs-tabs-extra {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  font-size: 0.9rem;
+}
+
+.ccs-dice {
+  display: inline-flex;
+  gap: 3px;
+}
+
+.ccs-dice .ccs-chip-btn {
+  height: 24px;
+  padding: 0 7px;
+  font-size: 0.8rem;
+}
+
+/* Core themes paint some section backgrounds; the sheet's tokens own every surface. */
 .ccs-sheet .ccs-scroll,
 .ccs-sheet .ccs-panel {
   background: transparent;
@@ -952,18 +1113,12 @@
   color: var(--ccs-text);
 }
 
-/* --------------------------------------------------------------------------
-   Toolbar, tag bar, currency
-   -------------------------------------------------------------------------- */
+/* Toolbar, tag bar, currency ----------------------------------------------- */
 
 .ccs-toolbar-bar {
   padding: 6px 12px;
   background: var(--ccs-panel);
   border-bottom: 1px solid var(--ccs-line);
-}
-
-.ccs-toolbar-bar .ccs-toolbar {
-  margin-bottom: 0;
 }
 
 .ccs-toolbar {
@@ -972,6 +1127,10 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 8px;
+}
+
+.ccs-toolbar-bar .ccs-toolbar {
+  margin-bottom: 0;
 }
 
 .ccs-segment {
@@ -1090,12 +1249,6 @@
   border-radius: 0;
   background: transparent;
   color: var(--ccs-muted);
-  display: none;
-}
-
-.ccs-chip:hover .ccs-chip-btn,
-.ccs-chip:focus-within .ccs-chip-btn {
-  display: inline-flex;
 }
 
 .ccs-currency {
@@ -1111,9 +1264,7 @@
   width: 72px;
 }
 
-/* --------------------------------------------------------------------------
-   Groups and cards
-   -------------------------------------------------------------------------- */
+/* Groups ------------------------------------------------------------------- */
 
 .ccs-group {
   margin-bottom: 10px;
@@ -1194,9 +1345,8 @@
   text-align: center;
 }
 
-/* Card ------------------------------------------------------------------- */
-/* Full-bleed art with text overlaid on a dark shade. The shade is dark in both themes, so the
-   overlaid text is always light and high-contrast. */
+/* Cards -------------------------------------------------------------------- */
+/* Full-bleed art under a shade that is dark in both themes, so overlaid text is always light. */
 
 .ccs-card {
   --frame: var(--ccs-line-strong);
@@ -1223,6 +1373,9 @@
 .ccs-card.tr-trained { --frame: var(--ccs-tr-trained); }
 .ccs-card.tr-specialized { --frame: var(--ccs-tr-specialized); }
 
+/* The number takes the frame's metal: untrained (steel) cards read silver. */
+.ccs-card.frame-none { --ccs-frame-on-art: #d6dce3; }
+
 .ccs-card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 14px var(--ccs-shadow), 0 0 0 1px color-mix(in srgb, var(--frame) 60%, transparent);
@@ -1248,19 +1401,26 @@
 .ccs-card-body {
   position: absolute;
   inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
   width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 17px 7px 30px;
   border: none;
   border-radius: 0;
   background: transparent;
   color: var(--ccs-on-art);
   text-align: center;
   line-height: 1.2;
+}
+
+/* Rows: name, value (takes the remaining space), training. */
+.ccs-sheet .ccs-card .ccs-card-body,
+.ccs-frames-config .ccs-card .ccs-card-body {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+  margin: 0;
+  padding: 16px 7px 30px;
 }
 
 .ccs-card-img {
@@ -1273,6 +1433,7 @@
   border-radius: 0;
 }
 
+/* The system's default SVG icons are line art: contained, not cropped. */
 .ccs-card-img.is-icon {
   inset: 4px 30% 30px;
   width: auto;
@@ -1290,37 +1451,16 @@
   pointer-events: none;
 }
 
-.ccs-card-top,
-.ccs-card-name,
-.ccs-card-foot {
-  position: relative;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9);
-}
-
-.ccs-card-top {
+.ccs-card-marks {
   position: absolute;
   top: 3px;
-  left: 6px;
   right: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 4px;
-  font-size: 0.72rem;
-}
-
-.ccs-card-value {
-  color: var(--ccs-frame-on-art);
-  font-weight: 700;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ccs-card-marks {
+  z-index: 1;
   display: inline-flex;
   gap: 4px;
+  font-size: 0.72rem;
   color: var(--ccs-on-art-muted);
+  text-shadow: 0 0 3px #000, 0 1px 2px #000;
 }
 
 .ccs-fav {
@@ -1328,6 +1468,7 @@
 }
 
 .ccs-card-name {
+  position: relative;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -1335,6 +1476,7 @@
   width: 100%;
   min-width: 0;
   max-height: 2.4em;
+  margin: 0;
   overflow: hidden;
   white-space: normal;
   overflow-wrap: break-word;
@@ -1342,16 +1484,38 @@
   font-size: 0.8rem;
   font-weight: 700;
   color: var(--ccs-on-art);
+  text-shadow: var(--ccs-outline);
 }
 
-/* One centred line under the name: "TRAINED · SKILL". The d20 sits centred below it. */
+.ccs-card-value {
+  position: relative;
+  flex: 1 1 auto;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  overflow-x: clip;
+  overflow-y: visible;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 1px 2px 3px;
+  font-size: 1.15rem;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--ccs-frame-on-art);
+  text-shadow: var(--ccs-outline);
+}
+
 .ccs-card-foot {
+  position: relative;
   flex: 0 0 auto;
   display: flex;
   justify-content: center;
   align-items: baseline;
   gap: 5px;
   min-width: 0;
+  min-height: 12px;
   margin-top: 1px;
   font-size: 0.62rem;
   text-transform: uppercase;
@@ -1359,6 +1523,7 @@
   white-space: nowrap;
   overflow: hidden;
   color: var(--ccs-on-art-muted);
+  text-shadow: var(--ccs-outline);
 }
 
 .ccs-card-training {
@@ -1366,20 +1531,16 @@
   font-weight: 700;
 }
 
-.ccs-card-training:not(:empty)::after {
-  content: "·";
-  margin-left: 5px;
-  color: var(--ccs-on-art-muted);
-  font-weight: 400;
+@supports (paint-order: stroke fill) {
+  .ccs-card .ccs-card-name,
+  .ccs-popover .ccs-pop-header h3 {
+    -webkit-text-stroke: 2px #000;
+    paint-order: stroke fill;
+  }
 }
 
-.ccs-card-type {
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Button row: the d20, plus a worn toggle on armor, centred at the bottom of the card.
-   The large card's placement is measured from this row. */
+/* Card buttons: the d20, plus Worn (armor), depletion (artifacts) or −/+ (ammo). The large
+   card's placement is measured from this row. */
 .ccs-card-actions {
   position: absolute;
   left: 0;
@@ -1395,54 +1556,54 @@
   pointer-events: auto;
 }
 
-/* Core button styles add padding, gaps and icon margins; reset them so icons sit dead centre.
-   The sheet-scoped selectors outrank core's `.application button` rules. */
-.ccs-sheet .ccs-card-actions > button,
-.ccs-sheet .ccs-icon-btn,
-.ccs-popover .ccs-pop-control,
-.ccs-popover .ccs-pop-archive,
-.ccs-card-actions > button,
-.ccs-icon-btn,
-.ccs-pop-control,
-.ccs-pop-archive {
-  display: grid;
-  place-items: center;
-  padding: 0;
-  box-sizing: border-box;
-  gap: 0;
-  min-width: 0;
-  min-height: 0;
-  line-height: 1;
-  justify-content: center;
-  align-items: center;
+.ccs-sheet .ccs-card .ccs-card-actions > button,
+.ccs-frames-config .ccs-card .ccs-card-actions > button {
+  position: relative;
+  padding: 0 !important;
 }
 
-.ccs-sheet .ccs-card-actions > button > i,
-.ccs-sheet .ccs-icon-btn > i,
-.ccs-popover .ccs-pop-control > i,
-.ccs-popover .ccs-pop-archive > i {
+/* Inline SVG drawn centred in a square viewBox (Font Awesome's d20 sits off-centre). */
+.ccs-sheet .ccs-card .ccs-card-actions > button > .ccs-ico,
+.ccs-frames-config .ccs-card .ccs-card-actions > button > .ccs-ico {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 15px;
+  height: 15px;
   margin: 0;
-  width: 1.25em;
-  line-height: 1;
-  text-align: center;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.ccs-card-d20,
+.ccs-card-worn,
+.ccs-sheet .ccs-card-deplete,
+.ccs-sheet .ccs-card-qty {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--frame);
+  border-radius: 5px;
+  background: rgba(16, 21, 29, 0.8);
+  color: #ffffff;
 }
 
 .ccs-card-d20,
 .ccs-card-worn {
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  padding: 0;
-  border: 1px solid var(--frame);
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--frame) 30%, #10151d);
-  color: #ffffff;
   font-size: 0.8rem;
 }
 
+.ccs-card-d20 {
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--frame) 30%, #10151d);
+}
+
+.ccs-card-d20.is-chat {
+  border-style: dashed;
+  background: rgba(16, 21, 29, 0.75);
+  color: var(--ccs-on-art-muted);
+}
+
 .ccs-card-worn {
-  border-radius: 5px;
   background: rgba(16, 21, 29, 0.75);
   color: var(--ccs-on-art-muted);
 }
@@ -1452,24 +1613,58 @@
   color: #ffffff;
 }
 
-.ccs-card-worn:not(:disabled):hover {
-  box-shadow: 0 0 8px color-mix(in srgb, var(--frame) 70%, transparent);
+.ccs-sheet .ccs-card-qty {
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  font-size: 0.65rem;
 }
 
-.ccs-card-d20.is-chat {
-  border-style: dashed;
-  background: rgba(16, 21, 29, 0.75);
-  color: var(--ccs-on-art-muted);
+.ccs-card-d20:not(:disabled):hover,
+.ccs-card-worn:not(:disabled):hover,
+.ccs-sheet .ccs-card-deplete:not(:disabled):hover,
+.ccs-sheet .ccs-card-qty:not(:disabled):hover {
+  box-shadow: 0 0 8px color-mix(in srgb, var(--frame) 70%, transparent);
 }
 
 .ccs-card-d20:not(:disabled):hover {
-  box-shadow: 0 0 8px color-mix(in srgb, var(--frame) 70%, transparent);
   color: #ffffff;
 }
 
-/* --------------------------------------------------------------------------
-   Settings tab
-   -------------------------------------------------------------------------- */
+/* Card frames (caps) ------------------------------------------------------- */
+/* Hidden until frames.js writes rules for a frame key. 3-slice border-image: the ends keep the
+   image's aspect ratio (--cap-ratio), the middle stretches. */
+
+.ccs-cap {
+  --cap-h: 14px;
+  --cap-end: calc(var(--cap-h) * var(--cap-ratio, 1.5));
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: none;
+  height: var(--cap-h);
+  box-sizing: border-box;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 0 var(--cap-end);
+  border-image-width: 0 var(--cap-end);
+  border-image-repeat: stretch;
+  pointer-events: none;
+}
+
+.ccs-card .ccs-cap-top { top: 0; --cap-h: 14px; }
+.ccs-card .ccs-cap-bottom { bottom: 0; --cap-h: 18px; }
+.ccs-popover .ccs-cap-top,
+.ccs-frames-large .ccs-cap-top { top: 0; --cap-h: 22px; }
+.ccs-popover .ccs-cap-bottom,
+.ccs-frames-large .ccs-cap-bottom { bottom: 0; --cap-h: 22px; }
+
+@keyframes ccs-shimmer {
+  from { background-position: 130% 0; }
+  to { background-position: -130% 0; }
+}
+
+/* Settings tab ------------------------------------------------------------- */
 
 .ccs-settings {
   display: grid;
@@ -1521,15 +1716,12 @@
   grid-template-columns: minmax(90px, 40%) 1fr auto;
 }
 
-.ccs-hint {
-  margin: 0;
-  color: var(--ccs-muted);
-  font-size: 0.85rem;
+/* A toggle blocked by another (Compact vs Additional Pool) */
+.ccs-check.is-disabled {
+  opacity: 0.55;
 }
 
-/* --------------------------------------------------------------------------
-   Detail popover (lives on document.body)
-   -------------------------------------------------------------------------- */
+/* Large card (popover on document.body) ------------------------------------ */
 
 .ccs-popover {
   position: fixed;
@@ -1548,9 +1740,6 @@
   font-family: var(--ccs-font);
   color-scheme: var(--ccs-scheme);
   box-shadow: 0 10px 30px var(--ccs-shadow);
-}
-
-.ccs-popover {
   animation: ccs-pop-open 170ms cubic-bezier(0.2, 0.9, 0.25, 1) both;
 }
 
@@ -1560,6 +1749,10 @@
 .ccs-popover.is-closing {
   animation: ccs-pop-close 120ms ease-in both;
   pointer-events: none;
+}
+
+.ccs-popover[popover]:not(:popover-open) {
+  display: none;
 }
 
 @keyframes ccs-pop-open {
@@ -1573,18 +1766,16 @@
   to { opacity: 0; transform: scale(0.55, 0.3); }
 }
 
-.ccs-popover[popover]:not(:popover-open) {
-  display: none;
-}
-
+/* Header and bar keep their height; only the description shrinks and scrolls. */
 .ccs-pop-header {
   cursor: pointer;
   position: relative;
   display: flex;
+  flex: 0 0 auto;
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  padding: 14px 12px 10px;
+  padding: 26px 12px 10px;
   overflow: hidden;
   text-align: center;
 }
@@ -1609,19 +1800,21 @@
   position: relative;
 }
 
-.ccs-pop-header h3 {
+.ccs-popover .ccs-pop-header h3 {
   margin: 0;
   border: none;
   font-size: 1.15rem;
   line-height: 1.2;
-  color: var(--ccs-text);
+  color: #ffffff;
+  text-shadow: var(--ccs-outline);
 }
 
-.ccs-pop-type {
+.ccs-popover .ccs-pop-type {
   font-size: 0.8rem;
-  color: var(--ccs-muted);
+  color: rgba(255, 255, 255, 0.85);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  text-shadow: var(--ccs-outline);
 }
 
 .ccs-pop-facts {
@@ -1661,22 +1854,27 @@
   color: var(--ccs-info);
 }
 
+/* Icon controls run right to left from the archive button in the corner. */
 .ccs-pop-bar {
+  position: relative;
   display: flex;
+  flex: 0 0 auto;
   flex-direction: row-reverse;
   align-items: center;
   gap: 4px;
-  padding: 6px 8px;
+  padding: 6px 8px 8px;
   border-top: 1px solid var(--ccs-line);
+}
+
+.ccs-pop-bar > button {
+  position: relative;
+  z-index: 1;
 }
 
 .ccs-pop-control,
 .ccs-pop-archive {
-  display: grid;
-  place-items: center;
   width: 30px;
   height: 30px;
-  padding: 0;
   border: 1px solid var(--ccs-line-strong);
   border-radius: 4px;
   background: var(--ccs-panel);
@@ -1695,7 +1893,6 @@
   color: var(--ccs-accent);
 }
 
-/* The corner archive button is smaller and set apart from the item controls. */
 .ccs-pop-archive {
   width: 24px;
   height: 24px;
@@ -1706,234 +1903,7 @@
   font-size: 0.8rem;
 }
 
-.ccs-popover .ccs-danger {
-  color: var(--ccs-danger);
-  border-color: color-mix(in srgb, var(--ccs-danger) 50%, transparent);
-}
-
-.ccs-popover .ccs-danger:hover {
-  border-color: var(--ccs-danger);
-  background: var(--ccs-danger-soft);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ccs-card,
-  .ccs-recovery-slot {
-    transition: none;
-  }
-
-  .ccs-popover,
-  .ccs-popover.is-closing {
-    animation: none;
-  }
-
-  .ccs-card:hover {
-    transform: none;
-  }
-}
-
-/* Text buttons: keep labels vertically centred even where core button styles apply. */
-.ccs-sheet .ccs-segment button,
-.ccs-sheet .ccs-chip-toggle,
-.ccs-sheet .ccs-chip-btn,
-.ccs-sheet .ccs-btn,
-.ccs-sheet .ccs-toggle,
-.ccs-sheet .ccs-tab {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 1;
-}
-
-/* --------------------------------------------------------------------------
-   Card buttons: symmetric inline SVG icons
-   Font Awesome's d20 glyph sits off-centre inside its own em box, so no amount of box
-   centring fixed it. These SVGs are drawn centred in a square viewBox and sized exactly.
-   -------------------------------------------------------------------------- */
-
-.ccs-sheet .ccs-card .ccs-card-actions > button {
-  position: relative;
-  padding: 0 !important;
-}
-
-.ccs-sheet .ccs-card .ccs-card-actions > button > .ccs-ico {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 15px;
-  height: 15px;
-  margin: 0;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-
-/* --------------------------------------------------------------------------
-   All-in-One roll dialog (system app) in the card sheet's dark theme
-   Only applied when the rolling actor uses this sheet and it is dark (system-ui.js).
-   The system's rules use `.cyphersystem ...` and `!important` backgrounds, so these selectors
-   are deliberately heavier.
-   -------------------------------------------------------------------------- */
-
-.ccs-aio.ccs-aio-dark {
-  --ccs-bg: #0f131a;
-  --ccs-panel: rgba(21, 27, 37, 0.94);
-  --ccs-panel-2: rgba(30, 38, 51, 0.96);
-  --ccs-input: rgba(255, 255, 255, 0.06);
-  --ccs-line: #2d3a4c;
-  --ccs-line-strong: #41536b;
-  --ccs-text: #e7edf4;
-  --ccs-muted: #a3b0bf;
-  --ccs-accent: #dcb65e;
-  color-scheme: dark;
-}
-
-.ccs-aio.ccs-aio-dark .window-content,
-.ccs-aio.ccs-aio-dark .window-content form,
-.ccs-aio.ccs-aio-dark .window-content form.background-image {
-  background: var(--ccs-bg) !important;
-  background-image: none !important;
-  color: var(--ccs-text);
-}
-
-.ccs-aio.ccs-aio-dark .background-image-rectangle {
-  display: none;
-}
-
-.ccs-aio.ccs-aio-dark img.background-image-icon-roll-form {
-  filter: invert(1);
-  opacity: 0.12;
-}
-
-.ccs-aio.ccs-aio-dark .roll-engine-heading,
-.ccs-aio.ccs-aio-dark .roll-engine-label,
-.ccs-aio.ccs-aio-dark .roll-engine-label-summary,
-.ccs-aio.ccs-aio-dark .roll-engine-summary-bottom,
-.ccs-aio.ccs-aio-dark label {
-  color: var(--ccs-text);
-}
-
-.ccs-aio.ccs-aio-dark .roll-engine-heading {
-  color: var(--ccs-accent);
-}
-
-.ccs-aio.ccs-aio-dark .roll-engine-label-summary.red {
-  color: #f08a80;
-}
-
-.ccs-aio.ccs-aio-dark .roll-engine-label-summary.blue {
-  color: #8cc4ff;
-}
-
-.ccs-aio.ccs-aio-dark input,
-.ccs-aio.ccs-aio-dark select {
-  border: 1px solid var(--ccs-line);
-  background: var(--ccs-input);
-  color: var(--ccs-text);
-}
-
-.ccs-aio.ccs-aio-dark input:disabled {
-  color: var(--ccs-muted);
-}
-
-.ccs-aio.ccs-aio-dark select option {
-  background: #1c2430;
-  color: var(--ccs-text);
-}
-
-.ccs-aio.ccs-aio-dark hr,
-.ccs-aio.ccs-aio-dark .hr-roll-engine {
-  border-color: var(--ccs-line);
-  background: var(--ccs-line);
-}
-
-.ccs-aio.ccs-aio-dark .roll-engine-button {
-  border: 1px solid var(--ccs-line-strong);
-  background: var(--ccs-panel-2);
-  color: var(--ccs-text);
-}
-
-.ccs-aio.ccs-aio-dark .roll-engine-button:hover {
-  border-color: var(--ccs-accent);
-  box-shadow: none;
-}
-
-/* --------------------------------------------------------------------------
-   Small card text outline
-   A medium black outline around the white text on card art, for contrast over bright images.
-   Drawn with shadows (no layout change): eight 1px offsets plus a soft drop shadow. Where
-   supported, paint-order puts a real stroke behind the fill as well.
-   -------------------------------------------------------------------------- */
-
-.ccs-card .ccs-card-top,
-.ccs-card .ccs-card-name,
-.ccs-card .ccs-card-foot {
-  text-shadow:
-    -1px -1px 0 #000, 0 -1px 0 #000, 1px -1px 0 #000,
-    -1px 0 0 #000, 1px 0 0 #000,
-    -1px 1px 0 #000, 0 1px 0 #000, 1px 1px 0 #000,
-    0 1px 3px rgba(0, 0, 0, 0.9);
-}
-
-@supports (paint-order: stroke fill) {
-  .ccs-card .ccs-card-name {
-    -webkit-text-stroke: 2px #000;
-    paint-order: stroke fill;
-  }
-}
-
-/* --------------------------------------------------------------------------
-   Card frames (caps). Hidden until frames.js writes rules for a frame key.
-   3-slice via border-image: the ends keep the image's aspect ratio (height x --cap-ratio),
-   the middle stretches. Caps sit above the art and shade, below the text and buttons.
-   -------------------------------------------------------------------------- */
-
-.ccs-cap {
-  --cap-h: 14px;
-  --cap-end: calc(var(--cap-h) * var(--cap-ratio, 1.5));
-  position: absolute;
-  left: 0;
-  right: 0;
-  display: none;
-  height: var(--cap-h);
-  box-sizing: border-box;
-  border-style: solid;
-  border-color: transparent;
-  border-width: 0 var(--cap-end);
-  border-image-width: 0 var(--cap-end);
-  border-image-repeat: stretch;
-  pointer-events: none;
-}
-
-.ccs-card .ccs-cap-top { top: 0; --cap-h: 14px; }
-.ccs-card .ccs-cap-bottom { bottom: 0; --cap-h: 18px; }
-.ccs-popover .ccs-cap-top,
-.ccs-frames-large .ccs-cap-top { top: 0; --cap-h: 22px; }
-.ccs-popover .ccs-cap-bottom,
-.ccs-frames-large .ccs-cap-bottom { bottom: 0; --cap-h: 22px; }
-
-.ccs-pop-bar {
-  position: relative;
-}
-
-.ccs-pop-bar > button {
-  position: relative;
-  z-index: 1;
-}
-
-@keyframes ccs-shimmer {
-  from { background-position: 130% 0; }
-  to { background-position: -130% 0; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .ccs-card::after {
-    animation: none !important;
-  }
-}
-
-/* --------------------------------------------------------------------------
-   Card frames settings window
-   -------------------------------------------------------------------------- */
+/* Card frames settings window ---------------------------------------------- */
 
 .ccs-frames-config .window-content {
   display: flex;
@@ -1941,6 +1911,13 @@
   padding: 0;
   background: var(--ccs-bg);
   color: var(--ccs-text);
+}
+
+.ccs-frames-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
 }
 
 .ccs-frames-body {
@@ -1989,15 +1966,26 @@
   border: 1px dashed var(--ccs-line-strong);
 }
 
-.ccs-frames-diagram-mid {
-  border-left: none !important;
-  border-right: none !important;
+.ccs-frames-diagram .ccs-frames-diagram-mid {
+  border-left: none;
+  border-right: none;
   color: var(--ccs-muted);
 }
 
 .ccs-frames-enable {
   margin: 4px 0 10px;
   font-weight: 600;
+}
+
+.ccs-frames-suite {
+  margin-bottom: 14px;
+}
+
+.ccs-frames-suite-title {
+  margin: 4px 0 2px;
+  border: none;
+  color: var(--ccs-accent);
+  font-size: 1.15rem;
 }
 
 .ccs-frames-set {
@@ -2057,7 +2045,7 @@
   height: var(--ccs-card-h);
   border: 1px solid var(--ccs-line-strong);
   border-radius: var(--ccs-radius);
-  background: var(--ccs-surface, #1c2430);
+  background: var(--ccs-surface);
   overflow: hidden;
 }
 
@@ -2130,220 +2118,11 @@
   color: var(--ccs-accent);
 }
 
-/* The card body is a <button>; core `.application button` padding outranks a single class,
-   which let the name ride up into the value row. Restate the card's padding at higher priority. */
-.ccs-sheet .ccs-card .ccs-card-body,
-.ccs-frames-config .ccs-card .ccs-card-body {
-  padding: 17px 7px 30px;
-  height: 100%;
-  margin: 0;
-}
+/* System windows in the sheet's dark theme --------------------------------- */
+/* The All-in-One roll dialog and item sheets, for actors using this sheet (system-ui.js).
+   The system paints these with !important backgrounds, so the selectors are heavier. */
 
-/* --------------------------------------------------------------------------
-   High-contrast frame suite (per actor): training colours that stay distinct for
-   colour-blind players. Tuned from Okabe-Ito; every pair is CIELAB dE >= 31 under
-   protan, deutan and tritan simulation. Rank pips (0-3) give a non-colour cue too.
-   -------------------------------------------------------------------------- */
-
-.ccs-hc {
-  --ccs-tr-inability: #d9621a;
-  --ccs-tr-practiced: #f0a800;
-  --ccs-tr-trained: #10a877;
-  --ccs-tr-specialized: #9ad7fa;
-}
-
-/* --------------------------------------------------------------------------
-   Large card: room for the frame caps, and the same outlined title as the small cards
-   -------------------------------------------------------------------------- */
-
-.ccs-popover .ccs-pop-header {
-  padding-top: 26px;
-}
-
-.ccs-popover .ccs-pop-bar {
-  padding-bottom: 8px;
-}
-
-.ccs-popover .ccs-pop-header h3,
-.ccs-popover .ccs-pop-type {
-  color: #ffffff;
-  text-shadow:
-    -1px -1px 0 #000, 0 -1px 0 #000, 1px -1px 0 #000,
-    -1px 0 0 #000, 1px 0 0 #000,
-    -1px 1px 0 #000, 0 1px 0 #000, 1px 1px 0 #000,
-    0 1px 3px rgba(0, 0, 0, 0.9);
-}
-
-.ccs-popover .ccs-pop-type {
-  color: rgba(255, 255, 255, 0.85);
-}
-
-@supports (paint-order: stroke fill) {
-  .ccs-popover .ccs-pop-header h3 {
-    -webkit-text-stroke: 2px #000;
-    paint-order: stroke fill;
-  }
-}
-
-/* Settings window: suite headings */
-.ccs-frames-root {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  min-height: 0;
-}
-
-.ccs-frames-suite {
-  margin-bottom: 14px;
-}
-
-.ccs-frames-suite-title {
-  margin: 4px 0 2px;
-  border: none;
-  color: var(--ccs-accent);
-  font-size: 1.15rem;
-}
-
-/* --------------------------------------------------------------------------
-   Small card layout (0.3.0-alpha.3): name at the top, the key value large and centred,
-   training beneath, button row at the bottom. The type label is gone (groups already show it).
-   -------------------------------------------------------------------------- */
-
-.ccs-sheet .ccs-card .ccs-card-body,
-.ccs-frames-config .ccs-card .ccs-card-body {
-  padding: 16px 7px 30px;
-  justify-content: flex-start;
-}
-
-.ccs-card .ccs-card-marks {
-  position: absolute;
-  top: 3px;
-  right: 6px;
-  z-index: 1;
-  display: inline-flex;
-  gap: 4px;
-  font-size: 0.72rem;
-  color: var(--ccs-on-art-muted);
-  text-shadow: 0 0 3px #000, 0 1px 2px #000;
-}
-
-.ccs-card .ccs-card-value {
-  position: relative;
-  flex: 1 1 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  padding: 1px 2px 3px;
-  font-size: 1.15rem;
-  font-weight: 800;
-  line-height: 1.3;
-  color: var(--ccs-frame-on-art);
-  text-shadow:
-    -1px -1px 0 #000, 0 -1px 0 #000, 1px -1px 0 #000,
-    -1px 0 0 #000, 1px 0 0 #000,
-    -1px 1px 0 #000, 0 1px 0 #000, 1px 1px 0 #000,
-    0 1px 3px rgba(0, 0, 0, 0.9);
-}
-
-.ccs-card .ccs-card-value.is-empty {
-  flex: 1 1 auto;
-}
-
-.ccs-card .ccs-card-foot {
-  flex: 0 0 auto;
-  justify-content: center;
-  min-height: 12px;
-}
-
-.ccs-card .ccs-card-training::after {
-  content: none !important;
-}
-
-/* Artifact depletion button, beside the d20 */
-.ccs-sheet .ccs-card-deplete {
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border: 1px solid var(--frame);
-  border-radius: 5px;
-  background: rgba(16, 21, 29, 0.8);
-  color: #ffffff;
-}
-
-.ccs-sheet .ccs-card-deplete:not(:disabled):hover {
-  box-shadow: 0 0 8px color-mix(in srgb, var(--frame) 70%, transparent);
-}
-
-/* --------------------------------------------------------------------------
-   Large card: the header never shrinks. The popover is a fixed-height column; with long
-   rules text the header used to give up height and clip its title.
-   -------------------------------------------------------------------------- */
-
-.ccs-popover .ccs-pop-header,
-.ccs-popover .ccs-pop-bar {
-  flex: 0 0 auto;
-}
-
-.ccs-popover .ccs-pop-desc {
-  flex: 1 1 auto;
-  min-height: 0;
-}
-
-/* Three fixed rows: name, value (takes the remaining space), training. A grid never squeezes
-   the value below its line height the way the flex column did. */
-.ccs-sheet .ccs-card .ccs-card-body,
-.ccs-frames-config .ccs-card .ccs-card-body {
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto;
-  grid-template-columns: minmax(0, 1fr);
-  align-items: center;
-}
-
-.ccs-card .ccs-card-name {
-  margin: 0;
-}
-
-.ccs-card .ccs-card-value {
-  align-self: stretch;
-  overflow-x: clip;
-  overflow-y: visible;
-}
-
-/* Ammo +/- buttons, flanking the d20 */
-.ccs-sheet .ccs-card-qty {
-  display: grid;
-  place-items: center;
-  width: 20px;
-  height: 20px;
-  margin-top: 2px;
-  border: 1px solid var(--frame);
-  border-radius: 5px;
-  background: rgba(16, 21, 29, 0.8);
-  color: #ffffff;
-  font-size: 0.65rem;
-}
-
-.ccs-sheet .ccs-card-qty:not(:disabled):hover {
-  box-shadow: 0 0 8px color-mix(in srgb, var(--frame) 70%, transparent);
-}
-
-/* The card's number takes the frame's metal: untrained cards (steel frame) read silver
-   instead of their family colour. Trained levels already carry their colour in --frame. */
-.ccs-card.frame-none {
-  --ccs-frame-on-art: #d6dce3;
-}
-
-/* --------------------------------------------------------------------------
-   Item sheets (system AppV1 CypherItemSheet, every item type) in the card sheet's dark theme
-   Applied only to items owned by an actor using this sheet, when that sheet is dark
-   (system-ui.js). Same palette as the sheet and the All-in-One dialog.
-   -------------------------------------------------------------------------- */
-
+.ccs-aio.ccs-sys-dark,
 .ccs-item-sheet.ccs-sys-dark {
   --ccs-bg: #0f131a;
   --ccs-panel: rgba(21, 27, 37, 0.94);
@@ -2357,6 +2136,9 @@
   color-scheme: dark;
 }
 
+.ccs-aio.ccs-sys-dark .window-content,
+.ccs-aio.ccs-sys-dark .window-content form,
+.ccs-aio.ccs-sys-dark .window-content form.background-image,
 .ccs-item-sheet.ccs-sys-dark .window-content,
 .ccs-item-sheet.ccs-sys-dark .window-content form,
 .ccs-item-sheet.ccs-sys-dark .window-content form.background-image {
@@ -2365,15 +2147,85 @@
   color: var(--ccs-text);
 }
 
+.ccs-aio.ccs-sys-dark .background-image-rectangle,
 .ccs-item-sheet.ccs-sys-dark .background-image-rectangle {
   display: none;
 }
 
+.ccs-aio.ccs-sys-dark img.background-image-icon-roll-form {
+  filter: invert(1);
+  opacity: 0.12;
+}
+
+/* Opacity is set inline by the system template. */
 .ccs-item-sheet.ccs-sys-dark img.background-image-icon:not(.custom) {
   filter: invert(1);
   opacity: 0.12 !important;
 }
 
+.ccs-aio.ccs-sys-dark input,
+.ccs-aio.ccs-sys-dark select,
+.ccs-item-sheet.ccs-sys-dark input,
+.ccs-item-sheet.ccs-sys-dark select,
+.ccs-item-sheet.ccs-sys-dark textarea {
+  border: 1px solid var(--ccs-line);
+  background: var(--ccs-input);
+  color: var(--ccs-text);
+}
+
+.ccs-aio.ccs-sys-dark input:disabled,
+.ccs-item-sheet.ccs-sys-dark input:disabled,
+.ccs-item-sheet.ccs-sys-dark select:disabled {
+  color: var(--ccs-muted);
+}
+
+.ccs-aio.ccs-sys-dark select option,
+.ccs-item-sheet.ccs-sys-dark select option {
+  background: #1c2430;
+  color: var(--ccs-text);
+}
+
+.ccs-aio.ccs-sys-dark hr,
+.ccs-aio.ccs-sys-dark .hr-roll-engine,
+.ccs-item-sheet.ccs-sys-dark .items-list hr,
+.ccs-item-sheet.ccs-sys-dark .editor-content hr {
+  border-color: var(--ccs-line);
+  background: var(--ccs-line);
+}
+
+/* Roll dialog */
+.ccs-aio.ccs-sys-dark .roll-engine-heading,
+.ccs-aio.ccs-sys-dark .roll-engine-label,
+.ccs-aio.ccs-sys-dark .roll-engine-label-summary,
+.ccs-aio.ccs-sys-dark .roll-engine-summary-bottom,
+.ccs-aio.ccs-sys-dark label {
+  color: var(--ccs-text);
+}
+
+.ccs-aio.ccs-sys-dark .roll-engine-heading {
+  color: var(--ccs-accent);
+}
+
+.ccs-aio.ccs-sys-dark .roll-engine-label-summary.red {
+  color: #f08a80;
+}
+
+.ccs-aio.ccs-sys-dark .roll-engine-label-summary.blue {
+  color: #8cc4ff;
+}
+
+.ccs-aio.ccs-sys-dark .roll-engine-button {
+  border: 1px solid var(--ccs-line-strong);
+  background: var(--ccs-panel-2);
+  color: var(--ccs-text);
+}
+
+.ccs-aio.ccs-sys-dark .roll-engine-button:hover {
+  border-color: var(--ccs-accent);
+  box-shadow: none;
+}
+
+/* Item sheets */
 .ccs-item-sheet.ccs-sys-dark .sheet-header,
 .ccs-item-sheet.ccs-sys-dark label,
 .ccs-item-sheet.ccs-sys-dark .resource-label-normal,
@@ -2388,20 +2240,7 @@
   background: rgba(0, 0, 0, 0.3);
 }
 
-.ccs-item-sheet.ccs-sys-dark input,
-.ccs-item-sheet.ccs-sys-dark select,
-.ccs-item-sheet.ccs-sys-dark textarea {
-  border: 1px solid var(--ccs-line);
-  background: var(--ccs-input);
-  color: var(--ccs-text);
-}
-
 .ccs-item-sheet.ccs-sys-dark input::placeholder {
-  color: var(--ccs-muted);
-}
-
-.ccs-item-sheet.ccs-sys-dark input:disabled,
-.ccs-item-sheet.ccs-sys-dark select:disabled {
   color: var(--ccs-muted);
 }
 
@@ -2411,12 +2250,6 @@
   box-shadow: none;
 }
 
-.ccs-item-sheet.ccs-sys-dark select option {
-  background: #1c2430;
-  color: var(--ccs-text);
-}
-
-/* Tabs: the system draws folder tabs with a grey border; keep the shape, darken the colours. */
 .ccs-item-sheet.ccs-sys-dark nav.sheet-tabs .item {
   border-color: var(--ccs-line-strong);
   background: var(--ccs-panel-2);
@@ -2434,14 +2267,9 @@
   background: var(--ccs-panel);
 }
 
-.ccs-item-sheet.ccs-sys-dark .items-list .item-header {
+.ccs-item-sheet.ccs-sys-dark .items-list .item-header,
+.ccs-item-sheet.ccs-sys-dark .items-list .item-header .item-name {
   color: var(--ccs-accent);
-}
-
-.ccs-item-sheet.ccs-sys-dark .items-list hr,
-.ccs-item-sheet.ccs-sys-dark .editor-content hr {
-  border-color: var(--ccs-line);
-  background: var(--ccs-line);
 }
 
 .ccs-item-sheet.ccs-sys-dark a {
@@ -2464,7 +2292,6 @@
   border-color: var(--ccs-line);
 }
 
-/* ProseMirror toolbar and dropdowns */
 .ccs-item-sheet.ccs-sys-dark .ProseMirror,
 .ccs-item-sheet.ccs-sys-dark prose-mirror {
   --color-control-bg: rgba(255, 255, 255, 0.08);
@@ -2484,7 +2311,7 @@
   color: var(--ccs-text);
 }
 
-/* The cypher-type icon is coloured inline for a light background; lift those colours. */
+/* Cypher-type icons are coloured inline for a light background. */
 .ccs-item-sheet.ccs-sys-dark i[style*="44, 63, 101"] {
   color: #8cb4ff !important;
 }
@@ -2493,153 +2320,25 @@
   color: #f08a80 !important;
 }
 
-.ccs-item-sheet.ccs-sys-dark .items-list .item-header .item-name {
-  color: var(--ccs-accent);
-}
+/* Reduced motion ----------------------------------------------------------- */
 
-/* --------------------------------------------------------------------------
-   Compact layout (per-actor flag; blocked while the Additional Pool is on)
-   The header and pools share three equal columns, so Tier/Effort/XP sits exactly over the
-   third pool and the sentence never runs past the second. --ccs-third is resolved against the
-   .ccs-top width where it's used.
-     square: [portrait][identity = 2 thirds − portrait][vitals = third] / pools across all
-     tall:   [portrait][identity = 2 thirds + gap][vitals = third] / portrait + pools
-   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .ccs-card,
+  .ccs-recovery-slot {
+    transition: none;
+  }
 
-.ccs-top.is-compact {
-  --ccs-gap: 6px;
-  --ccs-third: calc((100% - 2 * var(--ccs-gap)) / 3);
-  column-gap: var(--ccs-gap);
-  grid-template-columns: var(--ccs-portrait-w) calc(2 * var(--ccs-third) - var(--ccs-portrait-w)) var(--ccs-third);
-  grid-template-areas:
-    "portrait identity vitals"
-    "pools pools pools";
-}
+  .ccs-card:hover {
+    transform: none;
+  }
 
-.ccs-top.is-compact.is-tall {
-  --ccs-third: calc((100% - var(--ccs-portrait-w) - 3 * var(--ccs-gap)) / 3);
-  grid-template-columns: var(--ccs-portrait-w) calc(2 * var(--ccs-third) + var(--ccs-gap)) var(--ccs-third);
-  grid-template-areas:
-    "portrait identity vitals"
-    "portrait pools pools";
-}
+  .ccs-popover,
+  .ccs-popover.is-closing {
+    animation: none;
+  }
 
-.ccs-top.is-compact > .ccs-header { display: contents; }
-.ccs-top.is-compact .ccs-identity { grid-area: identity; }
-.ccs-top.is-compact .ccs-vitals {
-  grid-area: vitals;
-  grid-template-columns: auto 26px minmax(36px, 1fr) 26px;
-}
-.ccs-top.is-compact .ccs-vital-input { width: 100%; }
-
-.ccs-top.is-compact .ccs-pools {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--ccs-gap);
-}
-
-/* Two sentence rows of equal-width fields; full text is in each field's tooltip. */
-.ccs-sentence-compact {
-  flex-wrap: nowrap;
-  gap: 5px;
-}
-
-/* width sets the fields' intrinsic size (inputs otherwise report ~150px); flex-grow fills the row. */
-.ccs-sentence-compact > input,
-.ccs-sentence-compact > select {
-  flex: 1 1 0;
-  width: 56px;
-  min-width: 56px;
-}
-
-.ccs-root .ccs-sentence-compact .ccs-name {
-  flex: 1 1 0;
-  width: 56px;
-  min-width: 56px;
-  height: auto;
-  font-size: inherit;
-  letter-spacing: normal;
-}
-
-/* Advancement as icon checkboxes: outlined when open, filled when taken (shape, not only colour). */
-.ccs-adv-icon {
-  position: relative;
-  display: inline-grid;
-  place-items: center;
-  flex: 0 0 auto;
-  width: 24px;
-  height: 24px;
-  border: 1px solid var(--ccs-line-strong);
-  border-radius: 5px;
-  color: var(--ccs-muted);
-  cursor: pointer;
-}
-
-.ccs-adv-icon > input {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  opacity: 0;
-  cursor: inherit;
-}
-
-.ccs-adv-icon > .ccs-ico {
-  width: 15px;
-  height: 15px;
-  pointer-events: none;
-}
-
-.ccs-adv-icon:has(input:checked) {
-  border-color: var(--ccs-accent);
-  background: var(--ccs-accent);
-  color: var(--ccs-on-accent);
-}
-
-.ccs-adv-icon:has(input:focus-visible) {
-  outline: 2px solid var(--ccs-focus);
-  outline-offset: 1px;
-}
-
-.ccs-adv-icon:has(input:disabled) {
-  cursor: default;
-  opacity: 0.6;
-}
-
-.ccs-adv-icon:not(:has(input:disabled)):hover {
-  border-color: var(--ccs-accent);
-}
-
-/* Settings: a toggle blocked by another (Compact vs Additional Pool). */
-.ccs-check.is-disabled {
-  opacity: 0.55;
-}
-
-/* Pool footer: the −/+/reset buttons and Edge never shrink; the measured minimum width grows
-   instead (compact counts this row). Compact trims spacing only: buttons stay at the 24px
-   minimum target size. */
-.ccs-pool-controls,
-.ccs-edge {
-  flex: 0 0 auto;
-}
-
-.ccs-root .ccs-edge input {
-  flex: 0 0 34px;
-  min-width: 34px;
-}
-
-.ccs-top.is-compact .ccs-pool {
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-.ccs-top.is-compact .ccs-pool-foot,
-.ccs-top.is-compact .ccs-edge {
-  gap: 3px;
-}
-
-.ccs-sheet .ccs-top.is-compact .ccs-pool-controls .ccs-icon-btn {
-  width: 24px;
-  height: 24px;
-  min-width: 24px;
+  /* Frame shimmer; the generated frame rules would otherwise win. */
+  .ccs-card::after {
+    animation: none !important;
+  }
 }

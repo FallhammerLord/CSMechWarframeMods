@@ -38,20 +38,7 @@
 
         <div class="ccs-frames-set-row">
           <div class="ccs-frames-previews" aria-hidden="true">
-            <article class="ccs-card {{#if (eq key "none")}}fam-equipment{{else}}tr-{{key}}{{/if}} frame-{{key}}">
-              <div class="ccs-card-body">
-                <span class="ccs-card-shade"></span>
-                <span class="ccs-cap ccs-cap-top frame-{{key}}"></span>
-                <span class="ccs-cap ccs-cap-bottom frame-{{key}}"></span>
-                <span class="ccs-card-top"><span class="ccs-card-value">{{localize "CCS.Frames.Preview.Value"}}</span></span>
-                <span class="ccs-card-name">{{localize "CCS.Frames.Preview.Name"}}</span>
-                <span class="ccs-card-foot">
-                  <span class="ccs-card-training">{{#unless (eq key "none")}}{{label}}{{/unless}}</span>
-                  <span class="ccs-card-type">{{localize "CCS.Frames.Preview.Type"}}</span>
-                </span>
-              </div>
-              <div class="ccs-card-actions"><span class="ccs-card-d20"></span></div>
-            </article>
+            {{> "modules/cypher-card-sheet/templates/parts/card.hbs" card=preview editable=false groupKey="preview"}}
             <div class="ccs-frames-large">
               <span class="ccs-cap ccs-cap-top frame-{{key}}"></span>
               <span class="ccs-frames-large-title">{{localize "CCS.Frames.Preview.Large"}}</span>

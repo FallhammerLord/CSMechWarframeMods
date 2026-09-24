@@ -1,13 +1,8 @@
 /**
- * Card frames ("mod textures"): top and bottom cap images on the small and large cards,
- * chosen by skill training level, set by the GM for the whole world.
- *
- * Caps are drawn with CSS border-image 3-slice: each cap image's two ends are drawn at a
- * fixed aspect ratio, and its middle stretches to the card width. So one image fits both the
- * ~150px small card and the 360px large card without distorting the corners.
- *
- * The rules are generated into one <style> element from the world setting, so changing frames
- * restyles every open sheet without re-rendering anything.
+ * Card frames: top and bottom cap images by training level, set by the GM for the world.
+ * Caps use border-image 3-slice (fixed-ratio ends, stretched middle), so one image fits both
+ * card sizes. Rules are generated into one <style> element, so a change restyles every open
+ * sheet without a re-render.
  */
 
 import {MODULE_ID, MODULE_PATH} from "../constants.js";
@@ -19,11 +14,7 @@ export const FRAME_KEYS = ["none", "inability", "practiced", "trained", "special
 
 export const FRAME_EFFECTS = ["none", "glow", "shimmer"];
 
-/**
- * Two suites of frame sets. "standard" is the Warframe-style bronze/silver/gold ladder;
- * "contrast" is a colour-blind-friendly red/orange/green/sky-blue ladder, chosen per actor
- * (the "ccs-hc" class on the sheet and its popover).
- */
+/** "standard": bronze/silver/gold. "contrast": colour-blind friendly, per actor (`.ccs-hc`). */
 export const FRAME_SUITES = ["standard", "contrast"];
 const SUITE_FILE_PREFIX = {standard: "", contrast: "hc-"};
 const SUITE_SCOPE = {standard: "", contrast: ".ccs-hc"};
@@ -87,9 +78,8 @@ export function getFrames() {
 const cssUrl = path => `url("${String(path).replace(/["\\\n\r]/g, c => `\\${c}`)}")`;
 
 /**
- * Rules for one suite. `prefix` scopes them (".ccs-hc " for the contrast suite, plus the
- * preview scope in the settings window). `explicit` also writes rules that switch things
- * off, so a scoped suite fully overrides whatever the unscoped suite set.
+ * Rules for one suite, under `prefix`. `explicit` also writes the "off" rules, so a scoped suite
+ * fully overrides the unscoped one.
  */
 function suiteCss(sets, prefix, explicit) {
   const rules = [];
@@ -136,9 +126,8 @@ function suiteCss(sets, prefix, explicit) {
 }
 
 /**
- * Build the frame CSS.
  * @param {object} frames   normalized frame config
- * @param {string} [scope]  selector prefix (the settings window's preview uses one to override the live rules)
+ * @param {string} [scope]  selector prefix (the settings preview overrides the live rules)
  */
 export function buildFrameCss(frames, scope = "") {
   const base = scope ? `${scope} ` : "";

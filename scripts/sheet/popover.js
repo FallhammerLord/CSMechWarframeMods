@@ -1,6 +1,6 @@
 /**
- * Detail popover: a single positioned element on document.body, outside every sheet's DOM,
- * so no scroll container can clip it (spec §5). Only one is open at a time across all sheets.
+ * The large card: one element on document.body, so no scroll container clips it (spec §5).
+ * One is open at a time across all sheets.
  */
 
 import {TEMPLATE_PATH, t} from "../constants.js";
@@ -10,7 +10,7 @@ import {applyTheme} from "./theme.js";
 const GAP = 6;
 const MARGIN = 8;
 const WIDTH = 360;
-/** Fixed popover size; the height shrinks only when the viewport can't fit it. */
+/** Fixed size; the height shrinks only when the viewport can't fit it. */
 const HEIGHT = 420;
 const MIN_HEIGHT = 200;
 
@@ -33,12 +33,12 @@ const ACTIONS = {
   archiveItem: (actor, item) => cs.toggleArchive(item)
 };
 
-/** Actions an observer (non-editable sheet) may still use, as on the default sheet. */
+/** Actions an observer may still use, as on the default sheet. */
 const READ_ONLY_ACTIONS = new Set(["sendToChat"]);
 
 const reducedMotion = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
-/** Play the close animation, then remove. The manager has already forgotten this element. */
+/** Play the close animation, then remove the element. */
 function animateOut(el) {
   el.removeEventListener("click", el._ccsClick);
   if (reducedMotion()) return el.remove();
@@ -47,7 +47,7 @@ function animateOut(el) {
   setTimeout(() => el.remove(), 300);
 }
 
-/** Give the large card its small card's frame (rarity) class and the sheet's frame suite. */
+/** Copy the small card's frame class and the sheet's frame suite. */
 function applyFrame(el, sheet, card) {
   for (const cls of [...el.classList]) if (cls.startsWith("frame-")) el.classList.remove(cls);
   const frame = [...card.classList].find(cls => cls.startsWith("frame-"));
@@ -91,7 +91,7 @@ class CardPopoverManager {
       this.#runAction(button.dataset.popoverAction, event);
       return;
     }
-    // The large card sits over the small one, so its title acts as the card: click to close.
+    // The title covers the small card, so clicking it closes, like clicking the card.
     if (event.target.closest(".ccs-pop-header")) this.close({restoreFocus: event.detail === 0});
   };
 
@@ -161,10 +161,7 @@ class CardPopoverManager {
     if (this.#sheet === sheet) this.close();
   }
 
-  /**
-   * After a sheet re-render the old card element is gone. Re-anchor to the new one and
-   * refresh the content, or close if the item or its card no longer exists.
-   */
+  /** After a sheet re-render: re-anchor to the new card and refresh, or close if it's gone. */
   async refresh(sheet) {
     if (!this.#el || this.#sheet !== sheet) return;
     const esc = CSS.escape;
@@ -213,9 +210,8 @@ class CardPopoverManager {
   }
 
   /**
-   * Cover the small card with the large one, keeping the small card's d20 visible: the popover's
-   * bottom edge sits just above the d20 and it grows upward. When there isn't room above (card
-   * near the top of the screen), it opens downward from just below the d20 instead.
+   * Cover the small card but leave its button row visible: grow upward from just above the
+   * buttons, or downward from below them when there isn't room above.
    */
   #position() {
     const el = this.#el;
@@ -227,7 +223,7 @@ class CardPopoverManager {
     const viewport = anchor.closest(".ccs-scroll")?.getBoundingClientRect();
     if (!a.width || (viewport && (a.bottom < viewport.top || a.top > viewport.bottom))) return this.close();
 
-    // The button row (d20, plus the worn toggle on armor) stays visible below the large card.
+    // The card's button row stays visible.
     const d20 = anchor.querySelector(".ccs-card-actions")?.getBoundingClientRect() ?? {top: a.bottom, bottom: a.bottom};
     const vw = window.innerWidth;
     const vh = window.innerHeight;
@@ -257,8 +253,8 @@ class CardPopoverManager {
     if (!item) return this.close();
     if (!sheet.isEditable && !READ_ONLY_ACTIONS.has(action)) return;
 
-    // Alt-click on archive deletes, as on the system's default sheet. Always confirmed.
-    // Read Alt from the click itself; Foundry's keyboard tracker can miss it.
+    // Alt-click on archive deletes (confirmed), as on the default sheet. Alt is read from the
+    // click, since Foundry's key tracker can miss it.
     if (action === "archiveItem" && (event?.altKey || game.keyboard.isModifierActive("Alt"))) action = "deleteItem";
     if (action === "deleteItem") {
       const confirmed = await foundry.applications.api.DialogV2.confirm({

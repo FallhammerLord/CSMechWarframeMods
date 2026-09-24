@@ -91,7 +91,7 @@
         placeholder=@root.settings.armorImage.placeholder label=(localize "CCS.Settings.ArmorImage")}}
   </section>
 
-  {{!-- Badge: low-opacity image in the lower-right corner (the system's own background icon fields) --}}
+  {{!-- Badge: the lower-right image (the system's own background icon fields) --}}
   <section class="ccs-fieldset">
     <h4 class="ccs-fieldset-title">{{localize 'CCS.Settings.Badge'}}</h4>
     {{#with @root.settings.badge as |b|}}
@@ -103,7 +103,7 @@
     {{/with}}
   </section>
 
-  {{!-- Pool names (module flags; sheet only) --}}
+  {{!-- Pool names (module flags; also shown in roll dialogs and chat) --}}
   <section class="ccs-fieldset">
     <h4 class="ccs-fieldset-title">{{localize 'CCS.Settings.PoolNames'}}</h4>
     <p class="ccs-hint">{{localize 'CCS.Settings.PoolNamesHint'}}</p>

@@ -1,7 +1,4 @@
-/**
- * GM settings window for card frames: one frame set per training level, with a live preview
- * and guidance on making cap images.
- */
+/** GM settings window for card frames, with a live preview and a guide to making caps. */
 
 import {MODULE_ID, TEMPLATE_PATH, t} from "../constants.js";
 import {
@@ -9,6 +6,16 @@ import {
 } from "./frames.js";
 
 const {HandlebarsApplicationMixin, ApplicationV2} = foundry.applications.api;
+
+/** A sample card for the preview, rendered with the sheet's own card template. */
+function previewCard(key) {
+  const trained = key !== "none";
+  return {
+    id: `preview-${key}`, family: "equipment", type: "equipment", frameKey: key,
+    training: trained ? {key, label: t(`Frames.Set.${key}.label`)} : null,
+    name: t("Frames.Preview.Name"), value: t("Frames.Preview.Value"), img: "icons/svg/item-bag.svg", imgIsIcon: true
+  };
+}
 
 export class CardFramesConfig extends HandlebarsApplicationMixin(ApplicationV2) {
 
@@ -50,7 +57,8 @@ export class CardFramesConfig extends HandlebarsApplicationMixin(ApplicationV2) 
           label: t(`Frames.Set.${key}.label`),
           rarity: t(`Frames.Set.${key}.${suite === "contrast" ? "rarityHc" : "rarity"}`),
           ...frames.suites[suite].sets[key],
-          effects
+          effects,
+          preview: previewCard(key)
         }))
       }))
     };
