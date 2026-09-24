@@ -3,7 +3,7 @@
  * stored messages are unchanged.
  * - All-in-One roll dialog and item sheets follow the sheet's dark theme.
  * - The roll dialog and roll chat cards show custom pool names.
- * - Artifact item sheets get the resource fields (spec §15), for every artifact.
+ * - Artifact and cypher item sheets get the resource and socket fields (spec §15, §16).
  * Baseline: cyphersystem v3.5.2.
  */
 
@@ -64,34 +64,79 @@ function onRenderItemSheet(app, html) {
   const item = app.document ?? app.object;
   const root = rootOf(app, html);
   if (!root || !item) return;
-  if (item.type === "artifact") addResourceFields(root, item, app.isEditable);
+  if (["artifact", "cypher"].includes(item.type)) addSheetFields(root, item, app.isEditable);
   const actor = item.parent;
   if (usesCardSheet(actor)) applySystemDark(root, effectiveTheme(actor.sheet) !== "theme-light", "ccs-item-sheet");
 }
 
-/**
- * The artifact resource fields (spec §15), in the system sheet's settings tab and markup. The
- * inputs are named by flag path, so the system's own form submit saves them.
- */
-export function resourceFieldsHtml(item, editable = true) {
-  const r = item.flags?.[MODULE_ID]?.resource ?? {};
-  const esc = v => Handlebars.escapeExpression(String(v ?? ""));
-  const path = key => `flags.${MODULE_ID}.resource.${key}`;
-  const off = editable ? "" : " disabled";
-  const row = (label, input) => `<li class="item flexrow item-settings"><div class="settings-list">${label}</div><div class="item-quantity">${input}</div></li>`;
-  return `<div class="flexrow ccs-resource-fields"><ol class="items-list">
-    <li class="item flexrow item-header"><div class="item-name">${t("Resource.Title")}</div></li>
-    ${row(t("Resource.Name"), `<input class="auto-margin settings-input" type="text" name="${path("label")}" value="${esc(r.label)}" placeholder="${esc(t("Resource.NameHint"))}"${off}>`)}
-    ${row(t("Resource.Value"), `<input class="auto-margin settings-input" type="number" data-dtype="Number" min="0" name="${path("value")}" value="${esc(r.value ?? 0)}"${off}>`)}
-    ${row(t("Resource.Max"), `<input class="auto-margin settings-input" type="number" data-dtype="Number" min="0" name="${path("max")}" value="${esc(r.max ?? 0)}"${off}>`)}
-    ${row(t("Resource.DepleteAtZero"), `<input type="checkbox" name="${path("depleteAtZero")}"${r.depleteAtZero ? " checked" : ""}${off}>`)}
+/* Fields added to the system's item sheets, in its Settings tab and markup. Inputs are named by
+   flag path, so the system's own form submit saves them. */
+
+const esc = v => Handlebars.escapeExpression(String(v ?? ""));
+const flagPath = key => `flags.${MODULE_ID}.${key}`;
+const settingsRow = (label, input) =>
+  `<li class="item flexrow item-settings"><div class="settings-list">${label}</div><div class="item-quantity">${input}</div></li>`;
+const textInput = (key, value, placeholder, off) =>
+  `<input class="auto-margin settings-input" type="text" name="${flagPath(key)}" value="${esc(value)}" placeholder="${esc(placeholder)}"${off}>`;
+const numberInput = (key, value, off) =>
+  `<input class="auto-margin settings-input" type="number" data-dtype="Number" min="0" name="${flagPath(key)}" value="${esc(value ?? 0)}"${off}>`;
+const checkbox = (key, value, off) => `<input type="checkbox" name="${flagPath(key)}"${value ? " checked" : ""}${off}>`;
+
+function fieldsSection(title, rows, note = "") {
+  return `<div class="flexrow ccs-sheet-fields"><ol class="items-list">
+    <li class="item flexrow item-header"><div class="item-name">${title}</div></li>
+    ${rows.join("")}${note ? `<li class="item flexrow"><div class="settings-list ccs-muted">${note}</div></li>` : ""}
   </ol></div>`;
 }
 
-function addResourceFields(root, item, editable) {
+/** Artifact resource (spec §15). */
+export function resourceFieldsHtml(item, editable = true) {
+  const r = item.flags?.[MODULE_ID]?.resource ?? {};
+  const off = editable ? "" : " disabled";
+  return fieldsSection(t("Resource.Title"), [
+    settingsRow(t("Resource.Name"), textInput("resource.label", r.label, t("Resource.NameHint"), off)),
+    settingsRow(t("Resource.Value"), numberInput("resource.value", r.value, off)),
+    settingsRow(t("Resource.Max"), numberInput("resource.max", r.max, off)),
+    settingsRow(t("Resource.DepleteAtZero"), checkbox("resource.depleteAtZero", r.depleteAtZero, off))
+  ]);
+}
+
+/** Socket settings (spec §16): sockets on an artifact, socketability on a cypher. GM-only. */
+export function socketFieldsHtml(item, editable = true) {
+  const gm = editable && game.user.isGM;
+  const off = gm ? "" : " disabled";
+  const note = editable && !gm ? t("Socket.GmOnly") : "";
+  if (item.type === "artifact") {
+    const s = item.flags?.[MODULE_ID]?.sockets ?? {};
+    const rows = [settingsRow(t("Socket.HasSockets"), checkbox("sockets.enabled", s.enabled, off))];
+    if (s.enabled) {
+      const count = Number(s.count) || 1;
+      const options = [1, 2, 3].map(n => `<option value="${n}"${n === count ? " selected" : ""}>${n}</option>`).join("");
+      rows.push(
+        settingsRow(t("Socket.Count"), `<select class="auto-margin settings-input" name="${flagPath("sockets.count")}" data-dtype="Number"${off}>${options}</select>`),
+        settingsRow(t("Socket.Key"), textInput("sockets.key", s.key, t("Socket.KeyHint"), off))
+      );
+    }
+    return fieldsSection(t("Socket.ArtifactTitle"), rows, note);
+  }
+  const s = item.flags?.[MODULE_ID]?.socket ?? {};
+  const rows = [settingsRow(t("Socket.Socketable"), checkbox("socket.enabled", s.enabled, off))];
+  if (s.enabled) {
+    rows.push(
+      settingsRow(t("Socket.Key"), textInput("socket.key", s.key, t("Socket.KeyHint"), off)),
+      settingsRow(t("Socket.Reusable"), checkbox("socket.reusable", s.reusable, off))
+    );
+  }
+  return fieldsSection(t("Socket.CypherTitle"), rows, note);
+}
+
+function addSheetFields(root, item, editable) {
   const tab = root.querySelector('.tab[data-tab="settings"]');
-  if (!tab || tab.querySelector(".ccs-resource-fields")) return;
-  tab.insertAdjacentHTML("afterbegin", resourceFieldsHtml(item, editable));
+  if (!tab || tab.querySelector(".ccs-sheet-fields")) return;
+  const html = item.type === "artifact"
+    ? resourceFieldsHtml(item, editable) + socketFieldsHtml(item, editable)
+    : socketFieldsHtml(item, editable);
+  tab.insertAdjacentHTML("afterbegin", html);
 }
 
 function onRenderChatMessage(message, html) {

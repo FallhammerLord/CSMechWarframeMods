@@ -1631,6 +1631,54 @@
   color: #ffffff;
 }
 
+/* Sockets (spec §16), left of the d20. Display only: clicks fall through to the card.
+   Empty is a dashed ring, filled shows the cypher, spent is dimmed with a slash. */
+.ccs-card-socket {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 0 0 18px;
+  width: 18px;
+  height: 18px;
+  margin-top: 3px;
+  overflow: hidden;
+  border: 1px dashed var(--frame);
+  border-radius: 50%;
+  background: rgba(16, 21, 29, 0.8);
+}
+
+.ccs-card-socket.is-filled {
+  border-style: solid;
+  box-shadow: 0 0 4px color-mix(in srgb, var(--frame) 60%, transparent);
+}
+
+.ccs-card-socket img,
+.ccs-pop-socket-ring img {
+  width: 100%;
+  height: 100%;
+  border: none;
+  object-fit: cover;
+}
+
+.ccs-card-socket img.is-icon,
+.ccs-pop-socket-ring img.is-icon {
+  padding: 2px;
+  object-fit: contain;
+}
+
+.ccs-card-socket.is-spent,
+.ccs-pop-socket.is-spent .ccs-pop-socket-ring {
+  opacity: 0.5;
+}
+
+.ccs-card-socket.is-spent::after,
+.ccs-pop-socket.is-spent .ccs-pop-socket-ring::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 44%, #ffffff 44%, #ffffff 56%, transparent 56%);
+}
+
 /* Card frames (caps) ------------------------------------------------------- */
 /* Hidden until frames.js writes rules for a frame key. 3-slice border-image: the ends keep the
    image's aspect ratio (--cap-ratio), the middle stretches. */
@@ -1865,6 +1913,107 @@
 
 .ccs-pop-resource > :last-child {
   margin-right: auto;
+}
+
+/* Sockets on the large card (spec §16) */
+.ccs-pop-sockets {
+  display: flex;
+  flex: 0 0 auto;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 12px;
+  border-top: 1px solid var(--ccs-line);
+}
+
+.ccs-pop-sockets-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 24px;
+}
+
+.ccs-pop-socket {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 32px;
+  padding: 2px 4px;
+  border: 1px solid var(--ccs-line);
+  border-radius: var(--ccs-radius);
+  background: var(--ccs-panel);
+  color: var(--ccs-text);
+  text-align: left;
+}
+
+.ccs-popover button.ccs-pop-socket {
+  width: 100%;
+  font-size: 0.9rem;
+}
+
+.ccs-popover button.ccs-pop-socket.is-empty:not(:disabled):hover {
+  border-color: var(--ccs-accent);
+}
+
+.ccs-pop-socket.is-empty .ccs-pop-socket-name {
+  color: var(--ccs-muted);
+}
+
+.ccs-pop-socket-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: 0 0 26px;
+  width: 26px;
+  height: 26px;
+  overflow: hidden;
+  border: 1px dashed var(--ccs-line-strong);
+  border-radius: 50%;
+  background: rgba(16, 21, 29, 0.8);
+}
+
+.ccs-pop-socket-ring.is-filled {
+  border: 1px solid var(--ccs-accent);
+}
+
+.ccs-pop-socket-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ccs-pop-socket-name em {
+  color: var(--ccs-muted);
+  font-style: normal;
+}
+
+/* Socket picker dialog */
+.ccs-socket-choices {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.ccs-socket-choice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  cursor: pointer;
+}
+
+.ccs-socket-choice img {
+  width: 28px;
+  height: 28px;
+  border: none;
+  object-fit: contain;
+}
+
+.ccs-socket-choice span:first-of-type {
+  flex: 1;
 }
 
 .ccs-pop-desc {

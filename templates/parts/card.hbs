@@ -1,3 +1,10 @@
+{{#*inline "ccsDeplete"}}
+      <button type="button" class="ccs-card-deplete" data-action="rollDepletion"
+              data-tooltip="{{localize 'CCS.Depletion.Roll'}}: {{card.depletion}}" aria-label="{{localize 'CCS.Depletion.Roll'}}: {{card.name}}"
+              {{#unless editable}}disabled{{/unless}}>
+        <svg class="ccs-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 10.5v3"/></g><rect x="5.5" y="9.5" width="5" height="5" rx="0.8" fill="currentColor"/></svg>
+      </button>
+{{/inline}}
 <article class="ccs-card fam-{{card.family}} type-{{card.type}}{{#if card.training}} tr-{{card.training.key}}{{/if}}{{#if card.archived}} is-archived{{/if}}{{#if card.inactive}} is-inactive{{/if}} frame-{{card.frameKey}}"
          data-item-id="{{card.id}}" data-group-key="{{groupKey}}" data-search="{{card.searchText}}" {{#if editable}}draggable="true"{{/if}}>
   <button type="button" class="ccs-card-body" data-action="togglePopover" aria-expanded="false" aria-haspopup="dialog" title="{{card.name}}">
@@ -17,6 +24,7 @@
     {{!-- The item's key number (damage, armor, cost, quantity, level), large and centred. --}}
     <span class="ccs-card-value{{#unless card.value}} is-empty{{/unless}}">{{card.value}}</span>
     <span class="ccs-card-foot"><span class="ccs-card-training">{{card.foot}}</span></span>
+    {{#if card.sockets}}<span class="ccs-visually-hidden">{{card.sockets.summary}}</span>{{/if}}
   </button>
   <div class="ccs-card-actions">
     {{#if card.isArmor}}
@@ -26,12 +34,14 @@
         <svg class="ccs-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2.5 19.5 5.3v5.9c0 4.9-3.2 8.6-7.5 10.3-4.3-1.7-7.5-5.4-7.5-10.3V5.3z"/></svg>
       </button>
     {{/if}}
-    {{#if card.depletion}}
-      <button type="button" class="ccs-card-deplete" data-action="rollDepletion"
-              data-tooltip="{{localize 'CCS.Depletion.Roll'}}: {{card.depletion}}" aria-label="{{localize 'CCS.Depletion.Roll'}}: {{card.name}}"
-              {{#unless editable}}disabled{{/unless}}>
-        <svg class="ccs-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 10.5v3"/></g><rect x="5.5" y="9.5" width="5" height="5" rx="0.8" fill="currentColor"/></svg>
-      </button>
+    {{#if card.sockets}}
+      {{#each card.sockets.slots}}
+        <span class="ccs-card-socket{{#if id}} is-filled{{/if}}{{#if spent}} is-spent{{/if}}" aria-hidden="true">
+          {{#if id}}<img class="{{#if imgIsIcon}}is-icon{{/if}}" src="{{img}}" alt="">{{/if}}
+        </span>
+      {{/each}}
+    {{else if card.depletion}}
+      {{> ccsDeplete}}
     {{/if}}
     {{#if card.isAmmo}}
       <button type="button" class="ccs-card-qty" data-action="quantityAdjust" data-delta="-1"
@@ -44,6 +54,7 @@
             {{#if card.canRoll}}{{#unless editable}}disabled{{/unless}}{{/if}}>
       <svg class="ccs-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"><path d="M12 2.5 20.5 7.25v9.5L12 21.5 3.5 16.75v-9.5z"/><path d="M12 8 16.4 15.6H7.6z"/><path d="M12 2.5V8M3.5 7.25 12 8l8.5-.75M3.5 7.25l4.1 8.35M20.5 7.25l-4.1 8.35M3.5 16.75l4.1-1.15M20.5 16.75l-4.1-1.15M7.6 15.6 12 21.5l4.4-5.9"/></g></svg>
     </button>
+    {{#if card.sockets}}{{#if card.depletion}}{{> ccsDeplete}}{{/if}}{{/if}}
     {{#if card.isAmmo}}
       <button type="button" class="ccs-card-qty" data-action="quantityAdjust" data-delta="1"
               data-tooltip="{{localize 'CCS.Card.QuantityUp'}}" aria-label="{{localize 'CCS.Card.QuantityUp'}}: {{card.name}}"

@@ -416,7 +416,7 @@ A named counter on an artifact: charges, battery, heat. Module data only; the sy
 
 **Must not change existing cards:** nothing renders unless `label` is set. Checked with the harness snapshot: every existing state identical.
 
-## 16. Cypher sockets (designed, not built)
+## 16. Cypher sockets (built in 0.6.0)
 
 Materia-style slots: an artifact holds up to three cyphers. A socketed cypher stays a normal item on the actor; the artifact stores links to it.
 
@@ -428,15 +428,17 @@ Materia-style slots: an artifact holds up to three cyphers. A socketed cypher st
 - Identifiers and the socket count are GM-only. Players socket and unsocket.
 - Set identifiers on the Items directory or compendium entries players buy from, so every copy carries them.
 
-**Data:**
-- Artifact: `flags.cypher-card-sheet.sockets = {enabled, count: 1-3, key, ids: [cypherId|null, …]}`.
-- Cypher: `flags.cypher-card-sheet.socket = {enabled, key, artifactId, reusable, spent}`.
+**Data** (one source of truth: each cypher records its own placement):
+- Artifact: `flags.cypher-card-sheet.sockets = {enabled, count: 1-3, key}`.
+- Cypher: `flags.cypher-card-sheet.socket = {enabled, key, artifactId, slot, reusable, spent}`.
+- `socketLayout(actor)` places cyphers into slots; a cypher whose artifact is gone or whose slot no longer exists is unsocketed.
 
 **Rules:**
 - Cyphers are single-use. Use posts the cypher to chat as the system does, then removes it; the socket empties. Buying the same cypher again is a new item.
 - Campaign option, per cypher: **Reusable**. Use marks it spent instead of removing it. **Refresh sockets** on the large card clears spent marks (after an intervening scene, at the table's call; no automation).
 - Socketed cyphers don't count toward the cypher limit: they leave the Cyphers group (and its count) and appear only in their artifact's sockets.
-- Housekeeping: a deleted or transferred cypher empties its socket. Transferring the artifact carries its socketed cyphers with it (custom drop handling; the system's drop logic knows nothing of sockets).
+- Housekeeping: a deleted or transferred cypher empties its socket (nothing to clean up, since the artifact stores no links).
+- Not built yet: transferring the artifact to carry its socketed cyphers along. Today they stay with the original actor, back in the Cyphers group. Needs custom drop handling, since the system's drop logic knows nothing of sockets.
 
 **Large card (where socketing happens):** a Sockets section under the facts row, one slot per socket.
 - Empty slot: click opens the picker (icon, name, level of each eligible cypher). With none eligible, it names the artifact's identifier.

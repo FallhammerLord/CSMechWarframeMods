@@ -10,3 +10,4 @@ export * from "./actor.js";
 export * from "./options.js";
 export * from "./items.js";
 export * from "./item-actions.js";
+export * from "./sockets.js";

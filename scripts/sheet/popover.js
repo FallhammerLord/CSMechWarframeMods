@@ -14,7 +14,7 @@ const WIDTH = 360;
 const HEIGHT = 420;
 const MIN_HEIGHT = 200;
 
-/** Popover actions. Each receives (actor, item). */
+/** Popover actions. Each receives (actor, item, data), `data` being the button's dataset. */
 const ACTIONS = {
   payItem: (actor, item) => cs.payItem(actor, item),
   castSpell: (actor, item) => cs.castSpell(actor, item),
@@ -22,6 +22,13 @@ const ACTIONS = {
   quantityUp: (actor, item) => cs.adjustQuantity(item, 1),
   resourceDown: (actor, item) => cs.adjustResource(actor, item, -1),
   resourceUp: (actor, item) => cs.adjustResource(actor, item, 1),
+  socketPick: (actor, item, data) => pickSocket(actor, item, Number(data.slot)),
+  useSocketed: (actor, item, data) => useSocketed(actor, actor.items.get(data.cypherId)),
+  unsocketCypher: (actor, item, data) => {
+    const cypher = actor.items.get(data.cypherId);
+    return cypher && cs.unsocketCypher(cypher);
+  },
+  refreshSockets: (actor, item) => cs.refreshSockets(actor, item),
   damageDown: (actor, item) => cs.adjustLastingDamage(item, -1),
   damageUp: (actor, item) => cs.adjustLastingDamage(item, 1),
   identify: (actor, item) => cs.identify(actor, item),
@@ -37,6 +44,42 @@ const ACTIONS = {
 
 /** Actions an observer may still use, as on the default sheet. */
 const READ_ONLY_ACTIONS = new Set(["sendToChat"]);
+
+/** Choose a cypher for an empty socket from the eligible ones (matching identifier). */
+async function pickSocket(actor, artifact, slot) {
+  const {key} = cs.socketSettings(artifact);
+  if (!key) return ui.notifications.warn(t("Socket.NoKey", {name: artifact.name}));
+  const eligible = cs.eligibleCyphers(actor, artifact);
+  if (!eligible.length) return ui.notifications.info(t("Socket.NoneEligible", {key}));
+  const esc = Handlebars.escapeExpression;
+  const rows = eligible.map((c, i) => `<label class="ccs-socket-choice">
+    <input type="radio" name="cypher" value="${c.id}"${i === 0 ? " checked" : ""}>
+    <img src="${esc(c.img)}" alt=""><span>${esc(c.name)}</span>${c.system.basic?.level ? `<span class="ccs-muted">${esc(t("Card.Level", {n: c.system.basic.level}))}</span>` : ""}
+  </label>`).join("");
+  const id = await foundry.applications.api.DialogV2.prompt({
+    window: {title: t("Socket.PickTitle", {name: artifact.name})},
+    classes: ["ccs-socket-picker"],
+    content: `<div class="ccs-socket-choices">${rows}</div>`,
+    ok: {label: t("Socket.Insert"), icon: "fa-solid fa-gem", callback: (event, button) => button.form.elements.cypher.value},
+    rejectClose: false
+  });
+  const cypher = id && actor.items.get(id);
+  if (cypher) return cs.socketCypher(cypher, artifact, slot);
+}
+
+/** Single-use cyphers are removed after use, so confirm first. */
+async function useSocketed(actor, cypher) {
+  if (!cypher) return;
+  if (!cs.cypherSocket(cypher).reusable) {
+    const confirmed = await foundry.applications.api.DialogV2.confirm({
+      window: {title: t("Socket.UseTitle")},
+      content: `<p>${t("Socket.UseConfirm", {name: Handlebars.escapeExpression(cypher.name)})}</p>`,
+      rejectClose: false
+    });
+    if (!confirmed) return;
+  }
+  return cs.useSocketed(actor, cypher);
+}
 
 const reducedMotion = () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
@@ -90,7 +133,7 @@ class CardPopoverManager {
       if (button.disabled) return;
       event.preventDefault();
       cs.noteClick(event);
-      this.#runAction(button.dataset.popoverAction, event);
+      this.#runAction(button.dataset.popoverAction, event, button.dataset);
       return;
     }
     // The title covers the small card, so clicking it closes, like clicking the card.
@@ -248,7 +291,7 @@ class CardPopoverManager {
     el.dataset.placement = growUp ? "up" : "down";
   }
 
-  async #runAction(action, event) {
+  async #runAction(action, event, data = {}) {
     if (action === "close") return this.close({restoreFocus: true});
     const sheet = this.#sheet;
     const item = sheet?.actor.items.get(this.#itemId);
@@ -268,7 +311,7 @@ class CardPopoverManager {
       this.close();
       return cs.deleteItem(sheet.actor, item);
     }
-    return ACTIONS[action]?.(sheet.actor, item);
+    return ACTIONS[action]?.(sheet.actor, item, data);
   }
 }
 

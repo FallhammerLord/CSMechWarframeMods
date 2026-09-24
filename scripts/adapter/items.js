@@ -3,6 +3,7 @@
 import {MODULE_ID, t} from "../constants.js";
 import {L, callApi, capitalize, get, isTeen, systemSetting} from "./shared.js";
 import {poolNames} from "./actor.js";
+import {socketView, socketedIds} from "./sockets.js";
 
 /** Types shown as cards, in display order. Tags and recursions show in the tag bar. */
 export const CARD_TYPES = [
@@ -191,6 +192,7 @@ export function cardData(item, actor) {
     depletion: item.type === "artifact" && identified && b.depletion ? String(b.depletion) : "",
     isArmor: item.type === "armor",
     isAmmo: item.type === "ammo",
+    sockets: item.type === "artifact" ? socketView(actor, item) : null,
     worn: item.type === "armor" && item.system.active !== false,
     spell: item.type === "ability" && item.system.settings?.general?.sorting === "Spell",
     identified,
@@ -374,9 +376,10 @@ function groupByTag(actor, visible) {
 
 export const GROUP_MODES = ["category", "type", "tag"];
 
-/** The grid's groups. Grouping never writes data. */
+/** The grid's groups. Grouping never writes data. Socketed cyphers show only in their sockets. */
 export function buildGroups(actor, mode) {
-  const visible = actor.items.filter(i => isVisible(actor, i));
+  const socketed = socketedIds(actor);
+  const visible = actor.items.filter(i => isVisible(actor, i) && !socketed.has(i.id));
   if (mode === "type") return groupByType(actor, visible);
   if (mode === "tag") return groupByTag(actor, visible);
   return groupByCategory(actor, visible);

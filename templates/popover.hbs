@@ -27,6 +27,44 @@
     {{/if}}
   </div>
 {{/if}}
+{{#if sockets}}
+  <section class="ccs-pop-sockets" aria-label="{{localize 'CCS.Socket.Title'}}">
+    <div class="ccs-pop-sockets-head">
+      <span class="ccs-pop-resource-label">{{localize 'CCS.Socket.Title'}}</span>
+      {{#if (and editable sockets.anySpent)}}
+        <button type="button" class="ccs-pop-control" data-popover-action="refreshSockets"
+                data-tooltip="{{localize 'CCS.Socket.Refresh'}}" aria-label="{{localize 'CCS.Socket.Refresh'}}">
+          <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+        </button>
+      {{/if}}
+    </div>
+    {{#each sockets.slots}}
+      {{#if id}}
+        <div class="ccs-pop-socket{{#if spent}} is-spent{{/if}}">
+          <span class="ccs-pop-socket-ring is-filled"><img class="{{#if imgIsIcon}}is-icon{{/if}}" src="{{img}}" alt=""></span>
+          <span class="ccs-pop-socket-name">{{name}}{{#if spent}} <em>· {{localize 'CCS.Socket.Spent'}}</em>{{/if}}</span>
+          {{#if @root.editable}}
+            <button type="button" class="ccs-pop-control" data-popover-action="useSocketed" data-cypher-id="{{id}}"
+                    data-tooltip="{{#if reusable}}{{localize 'CCS.Socket.UseReusable'}}{{else}}{{localize 'CCS.Socket.Use'}}{{/if}}"
+                    aria-label="{{localize 'CCS.Socket.Use'}}: {{name}}" {{#if spent}}disabled{{/if}}>
+              <i class="fa-solid fa-bolt" aria-hidden="true"></i>
+            </button>
+            <button type="button" class="ccs-pop-control" data-popover-action="unsocketCypher" data-cypher-id="{{id}}"
+                    data-tooltip="{{localize 'CCS.Socket.Unsocket'}}" aria-label="{{localize 'CCS.Socket.Unsocket'}}: {{name}}">
+              <i class="fa-solid fa-eject" aria-hidden="true"></i>
+            </button>
+          {{/if}}
+        </div>
+      {{else}}
+        <button type="button" class="ccs-pop-socket is-empty" data-popover-action="socketPick" data-slot="{{index}}"
+                {{#unless @root.editable}}disabled{{/unless}}>
+          <span class="ccs-pop-socket-ring"></span>
+          <span class="ccs-pop-socket-name">{{localize 'CCS.Socket.Choose'}}</span>
+        </button>
+      {{/if}}
+    {{/each}}
+  </section>
+{{/if}}
 <div class="ccs-pop-desc">{{{description}}}</div>
 {{!-- One row, stacked right to left: archive in the corner, then the item's controls. --}}
 <footer class="ccs-pop-bar">

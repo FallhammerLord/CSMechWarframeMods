@@ -4,6 +4,7 @@ import {MODULE_ID, t} from "../constants.js";
 import * as sys from "./system-imports.js";
 import {L, alt, callApi, capitalize} from "./shared.js";
 import {CARD_TYPES, ROLL_TYPES, cardData, cypherType, isFormula, isZeroCost, itemRollsEnabled, resourceOf} from "./items.js";
+import {cypherSocket, socketView} from "./sockets.js";
 
 /** d20: the default sheet's exact call (actor-sheet.js `.item-roll`), else post to chat. */
 export function rollItem(actor, item) {
@@ -165,6 +166,13 @@ export async function adjustResource(actor, item, direction) {
   if (value === 0 && r.depleteAtZero && item.system.basic?.depletion) return rollDepletion(actor, item);
 }
 
+/** Use a socketed cypher: post it to chat, then mark it spent (reusable) or remove it. */
+export async function useSocketed(actor, cypher) {
+  await sendToChat(actor, cypher);
+  if (cypherSocket(cypher).reusable) return cypher.update({[`flags.${MODULE_ID}.socket.spent`]: true});
+  return cypher.delete();
+}
+
 /** The large card's action bar (spec §5). `label` is the short text, `title` the tooltip. */
 export function itemControls(actor, item) {
   const b = item.system.basic ?? {};
@@ -231,7 +239,8 @@ export async function itemDetail(actor, item) {
   const description = card.identified
     ? await TextEditor.enrichHTML(item.system.description ?? "", {secrets: actor.isOwner, relativeTo: item})
     : `<p class="ccs-muted">${t("Popover.Unidentified")}</p>`;
-  return {card, facts, resource, description, controls: itemControls(actor, item)};
+  const sockets = item.type === "artifact" ? socketView(actor, item) : null;
+  return {card, facts, resource, sockets, description, controls: itemControls(actor, item)};
 }
 
 /** Core's creation dialog, filtered to the group's types (spec §6). */

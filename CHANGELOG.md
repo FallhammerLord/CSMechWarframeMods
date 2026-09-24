@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.6.0 — cypher sockets
+
+- **Cypher sockets (spec §16):** artifacts can hold up to three cyphers, materia-style.
+  - GM setup, in the system item sheets' Settings tab: an artifact gets **Has sockets**, a count (1 to 3) and a **socket identifier**; a cypher gets **Socketable**, an identifier and **Reusable after refresh**. Identifiers match ignoring case and surrounding spaces. Players can see but not change these.
+  - Large card: a Sockets section. Click an empty socket to choose from the character's unsocketed, identified cyphers with a matching identifier. Filled sockets have **Use** and **Unsocket**.
+  - **Use** posts the cypher to chat. A single-use cypher is then removed (after a confirmation); a reusable one is marked spent until **Refresh sockets**.
+  - Small card: sockets sit left of the d20, depletion to its right. Empty is a dashed ring, filled shows the cypher, spent is dimmed with a slash. Screen readers get a summary.
+  - Socketed cyphers leave the Cyphers group and its count, so they don't count toward the cypher limit.
+  - Each cypher stores its own placement, so a deleted or given-away cypher just leaves its socket empty, and one that no longer fits returns to the Cyphers group.
+- **Not yet:** giving a socketed artifact to another character doesn't carry its cyphers along. They stay with the original owner, back in the Cyphers group.
+- Every existing card and sheet state is unchanged (snapshot check).
+
 ## 0.5.0 — artifact resource
 
 - **Artifact resource (spec §15):** a named counter on an artifact, such as Charges.
