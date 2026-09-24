@@ -2614,3 +2614,32 @@
 .ccs-check.is-disabled {
   opacity: 0.55;
 }
+
+/* Pool footer: the −/+/reset buttons and Edge never shrink; the measured minimum width grows
+   instead (compact counts this row). Compact trims spacing only: buttons stay at the 24px
+   minimum target size. */
+.ccs-pool-controls,
+.ccs-edge {
+  flex: 0 0 auto;
+}
+
+.ccs-root .ccs-edge input {
+  flex: 0 0 34px;
+  min-width: 34px;
+}
+
+.ccs-top.is-compact .ccs-pool {
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.ccs-top.is-compact .ccs-pool-foot,
+.ccs-top.is-compact .ccs-edge {
+  gap: 3px;
+}
+
+.ccs-sheet .ccs-top.is-compact .ccs-pool-controls .ccs-icon-btn {
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+}

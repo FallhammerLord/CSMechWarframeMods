@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0-alpha.2
+
+- **Fix:** at the compact minimum width the pools' Edge field was squeezed. The −/+/reset buttons and Edge no longer shrink, and the compact minimum width now counts that row as well as Tier/Effort/XP, so the window stops before anything is crushed.
+- **Compact pools:** a little less spacing (pool side padding 6→4px, gaps 4→3px, buttons 26→24px, the WCAG minimum target size).
+
 ## 0.4.0-alpha.1 (compact layout)
 
 - **Compact layout** (per actor, Settings → Sheet layout):

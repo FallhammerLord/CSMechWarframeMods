@@ -387,7 +387,11 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       el.style.width = previous;
       return width;
     };
-    const vitals = minContent(top.querySelector(".ccs-vitals"));
+    // A third must fit Tier/Effort/XP above and a pool's button-and-Edge row below.
+    const pool = top.querySelector(".ccs-pool");
+    const poolRow = pool ? minContent(pool.querySelector(".ccs-pool-foot")) + pool.offsetWidth - pool.clientWidth
+      + parseFloat(getComputedStyle(pool).paddingLeft) + parseFloat(getComputedStyle(pool).paddingRight) : 0;
+    const vitals = Math.max(minContent(top.querySelector(".ccs-vitals")), poolRow);
     const identity = minContent(top.querySelector(".ccs-identity"));
     if (top.classList.contains("is-tall")) {
       const third = Math.max(vitals, (identity - gap) / 2);

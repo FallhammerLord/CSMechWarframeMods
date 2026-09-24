@@ -352,7 +352,7 @@ Levels 3–5 fit in the sheet's Settings tab as a small grid of dropdowns.
 - Per-actor flag `flags.cypher-card-sheet.compact`, blocked while the Additional Pool is on and vice versa (the blocked toggle is disabled with a tooltip; nothing is switched automatically). An actor with both on (e.g. the pool enabled from the default sheet) shows the full layout, and the Compact toggle stays enabled so it can be turned off.
 - `.ccs-top.is-compact` uses three equal columns from `--ccs-third`; `.ccs-header` is `display: contents` so the identity block takes two thirds (less the portrait when square) and Tier/Effort/XP takes the third, directly over the third pool. Tall portrait: the portrait spans both rows and the thirds are taken from the remaining width.
 - Two sentence rows with equal-width fields; Advancement as icon checkboxes.
-- Minimum width: the smallest top row where a third fits Tier/Effort/XP and the identity block fits its share, measured in the client (`#compactTopWidth`). Floors 520px / 560px. Verified in Chromium: ~570px square, ~650px tall, with no overflow above those widths and the vitals column matching the third pool to the pixel.
+- Minimum width: the smallest top row where a third fits both Tier/Effort/XP and a pool's button-and-Edge row (neither shrinks), and the identity block fits its share, measured in the client (`#compactTopWidth`). Floors 520px / 560px. Verified in Chromium: ~570px square, ~650px tall, with no overflow above those widths and the vitals column matching the third pool to the pixel.
 
 The catalogue below was the original scoping.
 
