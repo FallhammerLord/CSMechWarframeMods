@@ -17,7 +17,7 @@
 {{#*inline "ccsPath"}}
   <div class="ccs-field ccs-path">
     <span>{{label}}</span>
-    <input type="text" name="{{name}}" value="{{value}}" aria-label="{{label}}">
+    <input type="text" name="{{name}}" value="{{value}}" placeholder="{{placeholder}}" aria-label="{{label}}">
     <button type="button" class="ccs-icon-btn" data-action="pickFile" data-target="{{name}}" title="{{localize 'CCS.Settings.Browse'}}"
             aria-label="{{localize 'CCS.Settings.Browse'}}"><i class="fa-solid fa-file-import"></i></button>
   </div>
@@ -30,11 +30,6 @@
       {{#if (eq data.background.image "custom")}}
         {{> ccsPath name=(concat base ".background.imagePath") value=data.background.imagePath label=(localize "CCS.Settings.ImagePath")}}
         {{> ccsRange name=(concat base ".background.overlayOpacity") value=data.background.overlayOpacity label=(localize "CYPHERSYSTEM.BGImageOverlayOpacity")}}
-      {{/if}}
-      {{> ccsSelect name=(concat base ".background.icon") value=data.background.icon choices=@root.settings.choices.backgroundIcon label=(localize "CYPHERSYSTEM.BackgroundIcon")}}
-      {{#if (eq data.background.icon "custom")}}
-        {{> ccsPath name=(concat base ".background.iconPath") value=data.background.iconPath label=(localize "CCS.Settings.ImagePath")}}
-        {{> ccsRange name=(concat base ".background.iconOpacity") value=data.background.iconOpacity label=(localize "CYPHERSYSTEM.BGIconOpacity")}}
       {{/if}}
     {{/unless}}
     {{#unless data.additionalPool.active}}
@@ -83,6 +78,21 @@
     <h4 class="ccs-fieldset-title">{{localize 'CCS.Settings.Layout'}}</h4>
     {{> ccsText name=@root.settings.cardsTab.path value=@root.settings.cardsTab.value label=(localize "CCS.Settings.CardsTabName")
         placeholder=@root.settings.cardsTab.placeholder}}
+    {{> ccsCheck name=@root.settings.portraitTall.path value=@root.settings.portraitTall.value label=(localize "CCS.Settings.PortraitTall")}}
+    {{> ccsPath name=@root.settings.armorImage.path value=@root.settings.armorImage.value
+        placeholder=@root.settings.armorImage.placeholder label=(localize "CCS.Settings.ArmorImage")}}
+  </section>
+
+  {{!-- Badge: low-opacity image in the lower-right corner (the system's own background icon fields) --}}
+  <section class="ccs-fieldset">
+    <h4 class="ccs-fieldset-title">{{localize 'CCS.Settings.Badge'}}</h4>
+    {{#with @root.settings.badge as |b|}}
+      {{> ccsSelect name=(concat b.base ".icon") value=b.icon choices=@root.settings.choices.backgroundIcon label=(localize "CCS.Settings.BadgeImage")}}
+      {{#if (eq b.icon "custom")}}
+        {{> ccsPath name=(concat b.base ".iconPath") value=b.iconPath label=(localize "CCS.Settings.ImagePath")}}
+      {{/if}}
+      {{> ccsRange name=(concat b.base ".iconOpacity") value=b.opacity label=(localize "CCS.Settings.BadgeOpacity")}}
+    {{/with}}
   </section>
 
   {{!-- Pool names (module flags; sheet only) --}}

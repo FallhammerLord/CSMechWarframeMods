@@ -1,7 +1,7 @@
-<header class="ccs-header">
+<div class="ccs-top{{#if layout.portraitTall}} is-tall{{/if}}">
   <div class="ccs-portrait-wrap">
     <img class="ccs-portrait" src="{{identity.img}}" alt="{{identity.name}}"
-         {{#if editable}}data-action="editImage" data-edit="{{identity.imgPath}}" role="button" tabindex="0" title="{{localize 'CCS.Header.EditImage'}}"{{/if}}>
+         {{#if editable}}data-action="editImage" data-path="{{identity.imgPath}}" role="button" tabindex="0" title="{{localize 'CCS.Header.EditImage'}}"{{/if}}>
     <div class="ccs-portrait-badges">
       {{#if state.exclusiveTag}}
         <span class="ccs-badge" title="{{localize 'CYPHERSYSTEM.ExclusiveTag'}}: {{state.exclusiveTag}}"><i class="fa-solid fa-hashtag"></i></span>
@@ -16,6 +16,7 @@
     </div>
   </div>
 
+<header class="ccs-header">
   <div class="ccs-identity">
     <div class="ccs-row">
       <input class="ccs-name" type="text" name="{{identity.namePath}}" value="{{identity.name}}"
@@ -72,3 +73,54 @@
             title="{{localize 'CCS.Action.AltTen'}}" {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-plus"></i></button>
   </div>
 </header>
+  <div class="ccs-pools">
+    {{#each pools}}
+      <div class="ccs-pool pool-{{key}}">
+        <div class="ccs-pool-head">
+          <span class="ccs-pool-label">{{label}}</span>
+          {{#if rollable}}
+            <button type="button" class="ccs-icon-btn ccs-pool-roll" data-action="statRoll" data-pool="{{key}}"
+                    title="{{localize 'CCS.Pool.Roll' pool=label}}" aria-label="{{localize 'CCS.Pool.Roll' pool=label}}"
+                    {{#unless @root.editable}}disabled{{/unless}}>
+              <i class="fa-solid fa-dice-d20"></i>
+            </button>
+          {{/if}}
+        </div>
+        <div class="ccs-pool-values">
+          <input class="ccs-pool-value" type="number" name="{{valuePath}}" value="{{value}}" aria-label="{{label}}">
+          <span class="ccs-pool-sep" aria-hidden="true">{{@root.poolSeparator}}</span>
+          <input class="ccs-pool-max" type="number" name="{{maxPath}}" value="{{max}}" aria-label="{{localize 'CCS.Pool.Max' pool=label}}"
+                 {{#if @root.locked}}disabled{{/if}}>
+        </div>
+        <div class="ccs-pool-foot">
+          <div class="ccs-pool-controls">
+            <button type="button" class="ccs-icon-btn" data-action="poolAdjust" data-pool="{{key}}" data-dir="-1"
+                    title="{{localize 'CCS.Action.AltTen'}}" aria-label="{{localize 'CCS.Pool.Down' pool=label}}" {{#unless @root.editable}}disabled{{/unless}}>
+              <i class="fa-solid fa-minus"></i>
+            </button>
+            <button type="button" class="ccs-icon-btn" data-action="poolAdjust" data-pool="{{key}}" data-dir="1"
+                    title="{{localize 'CCS.Action.AltTen'}}" aria-label="{{localize 'CCS.Pool.Up' pool=label}}" {{#unless @root.editable}}disabled{{/unless}}>
+              <i class="fa-solid fa-plus"></i>
+            </button>
+            <button type="button" class="ccs-icon-btn" data-action="poolReset" data-pool="{{key}}"
+                    title="{{localize 'CCS.Pool.Reset' pool=label}}" aria-label="{{localize 'CCS.Pool.Reset' pool=label}}" {{#unless @root.editable}}disabled{{/unless}}>
+              <i class="fa-solid fa-rotate"></i>
+            </button>
+          </div>
+          {{#if hasEdge}}
+            <label class="ccs-edge">
+              <span>{{localize 'CYPHERSYSTEM.Edge'}}</span>
+              <input type="number" name="{{edgePath}}" value="{{edge}}" class="{{#if edgeChanged}}is-changed{{/if}}"
+                     {{#if @root.locked}}disabled{{/if}}>
+            </label>
+          {{/if}}
+        </div>
+      </div>
+    {{/each}}
+    {{#if logo}}
+      <div class="ccs-pool ccs-logo-slot" aria-hidden="true">
+        <img class="logo-{{logo.variant}}" src="{{logo.src}}" style="opacity: {{logo.opacity}};" alt="">
+      </div>
+    {{/if}}
+  </div>
+</div>

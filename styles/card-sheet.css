@@ -46,7 +46,7 @@
 
   --ccs-radius: 6px;
   --ccs-card-w: 148px;
-  --ccs-card-h: 140px;
+  --ccs-card-h: 80px;
   --ccs-font: var(--font-primary, "Signika", sans-serif);
 }
 
@@ -307,24 +307,52 @@
    Header
    -------------------------------------------------------------------------- */
 
-.ccs-header {
+.ccs-top {
+  --ccs-portrait-w: 94px;
   display: grid;
-  grid-template-columns: 76px minmax(min-content, 1fr) auto;
-  gap: 10px;
-  align-items: start;
+  grid-template-columns: var(--ccs-portrait-w) minmax(min-content, 1fr);
+  grid-template-areas:
+    "portrait head"
+    "pools pools";
+  gap: 6px 10px;
   padding: 7px 12px 6px;
   background: linear-gradient(180deg, var(--ccs-panel-2), var(--ccs-panel));
   border-bottom: 1px solid var(--ccs-line);
 }
 
+/* Double-tall portrait (2:3-ish): spans the header and the pools; the pools narrow to fit. */
+.ccs-top.is-tall {
+  --ccs-portrait-w: 132px;
+  grid-template-areas:
+    "portrait head"
+    "portrait pools";
+}
+
+.ccs-top > .ccs-portrait-wrap {
+  align-self: stretch;
+  min-height: 0; grid-area: portrait; }
+.ccs-top > .ccs-header { grid-area: head; }
+.ccs-top > .ccs-pools { grid-area: pools; }
+
+.ccs-header {
+  display: grid;
+  grid-template-columns: minmax(min-content, 1fr) auto;
+  gap: 10px;
+  align-items: start;
+}
+
 .ccs-portrait-wrap {
+  align-self: stretch;
+  min-height: 0;
   position: relative;
 }
 
+/* Fills its cell: square beside the header, or tall across header and pools. */
 .ccs-portrait {
   display: block;
-  width: 76px;
-  height: 76px;
+  width: 100%;
+  height: 100%;
+  min-height: 76px;
   object-fit: cover;
   border: 1px solid var(--ccs-accent);
   border-radius: var(--ccs-radius);
@@ -441,11 +469,16 @@
    Status: pools and strip
    -------------------------------------------------------------------------- */
 
+/* Above the tab bar and grid, so the armor menu can open over them. */
+.ccs-root > .ccs-status {
+  z-index: 3;
+}
+
 .ccs-status {
   display: flex;
   flex-direction: column;
   gap: 5px;
-  padding: 6px 12px;
+  padding: 5px 12px 6px;
   background: var(--ccs-panel);
   border-bottom: 1px solid var(--ccs-line);
 }
@@ -532,7 +565,7 @@
 }
 
 .ccs-root .ccs-edge input {
-  width: 38px;
+  width: 34px;
   height: 24px;
 }
 
@@ -575,6 +608,7 @@
 }
 
 .ccs-armor-tile {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -615,6 +649,62 @@
   font-weight: 800;
   color: var(--ccs-text);
   text-shadow: 0 0 4px var(--ccs-bg), 0 0 2px var(--ccs-bg);
+}
+
+.ccs-armor-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 220px;
+  max-height: 260px;
+  overflow-y: auto;
+  padding: 4px;
+  border: 1px solid var(--ccs-line-strong);
+  border-radius: var(--ccs-radius);
+  background: var(--ccs-surface);
+  box-shadow: 0 8px 24px var(--ccs-shadow);
+}
+
+.ccs-armor-piece {
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 5px 6px;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ccs-text);
+  text-align: left;
+}
+
+.ccs-armor-piece:not(:disabled):hover {
+  border-color: var(--ccs-line-strong);
+  background: var(--ccs-input);
+}
+
+.ccs-armor-piece.is-on i {
+  color: var(--ccs-accent);
+}
+
+.ccs-armor-piece-name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ccs-armor-piece-stats {
+  color: var(--ccs-muted);
+  font-size: 0.8rem;
+}
+
+.ccs-armor-menu .ccs-hint {
+  padding: 6px;
 }
 
 .ccs-armor-cost {
@@ -1067,7 +1157,7 @@
 .ccs-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(var(--ccs-card-w), 1fr));
-  gap: 8px;
+  gap: 6px;
 }
 
 .ccs-empty {
@@ -1141,11 +1231,11 @@
   inset: 0;
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
+  justify-content: flex-start;
   width: 100%;
   height: 100%;
   margin: 0;
-  padding: 6px 8px 38px;
+  padding: 19px 7px 30px;
   border: none;
   border-radius: 0;
   background: transparent;
@@ -1165,7 +1255,7 @@
 }
 
 .ccs-card-img.is-icon {
-  inset: 22px 22% 64px;
+  inset: 4px 30% 30px;
   width: auto;
   height: auto;
   object-fit: contain;
@@ -1190,14 +1280,14 @@
 
 .ccs-card-top {
   position: absolute;
-  top: 5px;
-  left: 7px;
-  right: 7px;
+  top: 3px;
+  left: 6px;
+  right: 6px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 4px;
-  font-size: 0.8rem;
+  font-size: 0.72rem;
 }
 
 .ccs-card-value {
@@ -1219,11 +1309,11 @@
 }
 
 .ccs-card-name {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
+  display: block;
   overflow: hidden;
-  font-size: 0.95rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-size: 0.88rem;
   font-weight: 700;
   color: var(--ccs-on-art);
 }
@@ -1235,8 +1325,8 @@
   align-items: baseline;
   gap: 5px;
   min-width: 0;
-  margin-top: 2px;
-  font-size: 0.68rem;
+  margin-top: 1px;
+  font-size: 0.62rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   white-space: nowrap;
@@ -1261,21 +1351,50 @@
   text-overflow: ellipsis;
 }
 
-.ccs-card-d20 {
+/* Button row: the d20, plus a worn toggle on armor, centred at the bottom of the card.
+   The large card's placement is measured from this row. */
+.ccs-card-actions {
   position: absolute;
-  left: 50%;
-  bottom: 6px;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  bottom: 3px;
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  pointer-events: none;
+}
+
+.ccs-card-actions > button {
+  pointer-events: auto;
+}
+
+.ccs-card-d20,
+.ccs-card-worn {
   display: grid;
   place-items: center;
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   padding: 0;
   border: 1px solid var(--frame);
   border-radius: 50%;
   background: color-mix(in srgb, var(--frame) 30%, #10151d);
   color: #ffffff;
-  font-size: 0.95rem;
+  font-size: 0.8rem;
+}
+
+.ccs-card-worn {
+  border-radius: 5px;
+  background: rgba(16, 21, 29, 0.75);
+  color: var(--ccs-on-art-muted);
+}
+
+.ccs-card-worn.is-on {
+  background: color-mix(in srgb, var(--frame) 30%, #10151d);
+  color: #ffffff;
+}
+
+.ccs-card-worn:not(:disabled):hover {
+  box-shadow: 0 0 8px color-mix(in srgb, var(--frame) 70%, transparent);
 }
 
 .ccs-card-d20.is-chat {

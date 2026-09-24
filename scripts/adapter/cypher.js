@@ -286,13 +286,48 @@ export async function resetStress(actor) {
 
 export function armorTotals(actor) {
   if (!actor.system.settings.combat.armor.active) return null;
-  const a = isTeen(actor) ? actor.system.teen.combat.armor : actor.system.combat.armor;
+  const teen = isTeen(actor);
+  // The system stores teen totals under different names (actor.js _preparePCData).
+  const a = teen ? actor.system.teen.combat.armor : actor.system.combat.armor;
+  const rating = teen ? a.armorValueTotal : a.ratingTotal;
+  const cost = teen ? a.speedCostTotal : a.costTotal;
+  // Only unarchived armor items in the current form count toward the system's total.
+  const pieces = actor.items
+    .filter(i => i.type === "armor" && !i.system.archived && inCurrentForm(i, teen))
+    .sort((x, y) => x.name.localeCompare(y.name))
+    .map(i => ({id: i.id, name: i.name, rating: i.system.basic.rating, cost: i.system.basic.cost, worn: i.system.active === true}));
+  return {rating: rating ?? 0, cost: cost ?? 0, img: armorImage(actor).value || ARMOR_IMAGE, pieces};
+}
+
+const ARMOR_IMAGE = "systems/cyphersystem/icons/items/armor.svg";
+
+/** Armor tile image (module flag), set in the settings tab. */
+export function armorImage(actor) {
+  const value = actor.getFlag(MODULE_ID, "armorImage");
+  // Ignore junk values ("undefined", "null") an earlier build could have saved.
+  const clean = typeof value === "string" && !["undefined", "null"].includes(value) ? value : "";
+  return {path: `flags.${MODULE_ID}.armorImage`, value: clean, placeholder: ARMOR_IMAGE};
+}
+
+/** Square (default) or double-tall portrait box (module flag). */
+export function portraitTall(actor) {
+  return {path: `flags.${MODULE_ID}.portraitTall`, value: !!actor.getFlag(MODULE_ID, "portraitTall")};
+}
+
+/** Badge: the low-opacity image in the lower-right corner, using the system's own actor fields. */
+export function badge(actor) {
+  const teen = isTeen(actor);
+  const base = teen ? "system.teen.settings.general.background" : "system.settings.general.background";
+  const bg = get(actor, base) ?? {};
+  let src = null;
+  if (bg.icon === "custom") src = bg.iconPath || null;
+  else if (bg.icon && bg.icon !== "none") src = `${BG_ROOT}/icon-${bg.icon}.svg`;
   return {
-    rating: a.ratingTotal,
-    cost: a.costTotal,
-    // Per-actor image (module flag), defaulting to the system's armor icon.
-    img: actor.getFlag(MODULE_ID, "armorImage") || "systems/cyphersystem/icons/items/armor.svg",
-    imgPath: `flags.${MODULE_ID}.armorImage`
+    base,
+    icon: bg.icon ?? "none",
+    iconPath: bg.iconPath ?? "",
+    opacity: Number(bg.iconOpacity ?? 0.5),
+    src
   };
 }
 
@@ -588,6 +623,8 @@ export function cardData(item, actor) {
     archived: !!item.system.archived,
     favorite: !!item.system.favorite && !actor.system.settings.general.hideFavoriteButton,
     inactive: item.type === "armor" && item.system.active === false,
+    isArmor: item.type === "armor",
+    worn: item.type === "armor" && item.system.active !== false,
     spell: item.type === "ability" && item.system.settings?.general?.sorting === "Spell",
     identified,
     cypherType: item.type === "cypher" && identified ? cypherType(item) : null,
@@ -1115,8 +1152,9 @@ export function sheetDesign(actor) {
       design.background = BACKGROUNDS[bg.image];
       design.scrim = 0.75;
     }
-    if (bg.icon === "custom" && bg.iconPath) design.icon = {src: bg.iconPath, opacity: Number(bg.iconOpacity ?? 0.5)};
-    else if (bg.icon && bg.icon !== "none" && bg.icon !== "custom") design.icon = {src: `${BG_ROOT}/icon-${bg.icon}.svg`, opacity: 0.5};
+    // The badge (lower-right icon) is set in its own settings panel, independent of custom design.
+    const b = badge(actor);
+    if (b.src) design.icon = {src: b.src, opacity: b.opacity};
   }
 
   if (logo.image === "custom" && logo.imagePath) design.logo = {src: logo.imagePath, opacity: Number(logo.imageOpacity ?? 1), variant: "custom"};

@@ -51,7 +51,9 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       recoverySlot: CypherCardSheet.#onRecoverySlot,
       recoveryReset: CypherCardSheet.#onRecoveryReset,
       rollDice: CypherCardSheet.#onRollDice,
-      endMultiRoll: CypherCardSheet.#onEndMultiRoll
+      endMultiRoll: CypherCardSheet.#onEndMultiRoll,
+      toggleArmorMenu: CypherCardSheet.#onToggleArmorMenu,
+      toggleArmorWorn: CypherCardSheet.#onToggleArmorWorn
     }
   };
 
@@ -62,6 +64,8 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       scrollable: [".ccs-scroll"]
     }
   };
+
+  #armorMenuAbort = null;
 
   /** Drop events already handled, so core's DragDrop and our fallback listener never double-handle. */
   #handledDrops = new WeakSet();
@@ -74,7 +78,7 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   get view() {
     let state = VIEW_STATE.get(this.actor.uuid);
     if (!state) {
-      state = {tab: "cards", mode: game.settings.get(MODULE_ID, "defaultGroupMode"), family: "all", search: ""};
+      state = {armorMenu: false, tab: "cards", mode: game.settings.get(MODULE_ID, "defaultGroupMode"), family: "all", search: ""};
       VIEW_STATE.set(this.actor.uuid, state);
     }
     return state;
@@ -100,7 +104,8 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       limited,
       isGM: game.user.isGM,
       identity: cs.identity(actor),
-      design: cs.sheetDesign(actor)
+      design: cs.sheetDesign(actor),
+      layout: {portraitTall: cs.portraitTall(actor).value}
     });
 
     if (limited) {
@@ -168,6 +173,9 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       recoveryLabels: Object.values(cs.recoveryLabels(actor)),
       poolNames: Object.values(cs.poolNames(actor)),
       movement: cs.movementRanges(actor),
+      portraitTall: cs.portraitTall(actor),
+      armorImage: cs.armorImage(actor),
+      badge: cs.badge(actor),
       cardsTab: cs.cardsTab(actor),
       cyphersheetsActive: cs.cyphersheetsActive(),
       general: actor.system.settings.general,
@@ -178,6 +186,28 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   async _onRender(context, options) {
     await super._onRender(context, options);
     const root = this.element;
+
+    // Minimum width follows the portrait mode; widen the window if the mode just changed.
+    root.style.setProperty("--ccs-sheet-min-width", `${this.minWidth}px`);
+    if (this.position.width < this.minWidth) this.setPosition({width: this.minWidth});
+
+    // Armor menu: close on a click outside the tile or on Escape.
+    this.#armorMenuAbort?.abort();
+    if (this.view.armorMenu) {
+      const tile = root.querySelector(".ccs-armor-tile");
+      const abort = this.#armorMenuAbort = new AbortController();
+      const close = () => {
+        abort.abort();
+        this.view.armorMenu = false;
+        this.render();
+      };
+      document.addEventListener("pointerdown", event => {
+        if (!tile?.contains(event.target)) close();
+      }, {capture: true, signal: abort.signal});
+      document.addEventListener("keydown", event => {
+        if (event.key === "Escape") { event.stopPropagation(); close(); }
+      }, {capture: true, signal: abort.signal});
+    }
 
     // The portrait is an <img> acting as a button; give it keyboard activation.
     root.querySelector(".ccs-portrait[data-action]")?.addEventListener("keydown", event => {
@@ -245,11 +275,18 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   /*  Window lifecycle                            */
   /* -------------------------------------------- */
 
-  /** Narrowest width that keeps the header (advancement row, Tier/Effort/XP) from overlapping. */
-  static MIN_WIDTH = 840;
+  /**
+   * Narrowest widths that keep the header (advancement row, Tier/Effort/XP) from overlapping,
+   * measured in Chromium. The double-tall portrait takes a wider column.
+   */
+  static MIN_WIDTH = {square: 840, tall: 880};
+
+  get minWidth() {
+    return cs.portraitTall(this.actor).value ? CypherCardSheet.MIN_WIDTH.tall : CypherCardSheet.MIN_WIDTH.square;
+  }
 
   setPosition(position) {
-    if (position?.width) position.width = Math.max(position.width, CypherCardSheet.MIN_WIDTH);
+    if (position?.width) position.width = Math.max(position.width, this.minWidth);
     const result = super.setPosition(position);
     CardPopover.reposition();
     return result;
@@ -262,6 +299,8 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   async close(options) {
     CardPopover.closeFor(this);
+    this.#armorMenuAbort?.abort();
+    this.view.armorMenu = false;
     return super.close(options);
   }
 
@@ -331,7 +370,7 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   static async #onEditImage(event, target) {
     if (!this.isEditable) return;
-    const attr = target.dataset.edit;
+    const attr = target.dataset.path;
     const FilePicker = foundry.applications.apps.FilePicker.implementation;
     return new FilePicker({
       type: "image",
@@ -442,6 +481,17 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
 
   static #onRollDice(event, target) {
     return cs.rollDice(this.actor, target.dataset.dice);
+  }
+
+  static #onToggleArmorMenu() {
+    this.view.armorMenu = !this.view.armorMenu;
+    this.render();
+  }
+
+  /** Worn toggle, from the armor menu or an armor card. */
+  static #onToggleArmorWorn(event, target) {
+    const item = this.#itemFrom(target);
+    if (item && this.isEditable) return cs.toggleArmorActive(item);
   }
 
   static #onEndMultiRoll() {

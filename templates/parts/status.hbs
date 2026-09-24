@@ -1,66 +1,29 @@
 <section class="ccs-status">
-  <div class="ccs-pools">
-    {{#each pools}}
-      <div class="ccs-pool pool-{{key}}">
-        <div class="ccs-pool-head">
-          <span class="ccs-pool-label">{{label}}</span>
-          {{#if rollable}}
-            <button type="button" class="ccs-icon-btn ccs-pool-roll" data-action="statRoll" data-pool="{{key}}"
-                    title="{{localize 'CCS.Pool.Roll' pool=label}}" aria-label="{{localize 'CCS.Pool.Roll' pool=label}}"
-                    {{#unless @root.editable}}disabled{{/unless}}>
-              <i class="fa-solid fa-dice-d20"></i>
-            </button>
-          {{/if}}
-        </div>
-        <div class="ccs-pool-values">
-          <input class="ccs-pool-value" type="number" name="{{valuePath}}" value="{{value}}" aria-label="{{label}}">
-          <span class="ccs-pool-sep" aria-hidden="true">{{@root.poolSeparator}}</span>
-          <input class="ccs-pool-max" type="number" name="{{maxPath}}" value="{{max}}" aria-label="{{localize 'CCS.Pool.Max' pool=label}}"
-                 {{#if @root.locked}}disabled{{/if}}>
-        </div>
-        <div class="ccs-pool-foot">
-          <div class="ccs-pool-controls">
-            <button type="button" class="ccs-icon-btn" data-action="poolAdjust" data-pool="{{key}}" data-dir="-1"
-                    title="{{localize 'CCS.Action.AltTen'}}" aria-label="{{localize 'CCS.Pool.Down' pool=label}}" {{#unless @root.editable}}disabled{{/unless}}>
-              <i class="fa-solid fa-minus"></i>
-            </button>
-            <button type="button" class="ccs-icon-btn" data-action="poolAdjust" data-pool="{{key}}" data-dir="1"
-                    title="{{localize 'CCS.Action.AltTen'}}" aria-label="{{localize 'CCS.Pool.Up' pool=label}}" {{#unless @root.editable}}disabled{{/unless}}>
-              <i class="fa-solid fa-plus"></i>
-            </button>
-            <button type="button" class="ccs-icon-btn" data-action="poolReset" data-pool="{{key}}"
-                    title="{{localize 'CCS.Pool.Reset' pool=label}}" aria-label="{{localize 'CCS.Pool.Reset' pool=label}}" {{#unless @root.editable}}disabled{{/unless}}>
-              <i class="fa-solid fa-rotate"></i>
-            </button>
-          </div>
-          {{#if hasEdge}}
-            <label class="ccs-edge">
-              <span>{{localize 'CYPHERSYSTEM.Edge'}}</span>
-              <input type="number" name="{{edgePath}}" value="{{edge}}" class="{{#if edgeChanged}}is-changed{{/if}}"
-                     {{#if @root.locked}}disabled{{/if}}>
-            </label>
-          {{/if}}
-        </div>
-      </div>
-    {{/each}}
-    {{#if logo}}
-      <div class="ccs-pool ccs-logo-slot" aria-hidden="true">
-        <img class="logo-{{logo.variant}}" src="{{logo.src}}" style="opacity: {{logo.opacity}};" alt="">
-      </div>
-    {{/if}}
-  </div>
-
   <div class="ccs-strip">
     <div class="ccs-panel-box ccs-damage{{#if armor}} has-armor{{/if}}">
       {{#if armor}}
         <div class="ccs-armor-tile">
-          <button type="button" class="ccs-armor-art" data-action="editImage" data-edit="{{armor.imgPath}}"
-                  data-tooltip="{{localize 'CCS.Status.ArmorImage'}}" aria-label="{{localize 'CCS.Status.ArmorImage'}}"
-                  {{#unless editable}}disabled{{/unless}}>
+          <button type="button" class="ccs-armor-art" data-action="toggleArmorMenu" aria-haspopup="menu"
+                  aria-expanded="{{#if view.armorMenu}}true{{else}}false{{/if}}"
+                  data-tooltip="{{localize 'CCS.Status.ArmorMenu'}}" aria-label="{{localize 'CCS.Status.ArmorMenu'}}">
             <img src="{{armor.img}}" alt="">
-            <span class="ccs-armor-rating" aria-label="{{localize 'CYPHERSYSTEM.Armor'}}">{{armor.rating}}</span>
+            <span class="ccs-armor-rating">{{armor.rating}}</span>
           </button>
           <span class="ccs-armor-cost">{{localize 'CCS.Status.SpeedCostShort' n=armor.cost}}</span>
+          {{#if view.armorMenu}}
+            <div class="ccs-armor-menu" role="menu" aria-label="{{localize 'CYPHERSYSTEM.Armor'}}">
+              {{#each armor.pieces}}
+                <button type="button" class="ccs-armor-piece{{#if worn}} is-on{{/if}}" role="menuitemcheckbox" aria-checked="{{worn}}"
+                        data-action="toggleArmorWorn" data-item-id="{{id}}" {{#unless @root.editable}}disabled{{/unless}}>
+                  <i class="fa-{{#if worn}}solid fa-square-check{{else}}regular fa-square{{/if}}" aria-hidden="true"></i>
+                  <span class="ccs-armor-piece-name">{{name}}</span>
+                  <span class="ccs-armor-piece-stats">{{rating}}{{#if cost}} · {{cost}}{{/if}}</span>
+                </button>
+              {{else}}
+                <p class="ccs-hint">{{localize 'CCS.Status.NoArmor'}}</p>
+              {{/each}}
+            </div>
+          {{/if}}
         </div>
       {{/if}}
       <div class="ccs-damage-main">

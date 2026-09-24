@@ -44,8 +44,9 @@
       "Supernatural": "Supernatural",
       "AltThree": "Alt-click: 3 at a time",
       "Dice": "Dice",
-      "ArmorImage": "Armor: click to change image",
-      "SpeedCostShort": "Speed cost {n}"
+      "SpeedCostShort": "Speed cost {n}",
+      "ArmorMenu": "Armor: choose what is worn",
+      "NoArmor": "No armor items. Add one in the Combat group."
     },
     "Family": {
       "all": "All",
@@ -129,7 +130,12 @@
       "MovementHint": "Distances for this character's token ruler, in the scene's units (ft or m). Each one sets where that range band ends, so keep each larger than the one before. Leave a field empty to keep the standard distance.",
       "Layout": "Sheet layout",
       "CardsTabName": "Card tab name",
-      "TagCategoriesHint": "Tags are grouped into four categories, as on the standard sheet. Each category holds any number of tags; add them with + in the tag bar on the Features tab."
+      "TagCategoriesHint": "Tags are grouped into four categories, as on the standard sheet. Each category holds any number of tags; add them with + in the tag bar on the Features tab.",
+      "PortraitTall": "Tall portrait (for portrait-shaped images)",
+      "ArmorImage": "Armor image",
+      "Badge": "Badge",
+      "BadgeImage": "Image",
+      "BadgeOpacity": "Opacity"
     }
   }
 }

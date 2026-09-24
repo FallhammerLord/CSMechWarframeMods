@@ -1,6 +1,6 @@
 <article class="ccs-card fam-{{card.family}} type-{{card.type}}{{#if card.training}} tr-{{card.training.key}}{{/if}}{{#if card.archived}} is-archived{{/if}}{{#if card.inactive}} is-inactive{{/if}}"
          data-item-id="{{card.id}}" data-group-key="{{groupKey}}" data-search="{{card.searchText}}" {{#if editable}}draggable="true"{{/if}}>
-  <button type="button" class="ccs-card-body" data-action="togglePopover" aria-expanded="false" aria-haspopup="dialog">
+  <button type="button" class="ccs-card-body" data-action="togglePopover" aria-expanded="false" aria-haspopup="dialog" title="{{card.name}}">
     <img class="ccs-card-img{{#if card.imgIsIcon}} is-icon{{/if}}" src="{{card.img}}" alt="" loading="lazy">
     <span class="ccs-card-shade" aria-hidden="true"></span>
     <span class="ccs-card-top">
@@ -20,10 +20,19 @@
       <span class="ccs-card-type">{{card.typeLabel}}</span>
     </span>
   </button>
-  <button type="button" class="ccs-card-d20{{#unless card.canRoll}} is-chat{{/unless}}" data-action="rollItem"
-          title="{{#if card.canRoll}}{{localize 'CCS.Action.Roll'}}{{else}}{{localize 'CCS.Action.SendToChat'}}{{/if}}"
-          aria-label="{{#if card.canRoll}}{{localize 'CCS.Action.Roll'}}{{else}}{{localize 'CCS.Action.SendToChat'}}{{/if}}: {{card.name}}"
-          {{#if card.canRoll}}{{#unless editable}}disabled{{/unless}}{{/if}}>
-    <i class="fa-solid fa-dice-d20"></i>
-  </button>
+  <div class="ccs-card-actions">
+    {{#if card.isArmor}}
+      <button type="button" class="ccs-card-worn{{#if card.worn}} is-on{{/if}}" data-action="toggleArmorWorn"
+              aria-pressed="{{card.worn}}" data-tooltip="{{localize 'CCS.Action.ArmorActive'}}"
+              aria-label="{{localize 'CCS.Action.ArmorActive'}}: {{card.name}}" {{#unless editable}}disabled{{/unless}}>
+        <i class="fa-solid fa-shield-halved"></i>
+      </button>
+    {{/if}}
+    <button type="button" class="ccs-card-d20{{#unless card.canRoll}} is-chat{{/unless}}" data-action="rollItem"
+            title="{{#if card.canRoll}}{{localize 'CCS.Action.Roll'}}{{else}}{{localize 'CCS.Action.SendToChat'}}{{/if}}"
+            aria-label="{{#if card.canRoll}}{{localize 'CCS.Action.Roll'}}{{else}}{{localize 'CCS.Action.SendToChat'}}{{/if}}: {{card.name}}"
+            {{#if card.canRoll}}{{#unless editable}}disabled{{/unless}}{{/if}}>
+      <i class="fa-solid fa-dice-d20"></i>
+    </button>
+  </div>
 </article>

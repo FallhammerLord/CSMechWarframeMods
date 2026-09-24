@@ -227,7 +227,8 @@ class CardPopoverManager {
     const viewport = anchor.closest(".ccs-scroll")?.getBoundingClientRect();
     if (!a.width || (viewport && (a.bottom < viewport.top || a.top > viewport.bottom))) return this.close();
 
-    const d20 = anchor.querySelector(".ccs-card-d20")?.getBoundingClientRect() ?? {top: a.bottom, bottom: a.bottom};
+    // The button row (d20, plus the worn toggle on armor) stays visible below the large card.
+    const d20 = anchor.querySelector(".ccs-card-actions")?.getBoundingClientRect() ?? {top: a.bottom, bottom: a.bottom};
     const vw = window.innerWidth;
     const vh = window.innerHeight;
     const width = Math.min(WIDTH, vw - (2 * MARGIN));
