@@ -1743,9 +1743,9 @@
 }
 
 /* --------------------------------------------------------------------------
-   Card buttons: icons centred absolutely
-   Flex/grid centring still let core button styles (padding, icon margins, fixed icon widths)
-   push the glyph off-centre in Foundry. Absolute centring ignores all of those.
+   Card buttons: symmetric inline SVG icons
+   Font Awesome's d20 glyph sits off-centre inside its own em box, so no amount of box
+   centring fixed it. These SVGs are drawn centred in a square viewBox and sized exactly.
    -------------------------------------------------------------------------- */
 
 .ccs-sheet .ccs-card .ccs-card-actions > button {
@@ -1753,14 +1753,15 @@
   padding: 0 !important;
 }
 
-.ccs-sheet .ccs-card .ccs-card-actions > button > i {
+.ccs-sheet .ccs-card .ccs-card-actions > button > .ccs-ico {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: auto;
-  margin: 0 !important;
-  line-height: 1;
+  width: 15px;
+  height: 15px;
+  margin: 0;
   transform: translate(-50%, -50%);
+  pointer-events: none;
 }
 
 /* --------------------------------------------------------------------------

@@ -35,6 +35,19 @@ function onRenderRollDialog(app, html) {
     root.classList.remove("theme-light");
     root.classList.add("themed", "theme-dark");
   }
+  // Backgrounds are set inline with priority: the system paints the form with an !important
+  // gradient and core themes paint the window, so stylesheet rules alone were not enough.
+  const surfaces = [root, root.querySelector(".window-content"), root.querySelector(".window-content > form"),
+    root.querySelector(".sheet-body")].filter(Boolean);
+  for (const el of surfaces) {
+    if (dark) {
+      el.style.setProperty("background", "#0f131a", "important");
+      el.style.setProperty("background-image", "none", "important");
+    } else {
+      el.style.removeProperty("background");
+      el.style.removeProperty("background-image");
+    }
+  }
   applyPoolNames(root.querySelector(".window-content") ?? root, actor, {skip: null});
 }
 

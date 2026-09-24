@@ -384,26 +384,34 @@ export function recoveryFormula(actor) {
 }
 
 /** Roll using the system macro unchanged; it spends the next free slot (Alt skips spending). */
+/** The system's chat wording for each timing (actor-utilities.js useRecoveries). */
+const RECOVERY_CHAT_KEYS = {action: "RecoveryOneAction", tenMinutes: "RecoveryTenMinutes", oneHour: "RecoveryOneHour", tenHours: "RecoveryTenHours"};
+
 /**
- * Roll a recovery and spend the slot that was clicked, in any order.
+ * Roll a recovery for the clicked slot, in any order: that slot is marked spent and the roll is
+ * posted. No timing order is enforced.
  *
- * The system macro always spends the first free slot (useRecoveries). To spend a later slot
- * without reimplementing the macro, the free slots before it are marked spent for the call and
- * freed again afterwards. The macro itself runs unchanged, so its chat card names the timing
- * actually used, and Alt still rolls without spending.
+ * The chat card copies the system's recovery card exactly (macros.js recoveryRollMacro): same
+ * "Is using a … recovery roll" text, same reroll button (handled by the system's chat hook), same
+ * flags. The timing named is this sheet's custom label when set, else the system's wording.
+ * Alt rolls without spending, as the system macro does.
  */
 export async function rollRecovery(actor, key) {
-  const slots = recoverySlots(actor);
-  const index = slots.findIndex(slot => slot.key === key);
-  const skipped = index > 0 ? slots.slice(0, index).filter(slot => !slot.spent).map(slot => slot.key) : [];
-  const setSkipped = value => actor.update(Object.fromEntries(skipped.map(k => [`system.combat.recoveries.${k}`, value])));
+  const slot = recoverySlots(actor).find(s => s.key === key);
+  if (!slot) return;
+  const spend = !alt();
+  if (spend) await actor.update({[`system.combat.recoveries.${key}`]: true});
 
-  if (skipped.length) await setSkipped(true);
-  try {
-    await callApi("recoveryRollMacro", actor, "", true);
-  } finally {
-    if (skipped.length) await setSkipped(false);
-  }
+  const dice = actor.system.combat.recoveries.roll;
+  const custom = actor.getFlag(MODULE_ID, "recoveryLabels")?.[slot.group];
+  const recoveryUsed = spend ? (custom || L(RECOVERY_CHAT_KEYS[slot.group])) : "";
+  const roll = await new Roll(dice).evaluate();
+  const reRollButton = `<div style="text-align: right"><a class="reroll-recovery" data-dice="${dice}" data-user="${game.user.id}" data-actor-uuid="${actor.uuid}"><i class="fa-item fas fa-dice-d20"></i></a></div>`;
+  return roll.toMessage({
+    speaker: ChatMessage.getSpeaker({actor}),
+    flavor: game.i18n.format("CYPHERSYSTEM.UseARecoveryRoll", {name: actor.name, recoveryUsed}) + reRollButton,
+    flags: {itemID: "recovery-roll"}
+  });
 }
 
 export async function unspendRecovery(actor, key) {
