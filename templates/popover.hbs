@@ -9,6 +9,24 @@
     </ul>
   {{/if}}
 </header>
+{{#if resource}}
+  <div class="ccs-pop-resource">
+    <span class="ccs-pop-resource-label">{{resource.label}}</span>
+    {{#if editable}}
+      <button type="button" class="ccs-pop-control" data-popover-action="resourceDown"
+              data-tooltip="{{localize 'CCS.Resource.Spend'}}" aria-label="{{localize 'CCS.Resource.Spend'}}: {{resource.label}}">
+        <i class="fa-solid fa-minus" aria-hidden="true"></i>
+      </button>
+    {{/if}}
+    <span class="ccs-pop-resource-value">{{resource.value}} / {{resource.max}}</span>
+    {{#if editable}}
+      <button type="button" class="ccs-pop-control" data-popover-action="resourceUp"
+              data-tooltip="{{localize 'CCS.Resource.Refill'}}" aria-label="{{localize 'CCS.Resource.Refill'}}: {{resource.label}}">
+        <i class="fa-solid fa-plus" aria-hidden="true"></i>
+      </button>
+    {{/if}}
+  </div>
+{{/if}}
 <div class="ccs-pop-desc">{{{description}}}</div>
 {{!-- One row, stacked right to left: archive in the corner, then the item's controls. --}}
 <footer class="ccs-pop-bar">

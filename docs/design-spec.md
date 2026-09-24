@@ -397,7 +397,7 @@ The catalogue below was the original scoping.
 
 ---
 
-## 15. Artifact resource (designed, not built)
+## 15. Artifact resource (built in 0.5.0)
 
 A named counter on an artifact: charges, battery, heat. Module data only; the system and the default sheet ignore it but keep it.
 
@@ -408,7 +408,9 @@ A named counter on an artifact: charges, battery, heat. Module data only; the sy
 
 **Small card:** the resource is the card's centred number (`3 / 5`), its name in the foot line (artifacts have no training label). No −/+ on the small card: the artifact's main action stays the d20, and the button row belongs to sockets (§16). Ammo keeps its own −/+.
 
-**Large card:** a stepper row, `Charges  − 3 / 5 +` (Alt: ten). Label and max are edited here and on the system's artifact item sheet (fields added through the `renderCypherItemSheet` hook).
+**Large card:** a stepper row, `Charges  − 3 / 5 +` (Alt: ten), between the header and the description.
+
+**Editing:** name, current, maximum and "roll depletion at 0" in the system artifact sheet's Settings tab, added through the `renderCypherItemSheet` hook on every artifact (not only card-sheet actors). The inputs are named by flag path, so the system's own form submit saves them.
 
 **Rules:** no automatic recharge; refills are a manual + or an edit. Value stays within 0 to max.
 

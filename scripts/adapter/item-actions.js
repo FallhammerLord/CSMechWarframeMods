@@ -1,9 +1,9 @@
 /** Item actions (rolls, chat, toggles, depletion), the large card's content, creation and drops. */
 
-import {t} from "../constants.js";
+import {MODULE_ID, t} from "../constants.js";
 import * as sys from "./system-imports.js";
 import {L, alt, callApi, capitalize} from "./shared.js";
-import {CARD_TYPES, ROLL_TYPES, cardData, cypherType, isFormula, isZeroCost, itemRollsEnabled} from "./items.js";
+import {CARD_TYPES, ROLL_TYPES, cardData, cypherType, isFormula, isZeroCost, itemRollsEnabled, resourceOf} from "./items.js";
 
 /** d20: the default sheet's exact call (actor-sheet.js `.item-roll`), else post to chat. */
 export function rollItem(actor, item) {
@@ -155,6 +155,16 @@ export async function rollDepletion(actor, item) {
   });
 }
 
+/** Spend or refill an artifact's resource, within 0 to max. Optionally rolls depletion at 0. */
+export async function adjustResource(actor, item, direction) {
+  const r = resourceOf(item);
+  if (!r) return;
+  const value = Math.clamp(r.value + (alt() ? 10 : 1) * direction, 0, r.max);
+  if (value === r.value) return;
+  await item.update({[`flags.${MODULE_ID}.resource.value`]: value});
+  if (value === 0 && r.depleteAtZero && item.system.basic?.depletion) return rollDepletion(actor, item);
+}
+
 /** The large card's action bar (spec §5). `label` is the short text, `title` the tooltip. */
 export function itemControls(actor, item) {
   const b = item.system.basic ?? {};
@@ -199,10 +209,11 @@ export function itemControls(actor, item) {
 /** The large card: facts row, description and controls. */
 export async function itemDetail(actor, item) {
   const card = cardData(item, actor);
+  const resource = resourceOf(item);
   const b = item.system.basic ?? {};
   const facts = [];
   if (card.training) facts.push(card.training.label);
-  if (card.value) facts.push(card.value);
+  if (card.value && !resource) facts.push(card.value);
   if (card.detail) facts.push(card.detail);
   if (item.type === "attack" && b.type) facts.push(b.type);
   if (item.type === "armor" && b.type) facts.push(b.type);
@@ -220,7 +231,7 @@ export async function itemDetail(actor, item) {
   const description = card.identified
     ? await TextEditor.enrichHTML(item.system.description ?? "", {secrets: actor.isOwner, relativeTo: item})
     : `<p class="ccs-muted">${t("Popover.Unidentified")}</p>`;
-  return {card, facts, description, controls: itemControls(actor, item)};
+  return {card, facts, resource, description, controls: itemControls(actor, item)};
 }
 
 /** Core's creation dialog, filtered to the group's types (spec §6). */

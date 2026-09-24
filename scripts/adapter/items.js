@@ -1,7 +1,7 @@
 /** Items as cards: classification, card data, sorting, grouping, and the tag bar. */
 
-import {t} from "../constants.js";
-import {L, callApi, capitalize, isTeen, systemSetting} from "./shared.js";
+import {MODULE_ID, t} from "../constants.js";
+import {L, callApi, capitalize, get, isTeen, systemSetting} from "./shared.js";
 import {poolNames} from "./actor.js";
 
 /** Types shown as cards, in display order. Tags and recursions show in the tag bar. */
@@ -84,6 +84,16 @@ function poolLabel(pool, actor) {
   return L("AnyPool");
 }
 
+/** An identified artifact's named counter (spec §15), or null. */
+export function resourceOf(item) {
+  if (item.type !== "artifact" || item.system.basic?.identified === false) return null;
+  const r = get(item, `flags.${MODULE_ID}.resource`) ?? {};
+  const label = String(r.label ?? "").trim();
+  if (!label) return null;
+  const max = Math.max(Number(r.max) || 0, 0);
+  return {label, value: Math.clamp(Number(r.value) || 0, 0, max), max, depleteAtZero: !!r.depleteAtZero};
+}
+
 /** Cypher type indicator (actor-sheet.js getData "Determine cypher type"). */
 export function cypherType(item) {
   const [kind, fantastic] = item.system.basic.type ?? [0, 0];
@@ -105,9 +115,13 @@ function keyValue(item, actor) {
     case "armor":
       return {value: t("Card.Armor", {n: b.rating}), detail: b.cost ? t("Card.SpeedCost", {n: b.cost}) : ""};
     case "cypher":
-    case "artifact":
+    case "artifact": {
       if (b.identified === false) return {value: "?"};
-      return {value: b.level !== "" && b.level != null ? t("Card.Level", {n: b.level}) : ""};
+      const level = b.level !== "" && b.level != null ? t("Card.Level", {n: b.level}) : "";
+      // An artifact's resource takes the card's number; the level moves to the large card.
+      const r = resourceOf(item);
+      return r ? {value: `${r.value} / ${r.max}`, detail: level} : {value: level};
+    }
     case "equipment":
     case "ammo":
       return {value: b.quantity != null ? `×${b.quantity}` : "", detail: b.level ? t("Card.Level", {n: b.level}) : ""};
@@ -152,6 +166,7 @@ export function cardData(item, actor) {
   const meta = TYPE_META[item.type];
   const kv = keyValue(item, actor);
   const identified = b.identified !== false;
+  const training = trainingOf(item);
   return {
     id: item.id,
     type: item.type,
@@ -162,7 +177,9 @@ export function cardData(item, actor) {
     imgIsIcon: /\.svg(?:$|\?)/i.test(item.img ?? ""),
     typeLabel: typeLabel(item.type),
     typeIcon: meta.icon,
-    training: trainingOf(item),
+    training,
+    // Foot line: training, or an artifact's resource name.
+    foot: training?.label ?? resourceOf(item)?.label ?? "",
     frameKey: frameKeyOf(item),
     value: kv.value,
     detail: kv.detail ?? "",

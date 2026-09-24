@@ -13,6 +13,7 @@ function previewCard(key) {
   return {
     id: `preview-${key}`, family: "equipment", type: "equipment", frameKey: key,
     training: trained ? {key, label: t(`Frames.Set.${key}.label`)} : null,
+    foot: trained ? t(`Frames.Set.${key}.label`) : "",
     name: t("Frames.Preview.Name"), value: t("Frames.Preview.Value"), img: "icons/svg/item-bag.svg", imgIsIcon: true
   };
 }

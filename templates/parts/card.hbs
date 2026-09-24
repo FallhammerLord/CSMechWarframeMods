@@ -16,7 +16,7 @@
     <span class="ccs-card-name">{{card.name}}</span>
     {{!-- The item's key number (damage, armor, cost, quantity, level), large and centred. --}}
     <span class="ccs-card-value{{#unless card.value}} is-empty{{/unless}}">{{card.value}}</span>
-    <span class="ccs-card-foot"><span class="ccs-card-training">{{card.training.label}}</span></span>
+    <span class="ccs-card-foot"><span class="ccs-card-training">{{card.foot}}</span></span>
   </button>
   <div class="ccs-card-actions">
     {{#if card.isArmor}}

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.5.0 — artifact resource
+
+- **Artifact resource (spec §15):** a named counter on an artifact, such as Charges.
+  - Set it in the artifact's item sheet, Settings tab: name, current, maximum, and "Roll depletion when it reaches 0". The fields appear on every artifact sheet; an empty name means no resource.
+  - Small card: the counter is the card's number (`3 / 5`), with its name in the foot line. The level moves to the large card.
+  - Large card: a − / + stepper (Alt: ten), kept between 0 and the maximum. Reaching 0 rolls depletion when that option is on.
+  - Stored in module flags: the default sheet ignores it but keeps it.
+- Every existing card and sheet state is unchanged (snapshot check).
+
 ## 0.4.2
 
 - **Rank pips readable:** the training pips on the bottom frame caps are about three times larger (roughly 7.5px on screen, up from 2.4px), with a dark outline against the plate. The small card's bottom cap is 22px tall (was 18px), matching the large card; the bottom caps drop their corner rivets to make room.

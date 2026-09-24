@@ -1835,6 +1835,38 @@
   color: var(--ccs-text);
 }
 
+/* Artifact resource stepper (spec §15) */
+.ccs-pop-resource {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 12px;
+  border-top: 1px solid var(--ccs-line);
+}
+
+.ccs-pop-resource-label {
+  margin-right: auto;
+  color: var(--ccs-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ccs-pop-resource-value {
+  min-width: 4.5em;
+  text-align: center;
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.ccs-pop-resource > :last-child {
+  margin-right: auto;
+}
+
 .ccs-pop-desc {
   flex: 1 1 auto;
   min-height: 0;

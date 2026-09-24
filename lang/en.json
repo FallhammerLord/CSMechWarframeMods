@@ -226,6 +226,16 @@
         }
       }
     },
+    "Resource": {
+      "Title": "Resource (Cypher Card Sheet)",
+      "Name": "Name",
+      "NameHint": "e.g. Charges. Leave empty for no resource.",
+      "Value": "Current",
+      "Max": "Maximum",
+      "DepleteAtZero": "Roll depletion when it reaches 0",
+      "Spend": "Spend one (Alt: ten)",
+      "Refill": "Refill one (Alt: ten)"
+    },
     "Depletion": {
       "Roll": "Depletion roll",
       "Flavor": "Depletion: {range} on {die}",
