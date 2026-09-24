@@ -418,24 +418,35 @@ A named counter on an artifact: charges, battery, heat. Module data only; the sy
 
 Materia-style slots: an artifact holds up to three cyphers. A socketed cypher stays a normal item on the actor; the artifact stores links to it.
 
+**Eligibility by identifier:**
+- Cypher: a **Socketable** toggle, which reveals a **Socket identifier** field (e.g. `ember-rod`).
+- Artifact: a **Has sockets** toggle, which reveals the **socket count** (1-3) and a **Socket identifier**.
+- A socket's picker lists the actor's unsocketed cyphers that are socketable and whose identifier matches the artifact's (case and surrounding spaces ignored). One identifier per cypher for now; a list can come later if a cypher needs to fit two artifact families.
+- An artifact with sockets but no identifier accepts nothing; the picker says to set one.
+- Identifiers and the socket count are GM-only. Players socket and unsocket.
+- Set identifiers on the Items directory or compendium entries players buy from, so every copy carries them.
+
 **Data:**
-- Artifact: `flags.cypher-card-sheet.sockets = {count: 0-3, ids: [cypherId|null, …]}`.
-- Cypher: `flags.cypher-card-sheet.socket = {artifactId, reusable, spent}`.
+- Artifact: `flags.cypher-card-sheet.sockets = {enabled, count: 1-3, key, ids: [cypherId|null, …]}`.
+- Cypher: `flags.cypher-card-sheet.socket = {enabled, key, artifactId, reusable, spent}`.
 
 **Rules:**
-- Cyphers are single-use. Use posts the cypher to chat as the system does, then removes it; the socket empties. Buying the same cypher again is a new item dropped in.
+- Cyphers are single-use. Use posts the cypher to chat as the system does, then removes it; the socket empties. Buying the same cypher again is a new item.
 - Campaign option, per cypher: **Reusable**. Use marks it spent instead of removing it. **Refresh sockets** on the large card clears spent marks (after an intervening scene, at the table's call; no automation).
 - Socketed cyphers don't count toward the cypher limit: they leave the Cyphers group (and its count) and appear only in their artifact's sockets.
 - Housekeeping: a deleted or transferred cypher empties its socket. Transferring the artifact carries its socketed cyphers with it (custom drop handling; the system's drop logic knows nothing of sockets).
 
-**Small card:** up to three 18px sockets left of the d20, depletion on the right (row ≈ 126px of 148px). Sockets are spaced so the 24px target-size spacing exception holds. States by shape, not only colour:
+**Large card (where socketing happens):** a Sockets section under the facts row, one slot per socket.
+- Empty slot: click opens the picker (icon, name, level of each eligible cypher). With none eligible, it names the artifact's identifier.
+- Filled slot: cypher icon and name, **Use**, **Unsocket** (returns it to the Cyphers group).
+- **Refresh sockets** shows when any socket is spent.
+
+**Small card:** up to three 18px sockets left of the d20, depletion on the right (row ≈ 126px of 148px), spaced so the 24px target-size spacing exception holds. Display only: clicking one opens the large card. States by shape, not only colour:
 - empty: dashed ring
 - filled: the cypher's icon in a solid ring in the frame colour
 - spent: dimmed, with a diagonal slash.
 
-Clicking a filled socket opens the large card; dropping a cypher on the artifact card sockets it into the first empty slot.
-
-**Large card:** a Sockets section under the facts row, one wider slot per socket: cypher icon and name, **Use**, **Unsocket** (returns it to the Cyphers group). The socket count (0-3) is set here and on the artifact item sheet. **Refresh sockets** shows when any socket is spent.
+**Editing:** the toggles and identifiers are added to the system's cypher and artifact item sheets (via `renderCypherItemSheet`), since that is where GMs build items.
 
 **Frames:** no new frame sets; sockets take the card's frame colour.
 
