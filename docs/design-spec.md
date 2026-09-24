@@ -3,6 +3,9 @@
 A Foundry VTT v14 module that adds a new, alternative PC sheet for the Cypher System. Items display as a Warframe Mods-style card grid. The sheet is a fresh build with its own files. It keeps full functional parity with the system's default PC sheet and changes only the look and feel.
 
 Research baseline: `cyphersystem` **v3.5.2** (requires Foundry 14, verified 14.360). File references below point into that release's source.
+- **Popover header and action bar** are `flex: 0 0 auto`; only the description shrinks and scrolls. Before, a long description squeezed the header and cut off the title.
+- **Alt-click** state is taken from the click event (`event.altKey`, remembered for 1.5s by a capture listener on the sheet and popover), with Foundry's key tracker as a fallback.
+- **Artifact depletion** button (identified artifacts only) parses `basic.depletion`, stripping inline-roll markup: `N in dX`, `N-M in dX`, `N in [[/r dX]]`. It posts a plain roll with a Depleted/Holds line; it doesn't change the item.
 
 ---
 
@@ -235,9 +238,9 @@ Only the look changes.
 
 Choices made while building the module, following the "UX/UI standards first, troubleshoot after" rule.
 
-- **Card layout.** The value slot sits top-left, marks (cypher type, spell, favorite) top-right, then the image, name, sub-line, and a footer with training and type. The action bar has archive on the left and the d20 in the centre. Non-rolling items keep the d20 in a dashed style, and its tooltip reads "Send to chat".
+- **Card layout** (0.3.0-alpha.3). Marks (cypher type, spell, favorite) sit top-right. The body is a three-row grid: name, then the card's number large and centred (weapon damage, armor value, pool cost, XP cost, ammo count), then training. There is no item-type label; the family filter and popover carry it. The action bar has archive on the left and the d20 in the centre. Non-rolling items keep the d20 in a dashed style, and its tooltip reads "Send to chat".
 - **Frame colour** comes from the training level when the item has one, otherwise from its family (skills, combat, abilities, equipment).
-- **Small cards** are 104px tall; the d20 and Worn buttons use the module's own symmetric SVG icons, because Font Awesome's d20 glyph is off-centre in its em box with the item image full-bleed. Name, training and type are overlaid in light text on a dark shade, which stays dark in both themes for contrast. The bottom button row holds the d20, plus a Worn toggle on armor cards, centred together; archive moved to the popover. Names wrap at word boundaries to two lines, then end with an ellipsis; the full name is in the tooltip and popover. Art that fails to load is hidden rather than shown as a broken image. The system's SVG icons are shown contained rather than cropped.
+- **Small cards** are 114px tall (was 104px; raised so a two-line name clears the centred value); the d20 and Worn buttons use the module's own symmetric SVG icons, because Font Awesome's d20 glyph is off-centre in its em box with the item image full-bleed. Name, training and type are overlaid in light text on a dark shade, which stays dark in both themes for contrast. The bottom button row holds the d20, plus a Worn toggle on armor cards, centred together; archive moved to the popover. Names wrap at word boundaries to two lines, then end with an ellipsis; the full name is in the tooltip and popover. Art that fails to load is hidden rather than shown as a broken image. The system's SVG icons are shown contained rather than cropped.
 - **Card sub-line removed.** Secondary facts such as attack range, armor speed cost and item level appear only in the popover. Temporary power shifts and permanent damage show as small icons next to the favorite star.
 - **Popover placement.** The large card covers the small one, with its bottom edge just above the small card's d20 so the d20 stays clickable. It grows upward, or downward from below the d20 when there's no room above. It unfolds from the card when opening and folds back when closing (170ms / 120ms; off with reduced motion).
 - **Popover layout.** Centred title over the item image as a faint (16%) banner. Clicking the title, clicking outside, or pressing Escape closes it; there is no close button. The actions are one row of icon buttons with tooltips, running right to left from a small archive button in the bottom-right corner.
@@ -377,3 +380,27 @@ Levels 3–5 fit in the sheet's Settings tab as a small grid of dropdowns.
 6. **Test in the Foundry desktop app plus Chrome and Firefox**, in both themes.
 
 **Size:** A is small (a few hours, plus a round of feedback). C is medium, mostly the token refactor in step 2.
+
+---
+
+## 15. Artifact resource pools (design only, not built)
+
+Some artifacts carry their own pool: charges, a battery, an energy reserve. The system has no field for this, so the pool lives in item flags and works on either sheet.
+
+**Data** (`flags.cypher-card-sheet.pool` on the artifact):
+- `value`, `max`: current and maximum.
+- `label`: what the pool is called ("Charges", "Energy"). Default "Charges".
+- `recharge`: optional text rule ("regains 1 per ten hours") shown only; no automation.
+- `depleteAtZero`: optional; when true, spending the last point triggers the depletion roll.
+
+**Small card:** the pool replaces the centred number as `value / max`, with the label under it. A thin bar along the bottom cap shows the fraction, with the numbers as the non-colour cue.
+
+**Large card:** a stepper row (− value / max +), like quantity on ammo. The item's rolls can spend from it: a "Cost" field of N points adds a Spend button that subtracts N, refusing below zero.
+
+**Editing:** fields in the artifact's own item sheet would need a system hook, so the first cut edits them in the large card (GM or owner), behind a "Has resource pool" toggle.
+
+**Open questions:**
+- Should the pool reset on a recovery roll or on a manual button only? Proposal: manual only; recharge rules vary too much.
+- Do cyphers need the same? Proposal: no; they're single-use.
+- Should it show on the default sheet? Flags survive, but the default sheet won't display them. Acceptable for a module feature.
+

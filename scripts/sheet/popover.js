@@ -87,7 +87,8 @@ class CardPopoverManager {
     if (button) {
       if (button.disabled) return;
       event.preventDefault();
-      this.#runAction(button.dataset.popoverAction);
+      cs.noteClick(event);
+      this.#runAction(button.dataset.popoverAction, event);
       return;
     }
     // The large card sits over the small one, so its title acts as the card: click to close.
@@ -249,7 +250,7 @@ class CardPopoverManager {
     el.dataset.placement = growUp ? "up" : "down";
   }
 
-  async #runAction(action) {
+  async #runAction(action, event) {
     if (action === "close") return this.close({restoreFocus: true});
     const sheet = this.#sheet;
     const item = sheet?.actor.items.get(this.#itemId);
@@ -257,7 +258,8 @@ class CardPopoverManager {
     if (!sheet.isEditable && !READ_ONLY_ACTIONS.has(action)) return;
 
     // Alt-click on archive deletes, as on the system's default sheet. Always confirmed.
-    if (action === "archiveItem" && game.keyboard.isModifierActive("Alt")) action = "deleteItem";
+    // Read Alt from the click itself; Foundry's keyboard tracker can miss it.
+    if (action === "archiveItem" && (event?.altKey || game.keyboard.isModifierActive("Alt"))) action = "deleteItem";
     if (action === "deleteItem") {
       const confirmed = await foundry.applications.api.DialogV2.confirm({
         window: {title: t("Popover.DeleteTitle")},

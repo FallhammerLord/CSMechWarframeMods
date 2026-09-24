@@ -18,7 +18,15 @@ import * as sys from "./system-imports.js";
 
 const L = key => game.i18n.localize(`CYPHERSYSTEM.${key}`);
 const get = foundry.utils.getProperty;
-const alt = () => game.keyboard.isModifierActive("Alt");
+/**
+ * Alt state for the click being handled. The click event's own `altKey` is authoritative;
+ * Foundry's keyboard tracker can miss Alt (e.g. when the OS or browser grabs the key first).
+ */
+let lastClick = {alt: false, at: 0};
+export function noteClick(event) {
+  if (event && "altKey" in event) lastClick = {alt: !!event.altKey, at: Date.now()};
+}
+const alt = () => (Date.now() - lastClick.at < 1500 ? lastClick.alt : false) || game.keyboard.isModifierActive("Alt");
 const capitalize = s => (s ? s.charAt(0).toUpperCase() + s.slice(1) : "");
 
 /** Read a Cypher System world setting without throwing if it was renamed. */
@@ -690,6 +698,7 @@ export function cardData(item, actor) {
     archived: !!item.system.archived,
     favorite: !!item.system.favorite && !actor.system.settings.general.hideFavoriteButton,
     inactive: item.type === "armor" && item.system.active === false,
+    depletion: item.type === "artifact" && identified && item.system.basic?.depletion ? String(item.system.basic.depletion) : "",
     isArmor: item.type === "armor",
     worn: item.type === "armor" && item.system.active !== false,
     spell: item.type === "ability" && item.system.settings?.general?.sorting === "Spell",
@@ -1063,6 +1072,35 @@ export async function castSpell(actor, item) {
     speaker: ChatMessage.getSpeaker({actor}),
     content: game.i18n.format("CYPHERSYSTEM.CastingASpell", {name: actor.name, recoveryUsed, spellName: item.name}),
     flags: {itemID: item.id}
+  });
+}
+
+/**
+ * Parse a Cypher depletion string: "1 in d6", "1-2 in d10", "1 in [[/r d20]]" (HTML allowed).
+ * Returns the depleting range and the die, or null.
+ */
+export function parseDepletion(text) {
+  const plain = String(text ?? "").replace(/<[^>]*>/g, " ");
+  const m = plain.match(/(\d+)\s*(?:[-–]\s*(\d+))?\s*in\s*(?:\[\[\s*\/r(?:oll)?\s*)?(\d*d\d+)/i);
+  if (!m) return null;
+  const low = Number(m[1]);
+  const high = Number(m[2] ?? m[1]);
+  const die = m[3].toLowerCase().startsWith("d") ? `1${m[3]}` : m[3];
+  return {low: Math.min(low, high), high: Math.max(low, high), die};
+}
+
+/** Roll an artifact's depletion and say whether it depleted. */
+export async function rollDepletion(actor, item) {
+  const text = item.system.basic?.depletion ?? "";
+  const parsed = parseDepletion(text);
+  if (!parsed) return ui.notifications.warn(t("Depletion.Unreadable", {name: item.name}));
+  const roll = await new Roll(parsed.die).evaluate();
+  const depleted = roll.total >= parsed.low && roll.total <= parsed.high;
+  const range = parsed.low === parsed.high ? `${parsed.low}` : `${parsed.low}–${parsed.high}`;
+  return roll.toMessage({
+    speaker: ChatMessage.getSpeaker({actor}),
+    flavor: `<b>${Handlebars.escapeExpression(item.name)}</b><br>${t("Depletion.Flavor", {range, die: parsed.die})}<br>`
+      + `<b>${t(depleted ? "Depletion.Depleted" : "Depletion.Holds")}</b>`
   });
 }
 

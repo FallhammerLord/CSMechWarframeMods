@@ -5,22 +5,18 @@
     <span class="ccs-card-shade" aria-hidden="true"></span>
     <span class="ccs-cap ccs-cap-top frame-{{card.frameKey}}" aria-hidden="true"></span>
     <span class="ccs-cap ccs-cap-bottom frame-{{card.frameKey}}" aria-hidden="true"></span>
-    <span class="ccs-card-top">
-      <span class="ccs-card-value">{{card.value}}</span>
-      <span class="ccs-card-marks">
-        {{#if card.cypherType}}<i class="{{card.cypherType.icon}}" style="color: {{card.cypherType.color}};" title="{{card.cypherType.title}}"></i>{{/if}}
-        {{#if card.temporary}}<i class="fa-solid fa-clock" title="{{localize 'CCS.Card.Temporary'}}"></i>{{/if}}
-        {{#if card.permanent}}<i class="fa-solid fa-infinity" title="{{localize 'CCS.Card.Permanent'}}"></i>{{/if}}
-        {{#if card.spell}}<i class="fa-solid fa-book-sparkles" title="{{localize 'CYPHERSYSTEM.Spells'}}"></i>{{/if}}
-        {{#if card.archived}}<i class="fa-solid fa-box-archive" title="{{localize 'CCS.Card.Archived'}}"></i>{{/if}}
-        {{#if card.favorite}}<i class="fa-solid fa-star ccs-fav" title="{{localize 'CCS.Action.Favorite'}}"></i>{{/if}}
-      </span>
+    <span class="ccs-card-marks">
+      {{#if card.cypherType}}<i class="{{card.cypherType.icon}}" style="color: {{card.cypherType.color}};" title="{{card.cypherType.title}}"></i>{{/if}}
+      {{#if card.temporary}}<i class="fa-solid fa-clock" title="{{localize 'CCS.Card.Temporary'}}"></i>{{/if}}
+      {{#if card.permanent}}<i class="fa-solid fa-infinity" title="{{localize 'CCS.Card.Permanent'}}"></i>{{/if}}
+      {{#if card.spell}}<i class="fa-solid fa-book-sparkles" title="{{localize 'CYPHERSYSTEM.Spells'}}"></i>{{/if}}
+      {{#if card.archived}}<i class="fa-solid fa-box-archive" title="{{localize 'CCS.Card.Archived'}}"></i>{{/if}}
+      {{#if card.favorite}}<i class="fa-solid fa-star ccs-fav" title="{{localize 'CCS.Action.Favorite'}}"></i>{{/if}}
     </span>
     <span class="ccs-card-name">{{card.name}}</span>
-    <span class="ccs-card-foot">
-      <span class="ccs-card-training">{{card.training.label}}</span>
-      <span class="ccs-card-type">{{card.typeLabel}}</span>
-    </span>
+    {{!-- The item's key number (damage, armor, cost, quantity, level), large and centred. --}}
+    <span class="ccs-card-value{{#unless card.value}} is-empty{{/unless}}">{{card.value}}</span>
+    <span class="ccs-card-foot"><span class="ccs-card-training">{{card.training.label}}</span></span>
   </button>
   <div class="ccs-card-actions">
     {{#if card.isArmor}}
@@ -28,6 +24,13 @@
               aria-pressed="{{card.worn}}" data-tooltip="{{localize 'CCS.Action.ArmorActive'}}"
               aria-label="{{localize 'CCS.Action.ArmorActive'}}: {{card.name}}" {{#unless editable}}disabled{{/unless}}>
         <svg class="ccs-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 2.5 19.5 5.3v5.9c0 4.9-3.2 8.6-7.5 10.3-4.3-1.7-7.5-5.4-7.5-10.3V5.3z"/></svg>
+      </button>
+    {{/if}}
+    {{#if card.depletion}}
+      <button type="button" class="ccs-card-deplete" data-action="rollDepletion"
+              data-tooltip="{{localize 'CCS.Depletion.Roll'}}: {{card.depletion}}" aria-label="{{localize 'CCS.Depletion.Roll'}}: {{card.name}}"
+              {{#unless editable}}disabled{{/unless}}>
+        <svg class="ccs-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 10.5v3"/></g><rect x="5.5" y="9.5" width="5" height="5" rx="0.8" fill="currentColor"/></svg>
       </button>
     {{/if}}
     <button type="button" class="ccs-card-d20{{#unless card.canRoll}} is-chat{{/unless}}" data-action="rollItem"

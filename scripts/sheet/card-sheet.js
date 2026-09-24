@@ -54,7 +54,8 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       rollDice: CypherCardSheet.#onRollDice,
       endMultiRoll: CypherCardSheet.#onEndMultiRoll,
       toggleArmorMenu: CypherCardSheet.#onToggleArmorMenu,
-      toggleArmorWorn: CypherCardSheet.#onToggleArmorWorn
+      toggleArmorWorn: CypherCardSheet.#onToggleArmorWorn,
+      rollDepletion: CypherCardSheet.#onRollDepletion
     }
   };
 
@@ -287,6 +288,8 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   async _onFirstRender(context, options) {
     await super._onFirstRender(context, options);
     const root = this.element;
+    // Record Alt from each click so Alt-click variants work even if Foundry's keyboard tracker misses Alt.
+    root.addEventListener("click", event => cs.noteClick(event), {capture: true});
     // Fallback drop handling in case the core sheet doesn't bind DragDrop in this version.
     root.addEventListener("dragover", event => event.preventDefault());
     root.addEventListener("drop", event => this.#handleDrop(event));
@@ -572,6 +575,11 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static #onToggleArmorWorn(event, target) {
     const item = this.#itemFrom(target);
     if (item && this.isEditable) return cs.toggleArmorActive(item);
+  }
+
+  static #onRollDepletion(event, target) {
+    const item = this.#itemFrom(target);
+    if (item && this.isEditable) return cs.rollDepletion(this.actor, item);
   }
 
   static #onEndMultiRoll() {

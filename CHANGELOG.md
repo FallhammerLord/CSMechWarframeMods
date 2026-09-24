@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0-alpha.3
+
+- **Small cards, new layout:** the card's number sits large and centred, clear of the frame caps: weapon damage, armor value, pool cost, XP cost, or ammo count. Name above it, training below. The item-type label ("Ability", "Skill") is gone; the family filter and large card still show it. Cards are 114px tall so two-line names and the value never overlap.
+- **Artifact depletion roll:** identified artifacts get a battery button beside the d20. It reads the depletion text ("1 in d6", "1-2 in d10", "1 in [[/r d6]]"), rolls the die, and posts the result with "Depleted" or "Holds". Unreadable text shows a warning instead of rolling.
+- **Fix:** the large card's title no longer gets cut off. The header and action bar were shrinking inside the fixed-height card when the description was long; now only the description scrolls.
+- **Fix:** Alt-click on the large card's archive button deletes (after confirmation). The Alt state is read from the click itself, since Foundry's key tracker could miss it.
+
 ## 0.3.0-alpha.2
 
 - **Fix:** the Card frames settings window now opens. Its template rendered two root elements, and AppV2 requires one.

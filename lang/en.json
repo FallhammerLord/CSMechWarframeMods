@@ -220,6 +220,13 @@
           "hint": "Colour-blind-friendly: red, orange, green and sky blue, chosen to stay distinct for protan, deutan and tritan colour vision. Each character's sheet can switch to these in Settings → Sheet layout."
         }
       }
+    },
+    "Depletion": {
+      "Roll": "Depletion roll",
+      "Flavor": "Depletion: {range} on {die}",
+      "Depleted": "Depleted!",
+      "Holds": "Still works.",
+      "Unreadable": "{name}: couldn't read a depletion like \"1 in d6\"."
     }
   }
 }
