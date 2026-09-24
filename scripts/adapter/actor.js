@@ -23,8 +23,7 @@ export function actorState(actor) {
       intellect: changed("intellect.edge")
     },
     exclusiveTag: exclusive?.name ?? "",
-    // Minor or major effect from the actor's latest roll (system-ui.js), until used or rolled over.
-    effect: actor.getFlag(MODULE_ID, "effect")?.kind ?? null
+    effects: rollEffects(actor)
   };
 }
 
@@ -63,10 +62,20 @@ export function identity(actor) {
   };
 }
 
-/** Mark a roll's minor or major effect as available, or clear it (kind null). */
-export async function setRollEffect(actor, kind) {
-  if (!kind) return actor.getFlag(MODULE_ID, "effect") ? actor.unsetFlag(MODULE_ID, "effect") : undefined;
-  return actor.setFlag(MODULE_ID, "effect", {kind});
+/**
+ * Available minor and major effects, each on or off independently: players can bank one for
+ * later, so a roll only ever lights a star. Reads the single `effect` flag from 0.8.0 too.
+ */
+export function rollEffects(actor) {
+  const saved = actor.getFlag(MODULE_ID, "effects") ?? {};
+  const legacy = actor.getFlag(MODULE_ID, "effect")?.kind;
+  return {minor: !!(saved.minor ?? legacy === "minor"), major: !!(saved.major ?? legacy === "major")};
+}
+
+export async function setRollEffect(actor, kind, on) {
+  const update = {[`flags.${MODULE_ID}.effects`]: {...rollEffects(actor), [kind]: !!on}};
+  if (actor.getFlag(MODULE_ID, "effect")) update[`flags.${MODULE_ID}.-=effect`] = null;
+  return actor.update(update);
 }
 
 export async function adjustXP(actor, direction) {

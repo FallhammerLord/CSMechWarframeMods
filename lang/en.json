@@ -228,12 +228,8 @@
     },
     "Effect": {
       "Title": "Roll effects",
-      "minor": "Minor",
-      "major": "Major",
-      "minorOn": "Minor effect available. Click to clear once it's used.",
-      "majorOn": "Major effect available. Click to clear once it's used.",
-      "minorOff": "Minor effect: lights on a natural 19, or click to light it",
-      "majorOff": "Major effect: lights on a natural 20, or click to light it"
+      "minor": "Minor effect",
+      "major": "Major effect"
     },
     "Socket": {
       "Title": "Sockets",
@@ -265,8 +261,8 @@
       "Title": "Linked artifact (Cypher Card Sheet)",
       "Artifact": "Artifact",
       "None": "None",
-      "Hint": "The attack card shows and uses this artifact's charges and sockets.",
-      "Unowned": "Link this attack once it belongs to a character, alongside its artifact."
+      "Hint": "This item's card shows and uses the artifact's charges and sockets.",
+      "Unowned": "Link this item once it belongs to a character, alongside its artifact."
     },
     "Resource": {
       "Title": "Resource (Cypher Card Sheet)",

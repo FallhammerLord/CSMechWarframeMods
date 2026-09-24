@@ -10,7 +10,7 @@ import {applyTheme} from "./theme.js";
 const GAP = 6;
 const MARGIN = 8;
 const WIDTH = 360;
-/** Fixed size; the height shrinks only when the viewport can't fit it. */
+/** Fixed size, plus the sockets section when there is one; shrinks only when the viewport can't fit it. */
 const HEIGHT = 420;
 const MIN_HEIGHT = 200;
 
@@ -372,7 +372,9 @@ class CardPopoverManager {
 
     el.style.width = `${width}px`;
     el.style.left = `${left}px`;
-    el.style.height = `${Math.max(Math.min(HEIGHT, growUp ? above : below), MIN_HEIGHT)}px`;
+    // Sockets add their own height instead of squeezing the description.
+    const extra = el.querySelector(".ccs-pop-sockets")?.offsetHeight ?? 0;
+    el.style.height = `${Math.max(Math.min(HEIGHT + extra, growUp ? above : below), MIN_HEIGHT)}px`;
     if (growUp) {
       el.style.top = "auto";
       el.style.bottom = `${vh - d20.top + GAP}px`;

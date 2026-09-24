@@ -85,13 +85,16 @@ function poolLabel(pool, actor) {
   return L("AnyPool");
 }
 
+/** Item types that can link to an artifact (spec §17): everything shown as a card but artifacts. */
+export const LINKABLE_TYPES = new Set(CARD_TYPES.filter(type => type !== "artifact"));
+
 /**
- * The artifact holding an item's charges and sockets: the artifact itself, or an attack's linked
+ * The artifact holding an item's charges and sockets: the artifact itself, or the item's linked
  * artifact (spec §17). The artifact keeps the only copy, so linked cards always agree.
  */
 export function artifactHost(actor, item) {
   if (item.type === "artifact") return item;
-  if (item.type !== "attack") return null;
+  if (!LINKABLE_TYPES.has(item.type)) return null;
   const id = get(item, `flags.${MODULE_ID}.linkedArtifact`);
   const host = id ? actor?.items.find(i => i.id === id) : null;
   return host?.type === "artifact" ? host : null;
@@ -135,7 +138,11 @@ function keyValue(item, actor) {
       const r = resourceOf(item);
       return r ? {value: `${r.value} / ${r.max}`, detail: level} : {value: level};
     }
-    case "equipment":
+    case "equipment": {
+      // Equipment shows its level; the quantity moves to the large card. No level: quantity.
+      const quantity = b.quantity != null ? `×${b.quantity}` : "";
+      return b.level ? {value: t("Card.Level", {n: b.level}), detail: quantity} : {value: quantity};
+    }
     case "ammo":
       return {value: b.quantity != null ? `×${b.quantity}` : "", detail: b.level ? t("Card.Level", {n: b.level}) : ""};
     case "material": {

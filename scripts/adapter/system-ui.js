@@ -5,12 +5,12 @@
  * - The roll dialog and roll chat cards show custom pool names.
  * - The roll dialog can pay from XP.
  * - A roll's minor or major effect is marked on the actor for the portrait indicators.
- * - Artifact, cypher and attack item sheets get the resource, socket and link fields (spec §15-17).
+ * - Item sheets get the resource, socket and artifact-link fields (spec §15-17).
  * Baseline: cyphersystem v3.5.2.
  */
 
 import {MODULE_ID, t} from "../constants.js";
-import {applyPoolNames, itemPool, setRollEffect} from "./cypher.js";
+import {LINKABLE_TYPES, applyPoolNames, itemPool, setRollEffect} from "./cypher.js";
 import {CypherCardSheet} from "../sheet/card-sheet.js";
 import {effectiveTheme} from "../sheet/theme.js";
 
@@ -85,7 +85,7 @@ function onRenderItemSheet(app, html) {
   const item = app.document ?? app.object;
   const root = rootOf(app, html);
   if (!root || !item) return;
-  if (["artifact", "cypher", "attack"].includes(item.type)) addSheetFields(root, item, app.isEditable);
+  addSheetFields(root, item, app.isEditable);
   const actor = item.parent;
   if (usesCardSheet(actor)) applySystemDark(root, effectiveTheme(actor.sheet) !== "theme-light", "ccs-item-sheet");
 }
@@ -151,7 +151,7 @@ export function socketFieldsHtml(item, editable = true) {
   return fieldsSection(t("Socket.CypherTitle"), rows, note);
 }
 
-/** An attack's link to the artifact whose charges and sockets it shares (spec §17). GM-only. */
+/** An item's link to the artifact whose charges and sockets it shares (spec §17). GM-only. */
 export function linkFieldsHtml(item, editable = true) {
   const gm = editable && game.user.isGM;
   const off = gm ? "" : " disabled";
@@ -168,11 +168,11 @@ export function linkFieldsHtml(item, editable = true) {
 function addSheetFields(root, item, editable) {
   const tab = root.querySelector('.tab[data-tab="settings"]');
   if (!tab || tab.querySelector(".ccs-sheet-fields")) return;
-  const html = {
-    artifact: () => resourceFieldsHtml(item, editable) + socketFieldsHtml(item, editable),
-    cypher: () => socketFieldsHtml(item, editable),
-    attack: () => linkFieldsHtml(item, editable)
-  }[item.type]();
+  let html = "";
+  if (item.type === "artifact") html = resourceFieldsHtml(item, editable) + socketFieldsHtml(item, editable);
+  if (item.type === "cypher") html += socketFieldsHtml(item, editable);
+  if (LINKABLE_TYPES.has(item.type)) html += linkFieldsHtml(item, editable);
+  if (!html) return;
   tab.insertAdjacentHTML("afterbegin", html);
 }
 
@@ -186,9 +186,8 @@ function onRenderChatMessage(message, html) {
 }
 
 /**
- * Roll effects: a natural 19 (minor) or 20 (major), when not impaired, marks the effect as
- * available on the actor; any other roll by the actor clears it. Written once, by the client
- * that made the roll.
+ * Roll effects: a natural 19 (minor) or 20 (major), when not impaired, lights that star on the
+ * actor. Rolls never clear a star (effects can be banked). Written once, by the rolling client.
  */
 function onCreateChatMessage(message) {
   const data = message.flags?.data;
@@ -196,8 +195,8 @@ function onCreateChatMessage(message) {
   const actor = fromUuidSync(data.actorUuid);
   if (!usesCardSheet(actor) || !actor.isOwner) return;
   const natural = data.roll?.total ?? message.rolls?.[0]?.total;
-  const kind = data.impairedStatus ? null : {19: "minor", 20: "major"}[natural] ?? null;
-  return setRollEffect(actor, kind);
+  const kind = data.impairedStatus ? null : {19: "minor", 20: "major"}[natural];
+  if (kind && !actor.getFlag(MODULE_ID, "effects")?.[kind]) return setRollEffect(actor, kind, true);
 }
 
 export function registerSystemUi() {

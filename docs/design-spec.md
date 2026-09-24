@@ -456,9 +456,9 @@ Materia-style slots: an artifact holds up to three cyphers. A socketed cypher st
 
 **Build order:** §15 first (small, self-contained), then §16.
 
-## 17. Linked attacks (built in 0.7.0)
+## 17. Linked items (built in 0.7.0; any item type since 0.9.0)
 
-Some artifacts are also attacks (a Fire Rod). The attack links to its artifact; the artifact keeps the only copy of the charges (§15) and sockets (§16), so the cards never disagree.
+Some artifacts are also attacks (a Fire Rod), or pair with other items. Any card item except an artifact (`LINKABLE_TYPES`) can link to one; the artifact keeps the only copy of the charges (§15) and sockets (§16), so the cards never disagree.
 
 - **Data:** `flags.cypher-card-sheet.linkedArtifact` on the attack: the artifact's item id on the same actor. `artifactHost(actor, item)` resolves an artifact to itself and an attack to its linked artifact (null if the link is missing or points elsewhere).
 - **Setup:** GM-only select on the attack's item sheet, Settings tab, listing the actor's artifacts. Shown only for owned attacks. Several attacks can link to one artifact.
@@ -469,9 +469,10 @@ Some artifacts are also attacks (a Fire Rod). The attack links to its artifact; 
 
 ## 18. Side cards, XP spending, roll effect lights (built in 0.8.0)
 
+- **Large card height:** the Sockets section adds its own height (0.9.0), up to the space available, so the description keeps its room.
 - **Beside the large card:** `CardPopover.besidePosition(width)` places a window to the right of the large card, or to its left when there isn't room on the right; top-aligned and kept on screen. Used by the socket picker (a DialogV2 given that position) and the side card.
 - **Side card:** a second large card for a socketed cypher (`toggleSide`), rendered from the same template. Its actions run on that cypher. It closes on a second click, on its title, and with the main card; outside clicks ignore it.
 - **XP in the All-in-One dialog:** the system defines an XP pool choice but doesn't offer it, and `rollEngineMain` refuses to open the dialog for XP-cost items. For card-sheet actors: the dialog hook adds XP to the pool select; XP-cost items are opened as "Any pool" (`poolOverride`, only when the dialog will open) and switched to XP once through the form's change handling, so the summary recalculates. The system's `payPoolPoints` already pays XP. The chat reroll of an XP-paid roll errors in the system (pre-existing).
-- **Roll effect stars:** `createChatMessage` on the rolling client reads the roll's flags: a natural 19 or 20 while not impaired sets `flags.cypher-card-sheet.effect = {kind: "minor"|"major"}`; any other roll by the actor clears it. The portrait shows two 4-point stars stacked on its left (0.8.1), both toggles: click to light by hand or to clear. Colours are the training tokens (minor = trained, major = specialized), so the high-contrast suite recolours them; lit is filled and glowing, unlit an outline, major larger.
+- **Roll effect stars:** independent since 0.9.0, in `flags.cypher-card-sheet.effects = {minor, major}` (the 0.8.0 `effect` flag is read and replaced). A natural 19 or 20 while not impaired lights that star on the rolling client; no roll clears one, since effects can be banked. The portrait shows two 4-point stars stacked on its left (0.8.1), both toggles: click to light by hand or to clear. Colours are the training tokens (minor = trained, major = specialized), so the high-contrast suite recolours them; lit is filled and glowing, unlit an outline, major larger.
 - **Child windows:** dialogs opened from the large card carry `ccs-pop-child`; clicks and Escape inside them don't close the large card (0.8.1).
 

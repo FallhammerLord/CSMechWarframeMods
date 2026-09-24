@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.9.0
+
+- **Effect stars are independent:** minor and major can both be lit, so a banked effect waits for later. A natural 19 or 20 lights its star; no roll clears one. Click a star to turn it on or off. Tooltips read "Minor effect" and "Major effect". A star lit under 0.8.x carries over.
+- **Sockets make the large card taller** by the height of the Sockets section, instead of shrinking the description.
+- **Any item can link to an artifact** (was attacks only): the Linked artifact field is on every card item's sheet except artifacts. A linked card shows the charge badge and the artifact's sockets; its large card shows the artifact's Charges and Sockets.
+- **Equipment shows its level** as the card's number; the quantity moves to the large card. Equipment without a level still shows its quantity.
+- Every other card and sheet state is unchanged (snapshot check).
+
 ## 0.8.1
 
 - **Fix:** clicking in a window opened from the large card (the socket picker, the use and delete confirmations) no longer closes the large card, and Escape in those windows closes only them.

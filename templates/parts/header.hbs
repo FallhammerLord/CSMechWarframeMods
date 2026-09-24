@@ -1,6 +1,6 @@
 {{#*inline "ccsEffect"}}
   <button type="button" class="ccs-effect ccs-effect-{{kind}}{{#if on}} is-on{{/if}}" data-action="toggleEffect" data-kind="{{kind}}"
-          aria-pressed="{{#if on}}true{{else}}false{{/if}}" aria-label="{{label}}" data-tooltip="{{#if on}}{{onTip}}{{else}}{{offTip}}{{/if}}"
+          aria-pressed="{{#if on}}true{{else}}false{{/if}}" aria-label="{{label}}" data-tooltip="{{label}}"
           {{#unless @root.editable}}disabled{{/unless}}>
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 1.5 14.7 9.3 22.5 12 14.7 14.7 12 22.5 9.3 14.7 1.5 12 9.3 9.3Z"/></svg>
   </button>
@@ -39,12 +39,10 @@
   <div class="ccs-portrait-wrap">
     <img class="ccs-portrait" src="{{identity.img}}" alt="{{identity.name}}"
          {{#if editable}}data-action="editImage" data-path="{{identity.imgPath}}" role="button" tabindex="0" title="{{localize 'CCS.Header.EditImage'}}"{{/if}}>
-    {{!-- Minor / major effect from the latest roll: a pair of stars, lit when available. --}}
+    {{!-- Minor / major effect stars, each lit while available (rolls light them; clicks toggle). --}}
     <div class="ccs-effects" role="group" aria-label="{{localize 'CCS.Effect.Title'}}">
-      {{> ccsEffect kind="minor" on=(eq state.effect "minor") label=(localize "CCS.Effect.minor")
-          onTip=(localize "CCS.Effect.minorOn") offTip=(localize "CCS.Effect.minorOff")}}
-      {{> ccsEffect kind="major" on=(eq state.effect "major") label=(localize "CCS.Effect.major")
-          onTip=(localize "CCS.Effect.majorOn") offTip=(localize "CCS.Effect.majorOff")}}
+      {{> ccsEffect kind="minor" on=state.effects.minor label=(localize "CCS.Effect.minor")}}
+      {{> ccsEffect kind="major" on=state.effects.major label=(localize "CCS.Effect.major")}}
     </div>
     <div class="ccs-portrait-badges">
       {{#if state.exclusiveTag}}

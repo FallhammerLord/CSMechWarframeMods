@@ -615,7 +615,7 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static #onToggleEffect(event, target) {
     if (!this.isEditable) return;
     const kind = target.dataset.kind;
-    return cs.setRollEffect(this.actor, cs.actorState(this.actor).effect === kind ? null : kind);
+    return cs.setRollEffect(this.actor, kind, !cs.rollEffects(this.actor)[kind]);
   }
 
   static #onEndMultiRoll() {
