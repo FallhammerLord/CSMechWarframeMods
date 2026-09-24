@@ -6,7 +6,8 @@
    ========================================================================== */
 
 .ccs-sheet,
-.ccs-popover {
+.ccs-popover,
+.ccs-frames-config {
   --ccs-bg: #0f131a;
   --ccs-panel: rgba(21, 27, 37, 0.94);
   --ccs-panel-2: rgba(30, 38, 51, 0.96);
@@ -1602,7 +1603,7 @@
   padding: 6px;
 }
 
-.ccs-pop-header > :not(.ccs-pop-banner) {
+.ccs-pop-header > :not(.ccs-pop-banner, .ccs-cap) {
   position: relative;
 }
 
@@ -1876,4 +1877,262 @@
     -webkit-text-stroke: 2px #000;
     paint-order: stroke fill;
   }
+}
+
+/* --------------------------------------------------------------------------
+   Card frames (caps). Hidden until frames.js writes rules for a frame key.
+   3-slice via border-image: the ends keep the image's aspect ratio (height x --cap-ratio),
+   the middle stretches. Caps sit above the art and shade, below the text and buttons.
+   -------------------------------------------------------------------------- */
+
+.ccs-cap {
+  --cap-h: 14px;
+  --cap-end: calc(var(--cap-h) * var(--cap-ratio, 1.5));
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: none;
+  height: var(--cap-h);
+  box-sizing: border-box;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 0 var(--cap-end);
+  border-image-width: 0 var(--cap-end);
+  border-image-repeat: stretch;
+  pointer-events: none;
+}
+
+.ccs-card .ccs-cap-top { top: 0; --cap-h: 14px; }
+.ccs-card .ccs-cap-bottom { bottom: 0; --cap-h: 18px; }
+.ccs-popover .ccs-cap-top,
+.ccs-frames-large .ccs-cap-top { top: 0; --cap-h: 22px; }
+.ccs-popover .ccs-cap-bottom,
+.ccs-frames-large .ccs-cap-bottom { bottom: 0; --cap-h: 22px; }
+
+.ccs-pop-bar {
+  position: relative;
+}
+
+.ccs-pop-bar > button {
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes ccs-shimmer {
+  from { background-position: 130% 0; }
+  to { background-position: -130% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ccs-card::after {
+    animation: none !important;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Card frames settings window
+   -------------------------------------------------------------------------- */
+
+.ccs-frames-config .window-content {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  background: var(--ccs-bg);
+  color: var(--ccs-text);
+}
+
+.ccs-frames-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px 12px;
+}
+
+.ccs-frames-guide {
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--ccs-line);
+  border-radius: var(--ccs-radius);
+  background: var(--ccs-panel);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.ccs-frames-guide summary {
+  cursor: pointer;
+  color: var(--ccs-accent);
+  font-weight: 600;
+}
+
+.ccs-frames-guide ul {
+  margin: 6px 0 0;
+  padding-left: 18px;
+}
+
+.ccs-frames-guide li {
+  margin-bottom: 4px;
+}
+
+.ccs-frames-diagram {
+  display: grid;
+  grid-template-columns: 96px 1fr 96px;
+  max-width: 512px;
+  margin: 6px 0;
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.ccs-frames-diagram span {
+  padding: 6px 2px;
+  border: 1px dashed var(--ccs-line-strong);
+}
+
+.ccs-frames-diagram-mid {
+  border-left: none !important;
+  border-right: none !important;
+  color: var(--ccs-muted);
+}
+
+.ccs-frames-enable {
+  margin: 4px 0 10px;
+  font-weight: 600;
+}
+
+.ccs-frames-set {
+  margin-bottom: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--ccs-line);
+  border-radius: var(--ccs-radius);
+  background: var(--ccs-panel);
+}
+
+.ccs-frames-set-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+
+.ccs-frames-set-head h3 {
+  margin: 0;
+  border: none;
+  font-size: 1rem;
+  color: var(--ccs-text);
+}
+
+.ccs-frames-rarity {
+  color: var(--ccs-muted);
+  font-size: 0.85rem;
+}
+
+.ccs-frames-set-row {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 12px;
+  align-items: start;
+}
+
+.ccs-frames-previews {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.ccs-frames-previews .ccs-card {
+  width: 150px;
+  flex: 0 0 150px;
+}
+
+.ccs-frames-previews .ccs-card-body {
+  cursor: default;
+}
+
+.ccs-frames-large {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 200px;
+  height: var(--ccs-card-h);
+  border: 1px solid var(--ccs-line-strong);
+  border-radius: var(--ccs-radius);
+  background: var(--ccs-surface, #1c2430);
+  overflow: hidden;
+}
+
+.ccs-frames-large-title {
+  position: relative;
+  z-index: 1;
+  color: var(--ccs-text);
+  font-weight: 600;
+}
+
+.ccs-frames-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ccs-frames-fields .ccs-path {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  align-items: center;
+  gap: 6px;
+}
+
+.ccs-frames-fields input[type="text"],
+.ccs-frames-fields input[type="number"],
+.ccs-frames-fields select {
+  height: 28px;
+  padding: 0 6px;
+  border: 1px solid var(--ccs-line);
+  border-radius: 4px;
+  background: var(--ccs-input);
+  color: var(--ccs-text);
+}
+
+.ccs-frames-numbers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+}
+
+.ccs-frames-numbers input[type="number"] {
+  width: 64px;
+}
+
+.ccs-frames-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--ccs-line);
+  background: var(--ccs-panel);
+}
+
+.ccs-frames-footer button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--ccs-line-strong);
+  border-radius: 4px;
+  background: var(--ccs-panel-2);
+  color: var(--ccs-text);
+}
+
+.ccs-frames-footer button[type="submit"] {
+  border-color: var(--ccs-accent);
+  color: var(--ccs-accent);
+}
+
+/* The card body is a <button>; core `.application button` padding outranks a single class,
+   which let the name ride up into the value row. Restate the card's padding at higher priority. */
+.ccs-sheet .ccs-card .ccs-card-body,
+.ccs-frames-config .ccs-card .ccs-card-body {
+  padding: 17px 7px 30px;
+  height: 100%;
+  margin: 0;
 }

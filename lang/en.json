@@ -5,6 +5,9 @@
       "DefaultGroupMode": {
         "Name": "Default card grouping",
         "Hint": "How the card grid groups items when you first open a sheet. You can change it on the sheet at any time."
+      },
+      "Frames": {
+        "Name": "Card frames"
       }
     },
     "Error": {
@@ -138,6 +141,68 @@
       "Badge": "Badge",
       "BadgeImage": "Image",
       "BadgeOpacity": "Opacity"
+    },
+    "Frames": {
+      "Title": "Card frames",
+      "MenuName": "Card frames",
+      "MenuLabel": "Configure card frames",
+      "MenuHint": "Top and bottom frame art for the card sheet's cards, chosen by skill training level. Applies to every card sheet in this world.",
+      "Enable": "Show card frames",
+      "Top": "Top cap",
+      "Bottom": "Bottom cap",
+      "EndWidth": "End width (px)",
+      "ImageHeight": "Image height (px)",
+      "Reset": "Reset to defaults",
+      "Save": "Save frames",
+      "Saved": "Card frames saved.",
+      "Preview": {
+        "Value": "Lvl 3",
+        "Name": "Sample card",
+        "Type": "Skill",
+        "Large": "Large card"
+      },
+      "Set": {
+        "none": {
+          "label": "No training",
+          "rarity": "Steel · equipment, cyphers and other untrained items"
+        },
+        "inability": {
+          "label": "Inability",
+          "rarity": "Damaged"
+        },
+        "practiced": {
+          "label": "Practiced",
+          "rarity": "Bronze"
+        },
+        "trained": {
+          "label": "Trained",
+          "rarity": "Silver"
+        },
+        "specialized": {
+          "label": "Specialized",
+          "rarity": "Gold"
+        }
+      },
+      "Guide": {
+        "Title": "Making frame images",
+        "Intro": "Each frame set has two cap images: one along the top edge of a card and one along the bottom. The same images are used on the small cards and the large card. The two ends of each image keep their shape; only the middle stretches to fit the card's width.",
+        "Stretch": "middle stretches: keep it the same left to right",
+        "Canvas": "<b>Canvas:</b> {width} × {height} px (8 : 1). Draw the corners and ornaments in the outer {slice} px at each end.",
+        "Format": "<b>Format:</b> SVG is best: sharp at every size and small. Otherwise use PNG or WebP with a <b>transparent background</b>. Avoid JPG: it has no transparency.",
+        "Middle": "<b>Middle:</b> only flat bands and straight lines, identical at every point left to right. Emblems placed in the middle get stretched.",
+        "Top": "<b>Top cap:</b> keep the plate near the top edge. The card's value text sits over the top cap, so leave the lower part mostly transparent.",
+        "Bottom": "<b>Bottom cap:</b> the mirror of the top cap. The d20 button sits in the centre of the bottom cap, so keep the centre low-contrast.",
+        "Sizes": "<b>Shown at:</b> small card 14 px (top) and 18 px (bottom) tall; large card 22 px each. Drawing at about 4× that height keeps detail on high-resolution screens.",
+        "Weight": "<b>File size:</b> keep each image under about 100 KB. One file is reused for every card.",
+        "Storage": "<b>Where to keep them:</b> upload to your world's folder (for example worlds/your-world/frames/) so module updates never overwrite them.",
+        "Custom": "<b>Other layouts:</b> if your ends are not 96 px, or your image is not 64 px tall, enter your own End width and Image height, measured in the image's pixels."
+      },
+      "EffectLabel": "Effect",
+      "Effect": {
+        "none": "None",
+        "glow": "Glow",
+        "shimmer": "Shimmer"
+      }
     }
   }
 }

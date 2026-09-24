@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="64" viewBox="0 0 512 64"><defs>
+  <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#4a5363"/><stop offset="1" stop-color="#1f252e"/>
+  </linearGradient>
+  <radialGradient id="gem" cx="0.4" cy="0.35" r="0.8">
+    <stop offset="0" stop-color="#e8fbff"/><stop offset="0.5" stop-color="#5fe3ff"/><stop offset="1" stop-color="#1b6b8a"/>
+  </radialGradient>
+  <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+    <feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs><path d="M0,0 H512 V58 L503,62 L494,34 L468,26 H44 L18,34 L9,62 L0,58 Z" fill="url(#plate)" opacity="0.94"/><path d="M0,0 H512 V58 L503,62 L494,34 L468,26 H44 L18,34 L9,62 L0,58 Z" fill="none" stroke="#8893a1" stroke-width="2" stroke-linejoin="round"/><path d="M4,4 H508" stroke="#a9b4c2" stroke-width="1.2" opacity="0.55"/><path d="M44,20 H468" stroke="#8893a1" stroke-width="1.2" opacity="0.7"/><g transform="translate(512,0) scale(-1,1)"></g></svg>

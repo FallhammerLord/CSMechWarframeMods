@@ -1,5 +1,6 @@
 <header class="ccs-pop-header">
   <img class="ccs-pop-banner{{#if card.imgIsIcon}} is-icon{{/if}}" src="{{card.img}}" alt="">
+  <span class="ccs-cap ccs-cap-top frame-{{card.frameKey}}" aria-hidden="true"></span>
   <h3>{{card.name}}</h3>
   <span class="ccs-pop-type"><i class="{{card.typeIcon}}" aria-hidden="true"></i> {{card.typeLabel}}</span>
   {{#if facts.length}}
@@ -11,6 +12,7 @@
 <div class="ccs-pop-desc">{{{description}}}</div>
 {{!-- One row, stacked right to left: archive in the corner, then the item's controls. --}}
 <footer class="ccs-pop-bar">
+  <span class="ccs-cap ccs-cap-bottom frame-{{card.frameKey}}" aria-hidden="true"></span>
   {{#if editable}}
     <button type="button" class="ccs-pop-archive" data-popover-action="archiveItem"
             data-tooltip="{{#if card.archived}}{{localize 'CCS.Action.UnarchiveAltDelete'}}{{else}}{{localize 'CCS.Action.ArchiveAltDelete'}}{{/if}}"

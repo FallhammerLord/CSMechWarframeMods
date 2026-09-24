@@ -1,0 +1,87 @@
+<div class="ccs-frames-body ccs-frames-preview">
+  <details class="ccs-frames-guide" open>
+    <summary>{{localize "CCS.Frames.Guide.Title"}}</summary>
+    <p>{{localize "CCS.Frames.Guide.Intro"}}</p>
+    <div class="ccs-frames-diagram" aria-hidden="true">
+      <span class="ccs-frames-diagram-end">{{recommended.slice}} px</span>
+      <span class="ccs-frames-diagram-mid">{{localize "CCS.Frames.Guide.Stretch"}}</span>
+      <span class="ccs-frames-diagram-end">{{recommended.slice}} px</span>
+    </div>
+    <ul>
+      <li>{{{localize "CCS.Frames.Guide.Canvas" width=recommended.width height=recommended.height slice=recommended.slice}}}</li>
+      <li>{{{localize "CCS.Frames.Guide.Format"}}}</li>
+      <li>{{{localize "CCS.Frames.Guide.Middle"}}}</li>
+      <li>{{{localize "CCS.Frames.Guide.Top"}}}</li>
+      <li>{{{localize "CCS.Frames.Guide.Bottom"}}}</li>
+      <li>{{{localize "CCS.Frames.Guide.Sizes"}}}</li>
+      <li>{{{localize "CCS.Frames.Guide.Weight"}}}</li>
+      <li>{{{localize "CCS.Frames.Guide.Storage"}}}</li>
+      <li>{{{localize "CCS.Frames.Guide.Custom"}}}</li>
+    </ul>
+  </details>
+
+  <label class="ccs-check ccs-frames-enable">
+    <input type="checkbox" name="enabled" {{checked enabled}}> {{localize "CCS.Frames.Enable"}}
+  </label>
+
+  {{#each sets}}
+    <section class="ccs-frames-set">
+      <header class="ccs-frames-set-head">
+        <h3>{{label}}</h3>
+        <span class="ccs-frames-rarity">{{rarity}}</span>
+      </header>
+
+      <div class="ccs-frames-set-row">
+        <div class="ccs-frames-previews" aria-hidden="true">
+          <article class="ccs-card {{#if (eq key "none")}}fam-equipment{{else}}tr-{{key}}{{/if}} frame-{{key}}">
+            <div class="ccs-card-body">
+              <span class="ccs-card-shade"></span>
+              <span class="ccs-cap ccs-cap-top frame-{{key}}"></span>
+              <span class="ccs-cap ccs-cap-bottom frame-{{key}}"></span>
+              <span class="ccs-card-top"><span class="ccs-card-value">{{localize "CCS.Frames.Preview.Value"}}</span></span>
+              <span class="ccs-card-name">{{localize "CCS.Frames.Preview.Name"}}</span>
+              <span class="ccs-card-foot">
+                <span class="ccs-card-training">{{#unless (eq key "none")}}{{label}}{{/unless}}</span>
+                <span class="ccs-card-type">{{localize "CCS.Frames.Preview.Type"}}</span>
+              </span>
+            </div>
+            <div class="ccs-card-actions"><span class="ccs-card-d20"></span></div>
+          </article>
+          <div class="ccs-frames-large">
+            <span class="ccs-cap ccs-cap-top frame-{{key}}"></span>
+            <span class="ccs-frames-large-title">{{localize "CCS.Frames.Preview.Large"}}</span>
+            <span class="ccs-cap ccs-cap-bottom frame-{{key}}"></span>
+          </div>
+        </div>
+
+        <div class="ccs-frames-fields">
+          <div class="ccs-field ccs-path">
+            <span>{{localize "CCS.Frames.Top"}}</span>
+            <input type="text" name="sets.{{key}}.top" value="{{top}}" aria-label="{{label}}: {{localize 'CCS.Frames.Top'}}">
+            <button type="button" class="ccs-icon-btn" data-action="pickFile" data-target="sets.{{key}}.top"
+                    aria-label="{{localize 'CCS.Settings.Browse'}}"><i class="fa-solid fa-file-import"></i></button>
+          </div>
+          <div class="ccs-field ccs-path">
+            <span>{{localize "CCS.Frames.Bottom"}}</span>
+            <input type="text" name="sets.{{key}}.bottom" value="{{bottom}}" aria-label="{{label}}: {{localize 'CCS.Frames.Bottom'}}">
+            <button type="button" class="ccs-icon-btn" data-action="pickFile" data-target="sets.{{key}}.bottom"
+                    aria-label="{{localize 'CCS.Settings.Browse'}}"><i class="fa-solid fa-file-import"></i></button>
+          </div>
+          <div class="ccs-frames-numbers">
+            <label class="ccs-field"><span>{{localize "CCS.Frames.EndWidth"}}</span>
+              <input type="number" name="sets.{{key}}.slice" value="{{slice}}" min="0" step="1"></label>
+            <label class="ccs-field"><span>{{localize "CCS.Frames.ImageHeight"}}</span>
+              <input type="number" name="sets.{{key}}.height" value="{{height}}" min="1" step="1"></label>
+            <label class="ccs-field"><span>{{localize "CCS.Frames.EffectLabel"}}</span>
+              <select name="sets.{{key}}.effect">{{selectOptions effects selected=effect}}</select></label>
+          </div>
+        </div>
+      </div>
+    </section>
+  {{/each}}
+</div>
+
+<footer class="ccs-frames-footer">
+  <button type="button" data-action="resetDefaults"><i class="fa-solid fa-rotate-left"></i> {{localize "CCS.Frames.Reset"}}</button>
+  <button type="submit"><i class="fa-solid fa-floppy-disk"></i> {{localize "CCS.Frames.Save"}}</button>
+</footer>

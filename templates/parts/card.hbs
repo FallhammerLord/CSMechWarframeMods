@@ -1,8 +1,10 @@
-<article class="ccs-card fam-{{card.family}} type-{{card.type}}{{#if card.training}} tr-{{card.training.key}}{{/if}}{{#if card.archived}} is-archived{{/if}}{{#if card.inactive}} is-inactive{{/if}}"
+<article class="ccs-card fam-{{card.family}} type-{{card.type}}{{#if card.training}} tr-{{card.training.key}}{{/if}}{{#if card.archived}} is-archived{{/if}}{{#if card.inactive}} is-inactive{{/if}} frame-{{card.frameKey}}"
          data-item-id="{{card.id}}" data-group-key="{{groupKey}}" data-search="{{card.searchText}}" {{#if editable}}draggable="true"{{/if}}>
   <button type="button" class="ccs-card-body" data-action="togglePopover" aria-expanded="false" aria-haspopup="dialog" title="{{card.name}}">
     <img class="ccs-card-img{{#if card.imgIsIcon}} is-icon{{/if}}" src="{{card.img}}" alt="" loading="lazy">
     <span class="ccs-card-shade" aria-hidden="true"></span>
+    <span class="ccs-cap ccs-cap-top frame-{{card.frameKey}}" aria-hidden="true"></span>
+    <span class="ccs-cap ccs-cap-bottom frame-{{card.frameKey}}" aria-hidden="true"></span>
     <span class="ccs-card-top">
       <span class="ccs-card-value">{{card.value}}</span>
       <span class="ccs-card-marks">

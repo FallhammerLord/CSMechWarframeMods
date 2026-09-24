@@ -9,6 +9,8 @@ import {preloadSystemImports} from "./adapter/system-imports.js";
 import {GROUP_MODES} from "./adapter/cypher.js";
 import {registerMovementRuler} from "./adapter/ruler.js";
 import {registerSystemUi} from "./adapter/system-ui.js";
+import {FRAME_SETTING, applyFrameStyles, defaultFrames} from "./frames/frames.js";
+import {CardFramesConfig} from "./frames/frames-config.js";
 
 Hooks.once("init", () => {
   if (game.system.id !== SYSTEM_ID) {
@@ -24,6 +26,24 @@ Hooks.once("init", () => {
     type: String,
     choices: Object.fromEntries(GROUP_MODES.map(mode => [mode, `CCS.Grid.Mode.${mode}`])),
     default: "category"
+  });
+
+  // Card frames: world-level, GM-only, chosen by skill training level.
+  game.settings.register(MODULE_ID, FRAME_SETTING, {
+    name: "CCS.Setting.Frames.Name",
+    scope: "world",
+    config: false,
+    type: Object,
+    default: defaultFrames(),
+    onChange: () => applyFrameStyles()
+  });
+  game.settings.registerMenu(MODULE_ID, "cardFramesMenu", {
+    name: "CCS.Frames.MenuName",
+    label: "CCS.Frames.MenuLabel",
+    hint: "CCS.Frames.MenuHint",
+    icon: "fa-solid fa-border-top-left",
+    type: CardFramesConfig,
+    restricted: true
   });
 
   foundry.documents.collections.Actors.registerSheet(MODULE_ID, CypherCardSheet, {
@@ -42,5 +62,7 @@ Hooks.once("init", () => {
 });
 
 Hooks.once("ready", () => {
-  if (game.system.id === SYSTEM_ID) preloadSystemImports();
+  if (game.system.id !== SYSTEM_ID) return;
+  preloadSystemImports();
+  applyFrameStyles();
 });

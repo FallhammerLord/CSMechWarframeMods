@@ -268,7 +268,13 @@ Choices made while building the module, following the "UX/UI standards first, tr
 
 ---
 
-## 13. Scoping: custom card frames (not built)
+## 13. Custom card frames (prototype in 0.3.0-alpha.1)
+
+**Built so far:** world-level frame sets chosen by training level (the GM-owned library from phase 2, limited to one set per level), the default SVG textures (phase 1), and the Glow and Shimmer effects (part of phase 4). The rendering is 3-slice `border-image` driven by one generated `<style>` (`scripts/frames/frames.js`). The settings window, preview and guide are in `scripts/frames/frames-config.js`. The default art comes from `tools/make-frames.py`.
+
+**Not built yet:** per-tag and per-item frames (phase 3).
+
+The original scoping notes follow.
 
 **Goal:** Warframe-style frame art on the small and large cards. Each card gets a top cap and a bottom cap, with frame sets that vary by rarity or theme.
 

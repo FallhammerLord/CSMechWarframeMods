@@ -637,6 +637,15 @@ function keyValue(item, actor) {
   }
 }
 
+/** Frame (rarity) key: the item's training level, including Practiced; "none" when untrained. */
+function frameKeyOf(item) {
+  let rating = null;
+  if (item.type === "skill") rating = item.system.basic.rating;
+  else if (item.type === "attack") rating = item.system.basic.skillRating;
+  else if (item.type === "ability") rating = item.system.settings?.rollButton?.skill;
+  return TRAINING.includes(rating) ? rating.toLowerCase() : "none";
+}
+
 function trainingOf(item) {
   let rating = null;
   if (item.type === "skill") rating = item.system.basic.rating;
@@ -667,6 +676,7 @@ export function cardData(item, actor) {
     typeLabel: typeLabel(item.type),
     typeIcon: meta.icon,
     training: trainingOf(item),
+    frameKey: frameKeyOf(item),
     value: kv.value,
     // Secondary facts (range, speed cost, level) live in the popover, not on the card.
     detail: kv.detail ?? "",
