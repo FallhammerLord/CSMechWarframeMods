@@ -384,8 +384,26 @@ export function recoveryFormula(actor) {
 }
 
 /** Roll using the system macro unchanged; it spends the next free slot (Alt skips spending). */
-export function rollRecovery(actor) {
-  return callApi("recoveryRollMacro", actor, "", true);
+/**
+ * Roll a recovery and spend the slot that was clicked, in any order.
+ *
+ * The system macro always spends the first free slot (useRecoveries). To spend a later slot
+ * without reimplementing the macro, the free slots before it are marked spent for the call and
+ * freed again afterwards. The macro itself runs unchanged, so its chat card names the timing
+ * actually used, and Alt still rolls without spending.
+ */
+export async function rollRecovery(actor, key) {
+  const slots = recoverySlots(actor);
+  const index = slots.findIndex(slot => slot.key === key);
+  const skipped = index > 0 ? slots.slice(0, index).filter(slot => !slot.spent).map(slot => slot.key) : [];
+  const setSkipped = value => actor.update(Object.fromEntries(skipped.map(k => [`system.combat.recoveries.${k}`, value])));
+
+  if (skipped.length) await setSkipped(true);
+  try {
+    await callApi("recoveryRollMacro", actor, "", true);
+  } finally {
+    if (skipped.length) await setSkipped(false);
+  }
 }
 
 export async function unspendRecovery(actor, key) {
@@ -531,6 +549,32 @@ export function poolNames(actor) {
     placeholder: L(capitalize(key)),
     label: custom[key] || L(capitalize(key))
   }]));
+}
+
+/**
+ * Replace the system's pool words (Might / Speed / Intellect) with the actor's custom names in
+ * the text of a rendered element. Only text nodes change; item descriptions are skipped so rules
+ * text quoting a pool keeps its wording. Returns false when the actor has no custom names.
+ */
+export function applyPoolNames(root, actor, {skip = ".chat-card-item-description"} = {}) {
+  const custom = actor?.getFlag(MODULE_ID, "poolLabels") ?? {};
+  const pairs = STAT_POOLS
+    .filter(key => custom[key])
+    .map(key => [new RegExp(`\\b${RegExp.escape?.(L(capitalize(key))) ?? L(capitalize(key))}\\b`, "g"), custom[key]]);
+  if (!pairs.length || !root) return false;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    if (skip && node.parentElement?.closest(skip)) continue;
+    nodes.push(node);
+  }
+  for (const node of nodes) {
+    let text = node.nodeValue;
+    for (const [pattern, name] of pairs) text = text.replace(pattern, name);
+    if (text !== node.nodeValue) node.nodeValue = text;
+  }
+  return true;
 }
 
 function poolLabel(pool, actor) {

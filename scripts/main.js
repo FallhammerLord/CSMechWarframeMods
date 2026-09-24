@@ -8,6 +8,7 @@ import {CypherCardSheet, PARTIALS} from "./sheet/card-sheet.js";
 import {preloadSystemImports} from "./adapter/system-imports.js";
 import {GROUP_MODES} from "./adapter/cypher.js";
 import {registerMovementRuler} from "./adapter/ruler.js";
+import {registerSystemUi} from "./adapter/system-ui.js";
 
 Hooks.once("init", () => {
   if (game.system.id !== SYSTEM_ID) {
@@ -35,6 +36,9 @@ Hooks.once("init", () => {
 
   // The system sets its ruler class during its own init, which runs before module init.
   registerMovementRuler();
+
+  // Roll dialog theming and custom pool names in roll chat cards.
+  registerSystemUi();
 });
 
 Hooks.once("ready", () => {

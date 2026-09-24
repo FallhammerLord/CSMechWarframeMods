@@ -516,7 +516,7 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static #onRecoverySlot(event, target) {
     if (!this.isEditable) return;
     if (target.dataset.spent === "true") return cs.unspendRecovery(this.actor, target.dataset.key);
-    return cs.rollRecovery(this.actor);
+    return cs.rollRecovery(this.actor, target.dataset.key);
   }
 
   static #onRecoveryReset() {

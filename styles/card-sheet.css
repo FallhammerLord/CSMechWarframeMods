@@ -1741,3 +1741,114 @@
   justify-content: center;
   line-height: 1;
 }
+
+/* --------------------------------------------------------------------------
+   Card buttons: icons centred absolutely
+   Flex/grid centring still let core button styles (padding, icon margins, fixed icon widths)
+   push the glyph off-centre in Foundry. Absolute centring ignores all of those.
+   -------------------------------------------------------------------------- */
+
+.ccs-sheet .ccs-card .ccs-card-actions > button {
+  position: relative;
+  padding: 0 !important;
+}
+
+.ccs-sheet .ccs-card .ccs-card-actions > button > i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: auto;
+  margin: 0 !important;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+}
+
+/* --------------------------------------------------------------------------
+   All-in-One roll dialog (system app) in the card sheet's dark theme
+   Only applied when the rolling actor uses this sheet and it is dark (system-ui.js).
+   The system's rules use `.cyphersystem ...` and `!important` backgrounds, so these selectors
+   are deliberately heavier.
+   -------------------------------------------------------------------------- */
+
+.ccs-aio.ccs-aio-dark {
+  --ccs-bg: #0f131a;
+  --ccs-panel: rgba(21, 27, 37, 0.94);
+  --ccs-panel-2: rgba(30, 38, 51, 0.96);
+  --ccs-input: rgba(255, 255, 255, 0.06);
+  --ccs-line: #2d3a4c;
+  --ccs-line-strong: #41536b;
+  --ccs-text: #e7edf4;
+  --ccs-muted: #a3b0bf;
+  --ccs-accent: #dcb65e;
+  color-scheme: dark;
+}
+
+.ccs-aio.ccs-aio-dark .window-content,
+.ccs-aio.ccs-aio-dark .window-content form,
+.ccs-aio.ccs-aio-dark .window-content form.background-image {
+  background: var(--ccs-bg) !important;
+  background-image: none !important;
+  color: var(--ccs-text);
+}
+
+.ccs-aio.ccs-aio-dark .background-image-rectangle {
+  display: none;
+}
+
+.ccs-aio.ccs-aio-dark img.background-image-icon-roll-form {
+  filter: invert(1);
+  opacity: 0.12;
+}
+
+.ccs-aio.ccs-aio-dark .roll-engine-heading,
+.ccs-aio.ccs-aio-dark .roll-engine-label,
+.ccs-aio.ccs-aio-dark .roll-engine-label-summary,
+.ccs-aio.ccs-aio-dark .roll-engine-summary-bottom,
+.ccs-aio.ccs-aio-dark label {
+  color: var(--ccs-text);
+}
+
+.ccs-aio.ccs-aio-dark .roll-engine-heading {
+  color: var(--ccs-accent);
+}
+
+.ccs-aio.ccs-aio-dark .roll-engine-label-summary.red {
+  color: #f08a80;
+}
+
+.ccs-aio.ccs-aio-dark .roll-engine-label-summary.blue {
+  color: #8cc4ff;
+}
+
+.ccs-aio.ccs-aio-dark input,
+.ccs-aio.ccs-aio-dark select {
+  border: 1px solid var(--ccs-line);
+  background: var(--ccs-input);
+  color: var(--ccs-text);
+}
+
+.ccs-aio.ccs-aio-dark input:disabled {
+  color: var(--ccs-muted);
+}
+
+.ccs-aio.ccs-aio-dark select option {
+  background: #1c2430;
+  color: var(--ccs-text);
+}
+
+.ccs-aio.ccs-aio-dark hr,
+.ccs-aio.ccs-aio-dark .hr-roll-engine {
+  border-color: var(--ccs-line);
+  background: var(--ccs-line);
+}
+
+.ccs-aio.ccs-aio-dark .roll-engine-button {
+  border: 1px solid var(--ccs-line-strong);
+  background: var(--ccs-panel-2);
+  color: var(--ccs-text);
+}
+
+.ccs-aio.ccs-aio-dark .roll-engine-button:hover {
+  border-color: var(--ccs-accent);
+  box-shadow: none;
+}

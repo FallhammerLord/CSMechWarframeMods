@@ -259,7 +259,8 @@ Choices made while building the module, following the "UX/UI standards first, tr
 - **Armor** shows in the damage track panel: an image with the armor total overlaid and the speed cost below. Clicking it opens a menu of the character's armor items with a Worn toggle for each (the system totals worn, unarchived armor items only). The image is set in Settings → Sheet layout (`flags.cypher-card-sheet.armorImage`).
 - **Portrait** fills the height of the name/sentence/advancement block. A "Tall portrait" setting (`flags.cypher-card-sheet.portraitTall`) makes it span the header and the pools, for portrait-shaped images; the pools narrow and the minimum width rises from 840px to 880px.
 - **Badge** is the low-opacity image in the lower-right corner, set in its own settings panel. It uses the system's own background-icon fields for the actor, so the same badge shows on the default sheet.
-- **Recovery slots** glow on hover only.
+- **Recovery slots** glow on hover only, and can be used in any order. Clicking a slot spends that slot: the free slots before it are marked spent while the system's unchanged recovery macro runs, then freed again, so the chat card still names the timing used.
+- **All-in-One dialog and roll chat cards.** When the rolling actor uses this sheet, the system's roll dialog follows the sheet's dark theme, and both the dialog and roll chat cards show the actor's custom pool names. Both are applied at render time through hooks; the system's code and stored messages are unchanged.
 - **Default grouping** is a client setting, "Default card grouping". The sheet remembers the chosen mode per actor for the rest of the session.
 - **Untested in a live Foundry client.** The adapter and templates were exercised against the system's `template.json` in a Node harness, and the layout was checked in Chromium. The AppV2 lifecycle hooks (`_onChangeForm`, drag/drop wiring, `<prose-mirror>` saving) need a first in-client test.
 
@@ -327,3 +328,44 @@ Levels 3–5 fit in the sheet's Settings tab as a small grid of dropdowns.
 - Should frames be chosen per actor (each player styles their own sheet), world-wide (GM sets the look), or both, with the actor overriding the world?
 - Is per-item frame choice wanted in phase 1, given that it means starting inline editing?
 - Should the module ship default art? Drawing a few tasteful SVG sets is part of the work.
+
+---
+
+## 14. Catalogue: "standard window" (scaled-down) mode (not built)
+
+**Goal:** a smaller sheet, about the size of the system's default PC sheet (650 × 750), that keeps every function of the full card sheet.
+
+### Approaches
+
+| Approach | How | Pros | Cons |
+|---|---|---|---|
+| **A. CSS `zoom`** on `.ccs-root` and the popover | one `--ccs-zoom` value (e.g. 0.85) | fastest to build; layout reflows correctly; clicks and drags hit the right places | text rendering can soften; browser support varies (Chromium/Electron yes, Firefox 126+, Safari yes); needs a check of `getBoundingClientRect` behaviour for popover placement |
+| **B. `transform: scale()`** | scale the window content | none worth it | layout doesn't reflow, hit areas and popover maths break; **rejected** |
+| **C. Density tokens** | every size (fonts, padding, card size, button size) becomes a variable, and a "compact" set of values replaces them | crisp text; control over what shrinks and what must not | more work: the whole stylesheet has to move to variables |
+
+**Recommendation:** prototype with A to judge the feel, then build C for the real feature.
+
+### What must keep working (test checklist)
+
+- **Large card placement:** measured from the small card's button row; must stay correct at the smaller scale. The popover lives on `<body>`, so it needs the same zoom or density class applied.
+- **Minimum width:** already measured from the rendered header, so it adapts on its own. The default window size needs a compact preset.
+- **Armor menu, tag chips, search, drag and drop:** hit areas scale with the layout under A or C.
+- **Editors and dialogs:** notes editors, FilePicker, the item creation dialog, and the All-in-One dialog (a separate system window, which does not scale with the sheet).
+- **Animations:** the open/close timing stays the same; only the sizes change.
+- **Themes:** light and dark are unaffected.
+
+### Accessibility limits (these set how small "small" can go)
+
+- **Button size:** WCAG 2.2 AA asks for at least 24 × 24px (2.5.8). Today's d20 and Worn buttons are exactly 24px, so under C they must stay 24px while everything around them shrinks. Under A they would shrink below it.
+- **Text size:** the smallest text (card footer, recovery labels) is about 10px today. Readability, including for dyslexic readers, argues for no smaller than about 11px in compact mode. Compact should shrink space, not type.
+
+### Steps to build (C)
+
+1. **Setting:** a client setting, "Sheet size: Full / Standard", saved per user. An optional per-actor override could come later.
+2. **Tokens:** move sizes in `card-sheet.css` to variables (`--ccs-font-*`, `--ccs-pad-*`, `--ccs-card-w/h`, `--ccs-btn`, `--ccs-portrait-w`), with values unchanged, and check visually that nothing moved.
+3. **Compact values:** add a `.ccs-compact` set of values: tighter padding, 3 pools per row where needed, 128px cards, the stats and recovery strip stacked into two rows, and the toolbar's family filter collapsed into a dropdown.
+4. **Apply:** add the class on render and on the popover, with a compact default window size (~680 × 760).
+5. **Check:** the minimum width measurement, popover placement, and the target-size and text-size limits above.
+6. **Test in the Foundry desktop app plus Chrome and Firefox**, in both themes.
+
+**Size:** A is small (a few hours, plus a round of feedback). C is medium, mostly the token refactor in step 2.

@@ -5,6 +5,7 @@
 
 import {TEMPLATE_PATH, t} from "../constants.js";
 import * as cs from "../adapter/cypher.js";
+import {applyTheme} from "./theme.js";
 
 const GAP = 6;
 const MARGIN = 8;
@@ -44,18 +45,6 @@ function animateOut(el) {
   el.classList.add("is-closing");
   el.addEventListener("animationend", () => el.remove(), {once: true});
   setTimeout(() => el.remove(), 300);
-}
-
-/**
- * The popover lives on document.body, outside the sheet, so it can't inherit the sheet's
- * theme. Copy the effective theme: the nearest `.themed` ancestor of the sheet (a per-document
- * theme chosen in Sheet Configuration), else the body (the global UI theme).
- */
-function applyTheme(el, sheet) {
-  const themed = sheet.element?.closest(".themed") ?? document.body;
-  const [, theme] = themed.className.match(/(?:^|\s)(theme-\w+)/) ?? [];
-  el.classList.remove("themed", "theme-light", "theme-dark");
-  if (theme) el.classList.add("themed", theme);
 }
 
 class CardPopoverManager {
