@@ -81,6 +81,8 @@
       "Untagged": "Untagged"
     },
     "Card": {
+      "QuantityDown": "Use one (Alt: ten)",
+      "QuantityUp": "Add one (Alt: ten)",
       "Damage": "{n} dmg",
       "Armor": "Armor {n}",
       "SpeedCost": "Speed cost {n}",

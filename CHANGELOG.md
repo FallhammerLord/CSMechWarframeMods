@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0-alpha.4
+
+- **Ammo cards:** − and + buttons flank the d20 (Alt: ten at a time, as in the large card).
+- **Card number colour follows the frame:** untrained cards (steel frame) show their number in silver instead of the family colour. Trained levels keep their frame colour.
+- **Dark item sheets:** the system's item sheets (every type: ability, skill, attack, cypher, artifact, and so on) follow the card sheet's dark theme when the item belongs to an actor using this sheet. Tabs, fields, the description editor, the settings lists and the cypher-type icon are restyled; the system's code is unchanged.
+- **Sentence tooltips:** the name, descriptor, type, focus and additional sentence fields show their full text on hover, so long entries cut off by sheet width can be read without clicking in. The tooltip updates as you type.
+
 ## 0.3.0-alpha.3
 
 - **Small cards, new layout:** the card's number sits large and centred, clear of the frame caps: weapon damage, armor value, pool cost, XP cost, or ammo count. Name above it, training below. The item-type label ("Ability", "Skill") is gone; the family filter and large card still show it. Cards are 114px tall so two-line names and the value never overlap.

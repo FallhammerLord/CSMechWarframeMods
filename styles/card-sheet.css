@@ -2311,3 +2311,186 @@
   overflow-x: clip;
   overflow-y: visible;
 }
+
+/* Ammo +/- buttons, flanking the d20 */
+.ccs-sheet .ccs-card-qty {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  margin-top: 2px;
+  border: 1px solid var(--frame);
+  border-radius: 5px;
+  background: rgba(16, 21, 29, 0.8);
+  color: #ffffff;
+  font-size: 0.65rem;
+}
+
+.ccs-sheet .ccs-card-qty:not(:disabled):hover {
+  box-shadow: 0 0 8px color-mix(in srgb, var(--frame) 70%, transparent);
+}
+
+/* The card's number takes the frame's metal: untrained cards (steel frame) read silver
+   instead of their family colour. Trained levels already carry their colour in --frame. */
+.ccs-card.frame-none {
+  --ccs-frame-on-art: #d6dce3;
+}
+
+/* --------------------------------------------------------------------------
+   Item sheets (system AppV1 CypherItemSheet, every item type) in the card sheet's dark theme
+   Applied only to items owned by an actor using this sheet, when that sheet is dark
+   (system-ui.js). Same palette as the sheet and the All-in-One dialog.
+   -------------------------------------------------------------------------- */
+
+.ccs-item-sheet.ccs-sys-dark {
+  --ccs-bg: #0f131a;
+  --ccs-panel: rgba(21, 27, 37, 0.94);
+  --ccs-panel-2: rgba(30, 38, 51, 0.96);
+  --ccs-input: rgba(255, 255, 255, 0.06);
+  --ccs-line: #2d3a4c;
+  --ccs-line-strong: #41536b;
+  --ccs-text: #e7edf4;
+  --ccs-muted: #a3b0bf;
+  --ccs-accent: #dcb65e;
+  color-scheme: dark;
+}
+
+.ccs-item-sheet.ccs-sys-dark .window-content,
+.ccs-item-sheet.ccs-sys-dark .window-content form,
+.ccs-item-sheet.ccs-sys-dark .window-content form.background-image {
+  background: var(--ccs-bg) !important;
+  background-image: none !important;
+  color: var(--ccs-text);
+}
+
+.ccs-item-sheet.ccs-sys-dark .background-image-rectangle {
+  display: none;
+}
+
+.ccs-item-sheet.ccs-sys-dark img.background-image-icon:not(.custom) {
+  filter: invert(1);
+  opacity: 0.12 !important;
+}
+
+.ccs-item-sheet.ccs-sys-dark .sheet-header,
+.ccs-item-sheet.ccs-sys-dark label,
+.ccs-item-sheet.ccs-sys-dark .resource-label-normal,
+.ccs-item-sheet.ccs-sys-dark .settings-list,
+.ccs-item-sheet.ccs-sys-dark .item-name,
+.ccs-item-sheet.ccs-sys-dark .editor-content {
+  color: var(--ccs-text);
+}
+
+.ccs-item-sheet.ccs-sys-dark .profile-img {
+  border: 1px solid var(--ccs-line-strong);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.ccs-item-sheet.ccs-sys-dark input,
+.ccs-item-sheet.ccs-sys-dark select,
+.ccs-item-sheet.ccs-sys-dark textarea {
+  border: 1px solid var(--ccs-line);
+  background: var(--ccs-input);
+  color: var(--ccs-text);
+}
+
+.ccs-item-sheet.ccs-sys-dark input::placeholder {
+  color: var(--ccs-muted);
+}
+
+.ccs-item-sheet.ccs-sys-dark input:disabled,
+.ccs-item-sheet.ccs-sys-dark select:disabled {
+  color: var(--ccs-muted);
+}
+
+.ccs-item-sheet.ccs-sys-dark input:focus,
+.ccs-item-sheet.ccs-sys-dark select:focus {
+  border-color: var(--ccs-accent);
+  box-shadow: none;
+}
+
+.ccs-item-sheet.ccs-sys-dark select option {
+  background: #1c2430;
+  color: var(--ccs-text);
+}
+
+/* Tabs: the system draws folder tabs with a grey border; keep the shape, darken the colours. */
+.ccs-item-sheet.ccs-sys-dark nav.sheet-tabs .item {
+  border-color: var(--ccs-line-strong);
+  background: var(--ccs-panel-2);
+  color: var(--ccs-muted);
+}
+
+.ccs-item-sheet.ccs-sys-dark nav.sheet-tabs .item.active {
+  border-color: var(--ccs-line-strong);
+  background: var(--ccs-bg);
+  color: var(--ccs-accent);
+}
+
+.ccs-item-sheet.ccs-sys-dark .sheet-body .tab {
+  border-color: var(--ccs-line-strong);
+  background: var(--ccs-panel);
+}
+
+.ccs-item-sheet.ccs-sys-dark .items-list .item-header {
+  color: var(--ccs-accent);
+}
+
+.ccs-item-sheet.ccs-sys-dark .items-list hr,
+.ccs-item-sheet.ccs-sys-dark .editor-content hr {
+  border-color: var(--ccs-line);
+  background: var(--ccs-line);
+}
+
+.ccs-item-sheet.ccs-sys-dark a {
+  color: var(--ccs-text);
+}
+
+.ccs-item-sheet.ccs-sys-dark a:hover {
+  color: var(--ccs-accent);
+  text-shadow: none;
+}
+
+.ccs-item-sheet.ccs-sys-dark .editor-content a.content-link,
+.ccs-item-sheet.ccs-sys-dark .editor-content a.inline-roll {
+  border-color: var(--ccs-line-strong);
+  background: var(--ccs-panel-2);
+  color: var(--ccs-text);
+}
+
+.ccs-item-sheet.ccs-sys-dark .editor-content h4 {
+  border-color: var(--ccs-line);
+}
+
+/* ProseMirror toolbar and dropdowns */
+.ccs-item-sheet.ccs-sys-dark .ProseMirror,
+.ccs-item-sheet.ccs-sys-dark prose-mirror {
+  --color-control-bg: rgba(255, 255, 255, 0.08);
+  --color-hover-bg: rgba(255, 255, 255, 0.14);
+}
+
+.ccs-item-sheet.ccs-sys-dark .ProseMirror menu,
+.ccs-item-sheet.ccs-sys-dark prose-mirror menu {
+  border-color: var(--ccs-line);
+  background: var(--ccs-panel-2);
+  color: var(--ccs-text);
+}
+
+.ccs-item-sheet.ccs-sys-dark .ProseMirror menu .pm-dropdown ul,
+.ccs-item-sheet.ccs-sys-dark prose-mirror menu .pm-dropdown ul {
+  background: #1c2430;
+  color: var(--ccs-text);
+}
+
+/* The cypher-type icon is coloured inline for a light background; lift those colours. */
+.ccs-item-sheet.ccs-sys-dark i[style*="44, 63, 101"] {
+  color: #8cb4ff !important;
+}
+
+.ccs-item-sheet.ccs-sys-dark i[style*="146, 16, 18"] {
+  color: #f08a80 !important;
+}
+
+.ccs-item-sheet.ccs-sys-dark .items-list .item-header .item-name {
+  color: var(--ccs-accent);
+}

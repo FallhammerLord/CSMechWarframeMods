@@ -700,6 +700,7 @@ export function cardData(item, actor) {
     inactive: item.type === "armor" && item.system.active === false,
     depletion: item.type === "artifact" && identified && item.system.basic?.depletion ? String(item.system.basic.depletion) : "",
     isArmor: item.type === "armor",
+    isAmmo: item.type === "ammo",
     worn: item.type === "armor" && item.system.active !== false,
     spell: item.type === "ability" && item.system.settings?.general?.sorting === "Spell",
     identified,

@@ -19,7 +19,7 @@
 <header class="ccs-header">
   <div class="ccs-identity">
     <div class="ccs-row">
-      <input class="ccs-name" type="text" name="{{identity.namePath}}" value="{{identity.name}}"
+      <input class="ccs-name" type="text" name="{{identity.namePath}}" value="{{identity.name}}" data-tooltip="{{identity.name}}" data-tooltip-value
              placeholder="{{localize 'CYPHERSYSTEM.Name'}}" aria-label="{{localize 'CYPHERSYSTEM.Name'}}">
       {{#if identity.showFormSelect}}
         <select name="system.basic.unmaskedForm" aria-label="{{localize 'CCS.Header.Form'}}">
@@ -29,16 +29,16 @@
     </div>
     <div class="ccs-sentence">
       <span class="ccs-joiner">{{identity.isLabel}}</span>
-      <input type="text" name="{{identity.descriptorPath}}" value="{{identity.descriptor}}"
+      <input type="text" name="{{identity.descriptorPath}}" value="{{identity.descriptor}}" data-tooltip="{{identity.descriptor}}" data-tooltip-value
              placeholder="{{localize 'CYPHERSYSTEM.Descriptor'}}" aria-label="{{localize 'CYPHERSYSTEM.Descriptor'}}">
       {{#unless identity.teen}}
-        <input type="text" name="system.basic.type" value="{{identity.type}}"
+        <input type="text" name="system.basic.type" value="{{identity.type}}" data-tooltip="{{identity.type}}" data-tooltip-value
                placeholder="{{localize 'CYPHERSYSTEM.Type'}}" aria-label="{{localize 'CYPHERSYSTEM.Type'}}">
         <span class="ccs-joiner">{{localize 'CYPHERSYSTEM.Who'}}</span>
-        <input type="text" name="system.basic.focus" value="{{identity.focus}}" {{#if identity.focusLocked}}disabled{{/if}}
+        <input type="text" name="system.basic.focus" value="{{identity.focus}}" data-tooltip="{{identity.focus}}" data-tooltip-value {{#if identity.focusLocked}}disabled{{/if}}
                placeholder="{{localize 'CYPHERSYSTEM.Focus'}}" aria-label="{{localize 'CYPHERSYSTEM.Focus'}}">
         {{#if identity.showSentence}}
-          <input type="text" name="system.basic.additionalSentence" value="{{identity.sentence}}" {{#if identity.focusLocked}}disabled{{/if}}
+          <input type="text" name="system.basic.additionalSentence" value="{{identity.sentence}}" data-tooltip="{{identity.sentence}}" data-tooltip-value {{#if identity.focusLocked}}disabled{{/if}}
                  placeholder="{{identity.sentencePlaceholder}}" aria-label="{{identity.sentencePlaceholder}}">
         {{/if}}
       {{/unless}}

@@ -55,7 +55,8 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       endMultiRoll: CypherCardSheet.#onEndMultiRoll,
       toggleArmorMenu: CypherCardSheet.#onToggleArmorMenu,
       toggleArmorWorn: CypherCardSheet.#onToggleArmorWorn,
-      rollDepletion: CypherCardSheet.#onRollDepletion
+      rollDepletion: CypherCardSheet.#onRollDepletion,
+      quantityAdjust: CypherCardSheet.#onQuantityAdjust
     }
   };
 
@@ -290,6 +291,10 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const root = this.element;
     // Record Alt from each click so Alt-click variants work even if Foundry's keyboard tracker misses Alt.
     root.addEventListener("click", event => cs.noteClick(event), {capture: true});
+    // Name and sentence fields show their full text as a tooltip; keep it current while typing.
+    root.addEventListener("input", event => {
+      if (event.target.matches?.("input[data-tooltip-value]")) event.target.dataset.tooltip = event.target.value;
+    });
     // Fallback drop handling in case the core sheet doesn't bind DragDrop in this version.
     root.addEventListener("dragover", event => event.preventDefault());
     root.addEventListener("drop", event => this.#handleDrop(event));
@@ -580,6 +585,12 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static #onRollDepletion(event, target) {
     const item = this.#itemFrom(target);
     if (item && this.isEditable) return cs.rollDepletion(this.actor, item);
+  }
+
+  /** Ammo card +/-: one per click, ten with Alt (as in the large card). */
+  static #onQuantityAdjust(event, target) {
+    const item = this.#itemFrom(target);
+    if (item && this.isEditable) return cs.adjustQuantity(item, Number(target.dataset.delta) || 0);
   }
 
   static #onEndMultiRoll() {

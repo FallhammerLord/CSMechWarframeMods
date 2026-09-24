@@ -33,11 +33,21 @@
         <svg class="ccs-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 10.5v3"/></g><rect x="5.5" y="9.5" width="5" height="5" rx="0.8" fill="currentColor"/></svg>
       </button>
     {{/if}}
+    {{#if card.isAmmo}}
+      <button type="button" class="ccs-card-qty" data-action="quantityAdjust" data-delta="-1"
+              data-tooltip="{{localize 'CCS.Card.QuantityDown'}}" aria-label="{{localize 'CCS.Card.QuantityDown'}}: {{card.name}}"
+              {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-minus" aria-hidden="true"></i></button>
+    {{/if}}
     <button type="button" class="ccs-card-d20{{#unless card.canRoll}} is-chat{{/unless}}" data-action="rollItem"
             title="{{#if card.canRoll}}{{localize 'CCS.Action.Roll'}}{{else}}{{localize 'CCS.Action.SendToChat'}}{{/if}}"
             aria-label="{{#if card.canRoll}}{{localize 'CCS.Action.Roll'}}{{else}}{{localize 'CCS.Action.SendToChat'}}{{/if}}: {{card.name}}"
             {{#if card.canRoll}}{{#unless editable}}disabled{{/unless}}{{/if}}>
       <svg class="ccs-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"><path d="M12 2.5 20.5 7.25v9.5L12 21.5 3.5 16.75v-9.5z"/><path d="M12 8 16.4 15.6H7.6z"/><path d="M12 2.5V8M3.5 7.25 12 8l8.5-.75M3.5 7.25l4.1 8.35M20.5 7.25l-4.1 8.35M3.5 16.75l4.1-1.15M20.5 16.75l-4.1-1.15M7.6 15.6 12 21.5l4.4-5.9"/></g></svg>
     </button>
+    {{#if card.isAmmo}}
+      <button type="button" class="ccs-card-qty" data-action="quantityAdjust" data-delta="1"
+              data-tooltip="{{localize 'CCS.Card.QuantityUp'}}" aria-label="{{localize 'CCS.Card.QuantityUp'}}: {{card.name}}"
+              {{#unless editable}}disabled{{/unless}}><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+    {{/if}}
   </div>
 </article>

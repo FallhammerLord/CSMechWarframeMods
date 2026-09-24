@@ -269,6 +269,10 @@ Choices made while building the module, following the "UX/UI standards first, tr
 - **Default grouping** is a client setting, "Default card grouping". The sheet remembers the chosen mode per actor for the rest of the session.
 - **Untested in a live Foundry client.** The adapter and templates were exercised against the system's `template.json` in a Node harness, and the layout was checked in Chromium. The AppV2 lifecycle hooks (`_onChangeForm`, drag/drop wiring, `<prose-mirror>` saving) need a first in-client test.
 
+- **Ammo cards** carry − / + buttons either side of the d20, calling the same quantity adjustment as the large card.
+- **Card number colour** comes from the frame: `frame-none` (steel) is silver; trained levels use their `--frame` colour.
+- **Item sheets** (system AppV1 `CypherItemSheet`) get `ccs-item-sheet ccs-sys-dark` from a `renderCypherItemSheet` hook when the item's owner uses this sheet and that sheet is dark. Backgrounds are set inline with priority, as for the All-in-One dialog. Unowned items (sidebar, compendium) keep the system's look.
+- **Header tooltips:** name and sentence inputs carry `data-tooltip` with their value, kept current by an input listener.
 ---
 
 ## 13. Custom card frames (prototype in 0.3.0-alpha.1)
