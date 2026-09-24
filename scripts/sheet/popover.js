@@ -67,7 +67,7 @@ async function pickSocket(actor, artifact, slot) {
   if (cypher) return cs.socketCypher(cypher, artifact, slot);
 }
 
-/** Single-use cyphers are removed after use, so confirm first. */
+/** Single-use cyphers are archived after use, so confirm first. */
 async function useSocketed(actor, cypher) {
   if (!cypher) return;
   if (!cs.cypherSocket(cypher).reusable) {

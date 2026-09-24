@@ -166,11 +166,11 @@ export async function adjustResource(actor, item, direction) {
   if (value === 0 && r.depleteAtZero && item.system.basic?.depletion) return rollDepletion(actor, item);
 }
 
-/** Use a socketed cypher: post it to chat, then mark it spent (reusable) or remove it. */
+/** Use a socketed cypher: post it to chat, then mark it spent (reusable) or archive and unsocket it. */
 export async function useSocketed(actor, cypher) {
   await sendToChat(actor, cypher);
   if (cypherSocket(cypher).reusable) return cypher.update({[`flags.${MODULE_ID}.socket.spent`]: true});
-  return cypher.delete();
+  return cypher.update({"system.archived": true, [`flags.${MODULE_ID}.socket`]: {artifactId: null, slot: null, spent: false}});
 }
 
 /** The large card's action bar (spec §5). `label` is the short text, `title` the tooltip. */

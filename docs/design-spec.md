@@ -434,7 +434,7 @@ Materia-style slots: an artifact holds up to three cyphers. A socketed cypher st
 - `socketLayout(actor)` places cyphers into slots; a cypher whose artifact is gone or whose slot no longer exists is unsocketed.
 
 **Rules:**
-- Cyphers are single-use. Use posts the cypher to chat as the system does, then removes it; the socket empties. Buying the same cypher again is a new item.
+- Cyphers are single-use. Use posts the cypher to chat as the system does, then archives it; the socket empties and the cypher returns to the Cyphers group as archived. Buying the same cypher again is a new item.
 - Campaign option, per cypher: **Reusable**. Use marks it spent instead of removing it. **Refresh sockets** on the large card clears spent marks (after an intervening scene, at the table's call; no automation).
 - Socketed cyphers don't count toward the cypher limit: they leave the Cyphers group (and its count) and appear only in their artifact's sockets.
 - Housekeeping: a deleted or transferred cypher empties its socket (nothing to clean up, since the artifact stores no links).
