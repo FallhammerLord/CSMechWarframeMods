@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.1
+
+- **Fix:** clicking in a window opened from the large card (the socket picker, the use and delete confirmations) no longer closes the large card, and Escape in those windows closes only them.
+- **Roll effects are 4-point stars,** stacked on the portrait's left side. Both are clickable: light one by hand, or click a lit one to clear it. Colours follow the training palette, so the high-contrast suite applies: minor is silver (green in high contrast), major is gold (sky blue). Lit is filled and glowing, unlit is an outline, and major is the larger star.
+
 ## 0.8.0
 
 - **Socket picker beside the large card:** it opens directly to the right of the large card, or to its left when the card is near the right edge of the screen.

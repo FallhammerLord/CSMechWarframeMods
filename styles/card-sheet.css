@@ -432,43 +432,53 @@
   gap: 4px;
 }
 
-/* Roll effect lights (top-right of the portrait). Lit is filled and solid, unlit is dim and dashed,
-   so on/off doesn't depend on colour; the words tell minor from major. */
+/* Roll effect stars, stacked on the portrait's left. Colours come from the training palette, so the
+   high-contrast suite recolours them too: minor = trained, major = specialized. Lit is filled and
+   glowing, unlit is an outline; major is larger, and each has its own label and tooltip. */
 .ccs-effects {
   position: absolute;
   top: 4px;
-  right: 4px;
+  left: 4px;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 3px;
+  align-items: center;
+  gap: 2px;
 }
 
-.ccs-effect,
+.ccs-effect-minor { --ccs-effect: var(--ccs-tr-trained); --ccs-effect-size: 16px; }
+.ccs-effect-major { --ccs-effect: var(--ccs-tr-specialized); --ccs-effect-size: 20px; }
+
 .ccs-sheet .ccs-effect {
-  display: inline-block;
+  display: grid;
+  place-items: center;
+  width: var(--ccs-effect-size);
+  height: var(--ccs-effect-size);
   min-width: 0;
-  height: auto;
-  padding: 1px 5px;
-  border: 1px dashed rgba(255, 255, 255, 0.45);
-  border-radius: 999px;
-  background: rgba(8, 11, 16, 0.6);
-  color: rgba(255, 255, 255, 0.55);
-  font-size: 0.58rem;
-  font-weight: 700;
-  line-height: 1.3;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  min-height: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
 }
 
-.ccs-sheet .ccs-effect.is-on {
-  border: 1px solid #ffffff;
-  color: #10151d;
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+.ccs-effect svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  fill: rgba(8, 11, 16, 0.55);
+  stroke: rgba(255, 255, 255, 0.7);
+  stroke-width: 1.6;
+  stroke-linejoin: round;
 }
 
-.ccs-sheet .ccs-effect-minor.is-on { background: #8fd3ff; }
-.ccs-sheet .ccs-effect-major.is-on { background: #f0cd6e; }
+.ccs-effect.is-on svg {
+  fill: var(--ccs-effect);
+  stroke: #ffffff;
+  filter: drop-shadow(0 0 3px var(--ccs-effect)) drop-shadow(0 0 1px #000);
+}
+
+.ccs-sheet .ccs-effect:not(:disabled):hover svg {
+  stroke: var(--ccs-effect);
+}
 
 .ccs-badge {
   display: inline-grid;

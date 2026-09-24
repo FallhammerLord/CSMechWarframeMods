@@ -230,10 +230,10 @@
       "Title": "Roll effects",
       "minor": "Minor",
       "major": "Major",
-      "minorOn": "Minor effect available (natural 19). Click once it's used.",
-      "majorOn": "Major effect available (natural 20). Click once it's used.",
-      "minorOff": "Minor effect: lights up on a natural 19",
-      "majorOff": "Major effect: lights up on a natural 20"
+      "minorOn": "Minor effect available. Click to clear once it's used.",
+      "majorOn": "Major effect available. Click to clear once it's used.",
+      "minorOff": "Minor effect: lights on a natural 19, or click to light it",
+      "majorOff": "Major effect: lights on a natural 20, or click to light it"
     },
     "Socket": {
       "Title": "Sockets",

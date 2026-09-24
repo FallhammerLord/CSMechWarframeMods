@@ -52,6 +52,9 @@ const READ_ONLY_ACTIONS = new Set(["sendToChat", "showSocketed"]);
 
 const PICKER_WIDTH = 320;
 
+/** Windows opened from the large card. Clicking in them doesn't close it. */
+const CHILD_CLASS = "ccs-pop-child";
+
 /** Choose a cypher for an empty socket from the eligible ones (matching identifier). */
 async function pickSocket(actor, artifact, slot) {
   if (!artifact) return;
@@ -68,7 +71,7 @@ async function pickSocket(actor, artifact, slot) {
   const id = await foundry.applications.api.DialogV2.prompt({
     window: {title: t("Socket.PickTitle", {name: artifact.name})},
     position: CardPopover.besidePosition(PICKER_WIDTH) ?? {width: PICKER_WIDTH},
-    classes: ["ccs-socket-picker"],
+    classes: ["ccs-socket-picker", CHILD_CLASS],
     content: `<div class="ccs-socket-choices">${rows}</div>`,
     ok: {label: t("Socket.Insert"), icon: "fa-solid fa-gem", callback: (event, button) => button.form.elements.cypher.value},
     rejectClose: false
@@ -83,6 +86,7 @@ async function useSocketed(actor, cypher) {
   if (!cs.cypherSocket(cypher).reusable) {
     const confirmed = await foundry.applications.api.DialogV2.confirm({
       window: {title: t("Socket.UseTitle")},
+      classes: [CHILD_CLASS],
       content: `<p>${t("Socket.UseConfirm", {name: Handlebars.escapeExpression(cypher.name)})}</p>`,
       rejectClose: false
     });
@@ -124,6 +128,8 @@ class CardPopoverManager {
 
   #onKeyDown = event => {
     if (event.key !== "Escape" || !this.#el) return;
+    // A child window (picker, confirmation) handles its own Escape.
+    if (event.target.closest?.(`.${CHILD_CLASS}`) || document.querySelector(`.${CHILD_CLASS}`)) return;
     event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
@@ -133,7 +139,7 @@ class CardPopoverManager {
   #onPointerDown = event => {
     if (!this.#el) return;
     const target = event.target;
-    if (this.#el.contains(target) || this.#side?.contains(target)) return;
+    if (this.#el.contains(target) || this.#side?.contains(target) || target.closest?.(`.${CHILD_CLASS}`)) return;
     // Card clicks are handled by the card itself (toggle / switch).
     if (target.closest?.(".ccs-card")) return;
     this.close();
@@ -391,6 +397,7 @@ class CardPopoverManager {
     if (action === "deleteItem") {
       const confirmed = await foundry.applications.api.DialogV2.confirm({
         window: {title: t("Popover.DeleteTitle")},
+        classes: [CHILD_CLASS],
         content: `<p>${t("Popover.DeleteConfirm", {name: Handlebars.escapeExpression(item.name)})}</p>`,
         rejectClose: false
       });

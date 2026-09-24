@@ -1,10 +1,9 @@
 {{#*inline "ccsEffect"}}
-  {{#if on}}
-    <button type="button" class="ccs-effect is-on ccs-effect-{{kind}}" data-action="clearEffect" data-tooltip="{{onTip}}" aria-label="{{onTip}}"
-            {{#unless @root.editable}}disabled{{/unless}}>{{label}}</button>
-  {{else}}
-    <span class="ccs-effect ccs-effect-{{kind}}" data-tooltip="{{offTip}}">{{label}}</span>
-  {{/if}}
+  <button type="button" class="ccs-effect ccs-effect-{{kind}}{{#if on}} is-on{{/if}}" data-action="toggleEffect" data-kind="{{kind}}"
+          aria-pressed="{{#if on}}true{{else}}false{{/if}}" aria-label="{{label}}" data-tooltip="{{#if on}}{{onTip}}{{else}}{{offTip}}{{/if}}"
+          {{#unless @root.editable}}disabled{{/unless}}>
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 1.5 14.7 9.3 22.5 12 14.7 14.7 12 22.5 9.3 14.7 1.5 12 9.3 9.3Z"/></svg>
+  </button>
 {{/inline}}
 {{!-- Fields shared by the full and compact layouts --}}
 {{#*inline "ccsName"}}
@@ -40,7 +39,7 @@
   <div class="ccs-portrait-wrap">
     <img class="ccs-portrait" src="{{identity.img}}" alt="{{identity.name}}"
          {{#if editable}}data-action="editImage" data-path="{{identity.imgPath}}" role="button" tabindex="0" title="{{localize 'CCS.Header.EditImage'}}"{{/if}}>
-    {{!-- Minor / major effect from the latest roll: a pair of lights, lit when available. --}}
+    {{!-- Minor / major effect from the latest roll: a pair of stars, lit when available. --}}
     <div class="ccs-effects" role="group" aria-label="{{localize 'CCS.Effect.Title'}}">
       {{> ccsEffect kind="minor" on=(eq state.effect "minor") label=(localize "CCS.Effect.minor")
           onTip=(localize "CCS.Effect.minorOn") offTip=(localize "CCS.Effect.minorOff")}}
