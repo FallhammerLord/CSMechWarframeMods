@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.0 — stable
+
+The card frames prototype (0.3.0-alpha.1 to alpha.4), tested in a live world and marked stable. No changes since alpha.4. Highlights:
+
+- Warframe-style card frames by skill training, with a GM settings window and a high-contrast suite for colour-blind players.
+- Small cards with a large centred number; ammo −/+ and artifact depletion buttons on the card.
+- Dark item sheets and roll dialog for actors using this sheet.
+- Sentence field tooltips; large card header and Alt-click delete fixes.
+
 ## 0.3.0-alpha.4
 
 - **Ammo cards:** − and + buttons flank the d20 (Alt: ten at a time, as in the large card).

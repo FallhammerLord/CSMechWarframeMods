@@ -2,7 +2,7 @@
   "id": "cypher-card-sheet",
   "title": "Cypher Card Sheet",
   "description": "An alternative Cypher System character sheet that shows abilities, skills, attacks, equipment, cyphers and every other item as a grid of uniform cards, inspired by Warframe's Mods screen. Click a card for its full rules text; the d20 on each card uses the system's own roller.",
-  "version": "0.3.0-alpha.4",
+  "version": "0.3.0",
   "authors": [
     {"name": "FallhammerLord"}
   ],
