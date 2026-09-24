@@ -41,8 +41,11 @@
     {{#each sockets.slots}}
       {{#if id}}
         <div class="ccs-pop-socket{{#if spent}} is-spent{{/if}}">
-          <span class="ccs-pop-socket-ring is-filled"><img class="{{#if imgIsIcon}}is-icon{{/if}}" src="{{img}}" alt=""></span>
-          <span class="ccs-pop-socket-name">{{name}}{{#if spent}} <em>· {{localize 'CCS.Socket.Spent'}}</em>{{/if}}</span>
+          <button type="button" class="ccs-pop-socket-open" data-popover-action="showSocketed" data-cypher-id="{{id}}"
+                  data-tooltip="{{localize 'CCS.Socket.Show'}}" aria-label="{{localize 'CCS.Socket.Show'}}: {{name}}">
+            <span class="ccs-pop-socket-ring is-filled"><img class="{{#if imgIsIcon}}is-icon{{/if}}" src="{{img}}" alt=""></span>
+            <span class="ccs-pop-socket-name">{{name}}{{#if spent}} <em>· {{localize 'CCS.Socket.Spent'}}</em>{{/if}}</span>
+          </button>
           {{#if @root.editable}}
             <button type="button" class="ccs-pop-control" data-popover-action="useSocketed" data-cypher-id="{{id}}"
                     data-tooltip="{{#if reusable}}{{localize 'CCS.Socket.UseReusable'}}{{else}}{{localize 'CCS.Socket.Use'}}{{/if}}"

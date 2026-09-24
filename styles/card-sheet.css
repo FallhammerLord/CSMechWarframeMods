@@ -432,6 +432,44 @@
   gap: 4px;
 }
 
+/* Roll effect lights (top-right of the portrait). Lit is filled and solid, unlit is dim and dashed,
+   so on/off doesn't depend on colour; the words tell minor from major. */
+.ccs-effects {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
+}
+
+.ccs-effect,
+.ccs-sheet .ccs-effect {
+  display: inline-block;
+  min-width: 0;
+  height: auto;
+  padding: 1px 5px;
+  border: 1px dashed rgba(255, 255, 255, 0.45);
+  border-radius: 999px;
+  background: rgba(8, 11, 16, 0.6);
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 0.58rem;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.ccs-sheet .ccs-effect.is-on {
+  border: 1px solid #ffffff;
+  color: #10151d;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.6);
+}
+
+.ccs-sheet .ccs-effect-minor.is-on { background: #8fd3ff; }
+.ccs-sheet .ccs-effect-major.is-on { background: #f0cd6e; }
+
 .ccs-badge {
   display: inline-grid;
   place-items: center;
@@ -1976,6 +2014,25 @@
 
 .ccs-popover button.ccs-pop-socket.is-empty:not(:disabled):hover {
   border-color: var(--ccs-accent);
+}
+
+/* The ring and name open the cypher's card beside this one. */
+.ccs-popover .ccs-pop-socket-open {
+  display: flex;
+  flex: 1 1 auto;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.ccs-popover .ccs-pop-socket-open:hover .ccs-pop-socket-name {
+  text-decoration: underline;
 }
 
 .ccs-pop-socket.is-empty .ccs-pop-socket-name {

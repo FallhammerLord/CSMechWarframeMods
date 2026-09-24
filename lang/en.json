@@ -226,6 +226,15 @@
         }
       }
     },
+    "Effect": {
+      "Title": "Roll effects",
+      "minor": "Minor",
+      "major": "Major",
+      "minorOn": "Minor effect available (natural 19). Click once it's used.",
+      "majorOn": "Major effect available (natural 20). Click once it's used.",
+      "minorOff": "Minor effect: lights up on a natural 19",
+      "majorOff": "Major effect: lights up on a natural 20"
+    },
     "Socket": {
       "Title": "Sockets",
       "Empty": "empty",
@@ -234,6 +243,7 @@
       "Use": "Use (archives the cypher)",
       "UseReusable": "Use (marks it spent until refreshed)",
       "Unsocket": "Unsocket (back to Cyphers)",
+      "Show": "Show this cypher's card",
       "Refresh": "Refresh sockets (clear spent marks)",
       "PickTitle": "Socket a cypher: {name}",
       "Insert": "Socket",

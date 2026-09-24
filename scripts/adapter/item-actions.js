@@ -1,22 +1,43 @@
 /** Item actions (rolls, chat, toggles, depletion), the large card's content, creation and drops. */
 
-import {MODULE_ID, t} from "../constants.js";
+import {MODULE_ID, SYSTEM_ID, t} from "../constants.js";
 import * as sys from "./system-imports.js";
-import {L, alt, callApi, capitalize} from "./shared.js";
+import {L, alt, callApi, capitalize, systemSetting} from "./shared.js";
 import {CARD_TYPES, ROLL_TYPES, artifactHost, cardData, cypherType, isFormula, isZeroCost, itemRollsEnabled, resourceOf} from "./items.js";
 import {cypherSocket, socketView} from "./sockets.js";
+
+/** The pool an item's roll pays from, as itemRollMacro reads it. */
+export function itemPool(item) {
+  return item.type === "ability" ? item.system.basic?.pool : item.system.settings?.rollButton?.pool;
+}
+
+/** Whether the system will open the All-in-One dialog for an item roll (roll-engine-main.js). */
+function rollDialogOpens(actor) {
+  let skip = !systemSetting("itemMacrosUseAllInOne");
+  if (game.keyboard.isModifierActive("Alt")) skip = !skip;
+  if (actor.getFlag(SYSTEM_ID, "multiRoll.active")) skip = false;
+  return !skip;
+}
+
+/**
+ * The system refuses to open the dialog for XP-cost items. Open it as "Any pool" instead; the
+ * dialog hook (system-ui.js) switches it to XP, which the system's cost code pays from.
+ */
+function poolOverride(actor, item) {
+  return itemPool(item) === "XP" && rollDialogOpens(actor) ? "Pool" : "";
+}
 
 /** d20: the default sheet's exact call (actor-sheet.js `.item-roll`), else post to chat. */
 export function rollItem(actor, item) {
   if (!itemRollsEnabled() || !ROLL_TYPES.has(item.type)) return sendToChat(actor, item);
   const macroUuid = item.system.settings.rollButton.macroUuid;
-  return callApi("itemRollMacro", actor, item.id, "", "", "", "", "", "", "", "", "", "", "", "", false, "", macroUuid, "");
+  return callApi("itemRollMacro", actor, item.id, poolOverride(actor, item), "", "", "", "", "", "", "", "", "", "", "", false, "", macroUuid, "");
 }
 
 /** Pay pool points without rolling (actor-sheet.js `.item-pay`). */
 export function payItem(actor, item) {
   const macroUuid = item.system.settings.rollButton.macroUuid;
-  return callApi("itemRollMacro", actor, item.id, "", "", "", "", "", "", "", "", "", "", "", "", true, "", macroUuid, "");
+  return callApi("itemRollMacro", actor, item.id, poolOverride(actor, item), "", "", "", "", "", "", "", "", "", "", "", true, "", macroUuid, "");
 }
 
 /** Post the item to chat (actor-sheet.js Alt-click on `.item-description`). */

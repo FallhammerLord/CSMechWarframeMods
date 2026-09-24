@@ -1,3 +1,11 @@
+{{#*inline "ccsEffect"}}
+  {{#if on}}
+    <button type="button" class="ccs-effect is-on ccs-effect-{{kind}}" data-action="clearEffect" data-tooltip="{{onTip}}" aria-label="{{onTip}}"
+            {{#unless @root.editable}}disabled{{/unless}}>{{label}}</button>
+  {{else}}
+    <span class="ccs-effect ccs-effect-{{kind}}" data-tooltip="{{offTip}}">{{label}}</span>
+  {{/if}}
+{{/inline}}
 {{!-- Fields shared by the full and compact layouts --}}
 {{#*inline "ccsName"}}
   <input class="ccs-name" type="text" name="{{identity.namePath}}" value="{{identity.name}}" data-tooltip="{{identity.name}}" data-tooltip-value
@@ -32,6 +40,13 @@
   <div class="ccs-portrait-wrap">
     <img class="ccs-portrait" src="{{identity.img}}" alt="{{identity.name}}"
          {{#if editable}}data-action="editImage" data-path="{{identity.imgPath}}" role="button" tabindex="0" title="{{localize 'CCS.Header.EditImage'}}"{{/if}}>
+    {{!-- Minor / major effect from the latest roll: a pair of lights, lit when available. --}}
+    <div class="ccs-effects" role="group" aria-label="{{localize 'CCS.Effect.Title'}}">
+      {{> ccsEffect kind="minor" on=(eq state.effect "minor") label=(localize "CCS.Effect.minor")
+          onTip=(localize "CCS.Effect.minorOn") offTip=(localize "CCS.Effect.minorOff")}}
+      {{> ccsEffect kind="major" on=(eq state.effect "major") label=(localize "CCS.Effect.major")
+          onTip=(localize "CCS.Effect.majorOn") offTip=(localize "CCS.Effect.majorOff")}}
+    </div>
     <div class="ccs-portrait-badges">
       {{#if state.exclusiveTag}}
         <span class="ccs-badge" title="{{localize 'CYPHERSYSTEM.ExclusiveTag'}}: {{state.exclusiveTag}}"><i class="fa-solid fa-hashtag"></i></span>

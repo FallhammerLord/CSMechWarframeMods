@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.8.0
+
+- **Socket picker beside the large card:** it opens directly to the right of the large card, or to its left when the card is near the right edge of the screen.
+- **Socketed cyphers open their own card:** click a socketed cypher's icon or name to show its large card beside the artifact's, on the side with room. Click again, or its title, to close it; it closes with the main card. Its buttons act on that cypher.
+- **XP in the All-in-One dialog** (for actors using this sheet): the pool list includes XP, which the system's cost code already pays from. Abilities that cost XP now open the dialog (the system blocked them) with XP selected.
+  - Known system issue, unchanged: the chat card's reroll button errors on an XP-paid roll.
+- **Roll effect lights on the portrait:** a Minor / Major pair. A natural 19 lights Minor and a natural 20 lights Major (not while Impaired); the character's next roll replaces it, and clicking a lit one turns it off once used. Lit is filled and solid, unlit is dim and dashed.
+- Every other card and sheet state is unchanged (snapshot check).
+
 ## 0.7.0 — linked attacks
 
 - **Attacks can link to an artifact (spec §17):** for artifacts that are also attacks, such as a Fire Rod. The GM picks a **Linked artifact** on the attack's item sheet (Settings tab). Several attacks can link to one artifact.

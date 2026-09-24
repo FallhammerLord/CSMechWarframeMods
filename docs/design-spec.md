@@ -467,3 +467,10 @@ Some artifacts are also attacks (a Fire Rod). The attack links to its artifact; 
 - **Manual spending:** an attack roll doesn't spend a charge (accidental clicks).
 - **Limit:** links are item ids; moving both items to another actor needs relinking (same transfer gap as §16).
 
+## 18. Side cards, XP spending, roll effect lights (built in 0.8.0)
+
+- **Beside the large card:** `CardPopover.besidePosition(width)` places a window to the right of the large card, or to its left when there isn't room on the right; top-aligned and kept on screen. Used by the socket picker (a DialogV2 given that position) and the side card.
+- **Side card:** a second large card for a socketed cypher (`toggleSide`), rendered from the same template. Its actions run on that cypher. It closes on a second click, on its title, and with the main card; outside clicks ignore it.
+- **XP in the All-in-One dialog:** the system defines an XP pool choice but doesn't offer it, and `rollEngineMain` refuses to open the dialog for XP-cost items. For card-sheet actors: the dialog hook adds XP to the pool select; XP-cost items are opened as "Any pool" (`poolOverride`, only when the dialog will open) and switched to XP once through the form's change handling, so the summary recalculates. The system's `payPoolPoints` already pays XP. The chat reroll of an XP-paid roll errors in the system (pre-existing).
+- **Roll effect lights:** `createChatMessage` on the rolling client reads the roll's flags: a natural 19 or 20 while not impaired sets `flags.cypher-card-sheet.effect = {kind: "minor"|"major"}`; any other roll by the actor clears it. The portrait shows a Minor/Major pair, lit when available; clicking a lit one clears it.
+

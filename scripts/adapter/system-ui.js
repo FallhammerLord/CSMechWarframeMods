@@ -3,12 +3,14 @@
  * stored messages are unchanged.
  * - All-in-One roll dialog and item sheets follow the sheet's dark theme.
  * - The roll dialog and roll chat cards show custom pool names.
+ * - The roll dialog can pay from XP.
+ * - A roll's minor or major effect is marked on the actor for the portrait indicators.
  * - Artifact, cypher and attack item sheets get the resource, socket and link fields (spec §15-17).
  * Baseline: cyphersystem v3.5.2.
  */
 
 import {MODULE_ID, t} from "../constants.js";
-import {applyPoolNames} from "./cypher.js";
+import {applyPoolNames, itemPool, setRollEffect} from "./cypher.js";
 import {CypherCardSheet} from "../sheet/card-sheet.js";
 import {effectiveTheme} from "../sheet/theme.js";
 
@@ -56,7 +58,26 @@ function onRenderRollDialog(app, html) {
   if (!root) return;
   const dark = effectiveTheme(actor.sheet) !== "theme-light";
   applySystemDark(root, dark, "ccs-aio");
+  enableXpPool(app, root, actor);
   applyPoolNames(root.querySelector(".window-content") ?? root, actor, {skip: null});
+}
+
+/**
+ * Let the dialog pay from XP: add XP to its pool choices (the system defines the choice but
+ * doesn't offer it). An XP-cost item arrives as "Any pool" (item-actions.js poolOverride) and is
+ * switched to XP once, through the form's own change handling so the summary recalculates.
+ */
+function enableXpPool(app, root, actor) {
+  const select = root.querySelector('select[name="pool"]');
+  if (!select) return;
+  if (!select.querySelector('option[value="XP"]')) select.add(new Option(game.i18n.localize("CYPHERSYSTEM.XP"), "XP"));
+  if (app.object.pool === "XP") select.value = "XP";
+  const item = app.object.itemID ? actor.items.get(app.object.itemID) : null;
+  if (!app._ccsXpApplied && item && itemPool(item) === "XP" && app.object.pool === "Pool") {
+    app._ccsXpApplied = true;
+    select.value = "XP";
+    select.dispatchEvent(new Event("change", {bubbles: true}));
+  }
 }
 
 /** Item sheets (every type) of items owned by a card-sheet actor follow that sheet's theme. */
@@ -164,7 +185,23 @@ function onRenderChatMessage(message, html) {
   applyPoolNames(root?.querySelector(".roll-flavor") ?? root, actor);
 }
 
+/**
+ * Roll effects: a natural 19 (minor) or 20 (major), when not impaired, marks the effect as
+ * available on the actor; any other roll by the actor clears it. Written once, by the client
+ * that made the roll.
+ */
+function onCreateChatMessage(message) {
+  const data = message.flags?.data;
+  if (!data?.actorUuid || data.skipRoll || message.author?.id !== game.user.id) return;
+  const actor = fromUuidSync(data.actorUuid);
+  if (!usesCardSheet(actor) || !actor.isOwner) return;
+  const natural = data.roll?.total ?? message.rolls?.[0]?.total;
+  const kind = data.impairedStatus ? null : {19: "minor", 20: "major"}[natural] ?? null;
+  return setRollEffect(actor, kind);
+}
+
 export function registerSystemUi() {
+  Hooks.on("createChatMessage", onCreateChatMessage);
   Hooks.on("renderRollEngineDialogSheet", onRenderRollDialog);
   Hooks.on("renderCypherItemSheet", onRenderItemSheet);
   Hooks.on("renderChatMessageHTML", onRenderChatMessage);

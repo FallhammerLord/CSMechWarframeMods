@@ -122,6 +122,8 @@ const page = (a, state, force) => {
 
 // Wait for web fonts (Font Awesome) and two frames, so both pages measure the same layout.
 const settle = () => {
+  // Lazy images off screen would settle at unpredictable times; load them all now.
+  for (const img of document.querySelectorAll('img[loading="lazy"]')) img.loading = "eager";
   const images = [...document.images].map(i => (i.complete ? null : new Promise(r => { i.onload = i.onerror = r; })));
   return Promise.race([Promise.all([document.fonts.ready, ...images]), new Promise(r => setTimeout(r, 2000))])
     .then(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));

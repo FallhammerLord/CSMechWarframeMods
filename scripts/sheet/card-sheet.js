@@ -53,6 +53,7 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       recoveryReset: CypherCardSheet.#onRecoveryReset,
       rollDice: CypherCardSheet.#onRollDice,
       endMultiRoll: CypherCardSheet.#onEndMultiRoll,
+      clearEffect: CypherCardSheet.#onClearEffect,
       toggleArmorMenu: CypherCardSheet.#onToggleArmorMenu,
       toggleArmorWorn: CypherCardSheet.#onToggleArmorWorn,
       rollDepletion: CypherCardSheet.#onRollDepletion,
@@ -608,6 +609,11 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   static #onQuantityAdjust(event, target) {
     const item = this.#itemFrom(target);
     if (item && this.isEditable) return cs.adjustQuantity(item, Number(target.dataset.delta) || 0);
+  }
+
+  /** The effect has been used (or waved off): turn its light off. */
+  static #onClearEffect() {
+    if (this.isEditable) return cs.setRollEffect(this.actor, null);
   }
 
   static #onEndMultiRoll() {

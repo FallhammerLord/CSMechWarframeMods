@@ -22,7 +22,9 @@ export function actorState(actor) {
       speed: changed("speed.edge"),
       intellect: changed("intellect.edge")
     },
-    exclusiveTag: exclusive?.name ?? ""
+    exclusiveTag: exclusive?.name ?? "",
+    // Minor or major effect from the actor's latest roll (system-ui.js), until used or rolled over.
+    effect: actor.getFlag(MODULE_ID, "effect")?.kind ?? null
   };
 }
 
@@ -59,6 +61,12 @@ export function identity(actor) {
       label: L(`Advancement${key === "stats" ? "Pool" : capitalize(key)}`)
     }))
   };
+}
+
+/** Mark a roll's minor or major effect as available, or clear it (kind null). */
+export async function setRollEffect(actor, kind) {
+  if (!kind) return actor.getFlag(MODULE_ID, "effect") ? actor.unsetFlag(MODULE_ID, "effect") : undefined;
+  return actor.setFlag(MODULE_ID, "effect", {kind});
 }
 
 export async function adjustXP(actor, direction) {

@@ -29,6 +29,7 @@ const ACTIONS = {
     const cypher = actor.items.get(data.cypherId);
     return cypher && cs.unsocketCypher(cypher);
   },
+  showSocketed: (actor, item, data) => CardPopover.toggleSide(data.cypherId),
   refreshSockets: (actor, item) => {
     const host = cs.artifactHost(actor, item);
     return host && cs.refreshSockets(actor, host);
@@ -47,7 +48,9 @@ const ACTIONS = {
 };
 
 /** Actions an observer may still use, as on the default sheet. */
-const READ_ONLY_ACTIONS = new Set(["sendToChat"]);
+const READ_ONLY_ACTIONS = new Set(["sendToChat", "showSocketed"]);
+
+const PICKER_WIDTH = 320;
 
 /** Choose a cypher for an empty socket from the eligible ones (matching identifier). */
 async function pickSocket(actor, artifact, slot) {
@@ -61,8 +64,10 @@ async function pickSocket(actor, artifact, slot) {
     <input type="radio" name="cypher" value="${c.id}"${i === 0 ? " checked" : ""}>
     <img src="${esc(c.img)}" alt=""><span>${esc(c.name)}</span>${c.system.basic?.level ? `<span class="ccs-muted">${esc(t("Card.Level", {n: c.system.basic.level}))}</span>` : ""}
   </label>`).join("");
+  CardPopover.closeSide();
   const id = await foundry.applications.api.DialogV2.prompt({
     window: {title: t("Socket.PickTitle", {name: artifact.name})},
+    position: CardPopover.besidePosition(PICKER_WIDTH) ?? {width: PICKER_WIDTH},
     classes: ["ccs-socket-picker"],
     content: `<div class="ccs-socket-choices">${rows}</div>`,
     ok: {label: t("Socket.Insert"), icon: "fa-solid fa-gem", callback: (event, button) => button.form.elements.cypher.value},
@@ -97,13 +102,14 @@ function animateOut(el) {
   setTimeout(() => el.remove(), 300);
 }
 
-/** Copy the small card's frame class and the sheet's frame suite. */
-function applyFrame(el, sheet, card) {
+/** Set the frame (rarity) class and the sheet's frame suite. */
+function applyFrame(el, sheet, frameKey) {
   for (const cls of [...el.classList]) if (cls.startsWith("frame-")) el.classList.remove(cls);
-  const frame = [...card.classList].find(cls => cls.startsWith("frame-"));
-  if (frame) el.classList.add(frame);
+  if (frameKey) el.classList.add(`frame-${frameKey}`);
   el.classList.toggle("ccs-hc", !!sheet.element?.querySelector(".ccs-root.ccs-hc"));
 }
+
+const frameOf = card => [...card.classList].find(cls => cls.startsWith("frame-"))?.slice(6);
 
 class CardPopoverManager {
   #el = null;
@@ -112,6 +118,9 @@ class CardPopoverManager {
   #groupKey = null;
   #anchor = null;
   #token = 0;
+  /** Side card: a socketed cypher's large card, beside the main one. */
+  #side = null;
+  #sideItemId = null;
 
   #onKeyDown = event => {
     if (event.key !== "Escape" || !this.#el) return;
@@ -124,7 +133,7 @@ class CardPopoverManager {
   #onPointerDown = event => {
     if (!this.#el) return;
     const target = event.target;
-    if (this.#el.contains(target)) return;
+    if (this.#el.contains(target) || this.#side?.contains(target)) return;
     // Card clicks are handled by the card itself (toggle / switch).
     if (target.closest?.(".ccs-card")) return;
     this.close();
@@ -143,6 +152,18 @@ class CardPopoverManager {
     }
     // The title covers the small card, so clicking it closes, like clicking the card.
     if (event.target.closest(".ccs-pop-header")) this.close({restoreFocus: event.detail === 0});
+  };
+
+  #onSideClick = event => {
+    const button = event.target.closest("[data-popover-action]");
+    if (button) {
+      if (button.disabled) return;
+      event.preventDefault();
+      cs.noteClick(event);
+      this.#runAction(button.dataset.popoverAction, event, button.dataset, this.#sideItemId);
+      return;
+    }
+    if (event.target.closest(".ccs-pop-header")) this.closeSide();
   };
 
   get isOpen() {
@@ -169,7 +190,7 @@ class CardPopoverManager {
     const el = document.createElement("section");
     el.className = "ccs-popover";
     applyTheme(el, sheet);
-    applyFrame(el, sheet, card);
+    applyFrame(el, sheet, frameOf(card));
     el.setAttribute("role", "dialog");
     el.setAttribute("aria-label", cs.displayName(item));
     if ("popover" in HTMLElement.prototype) el.setAttribute("popover", "manual");
@@ -196,6 +217,7 @@ class CardPopoverManager {
   close({restoreFocus = false} = {}) {
     this.#token++;
     if (!this.#el) return;
+    this.closeSide();
     window.removeEventListener("keydown", this.#onKeyDown, {capture: true});
     document.removeEventListener("pointerdown", this.#onPointerDown, {capture: true});
     window.removeEventListener("resize", this.#onResize);
@@ -230,10 +252,69 @@ class CardPopoverManager {
     const scrollTop = scroller?.scrollTop ?? 0;
     this.#el.innerHTML = html;
     applyTheme(this.#el, sheet);
-    applyFrame(this.#el, sheet, card);
+    applyFrame(this.#el, sheet, frameOf(card));
     const next = this.#el.querySelector(".ccs-pop-desc");
     if (next) next.scrollTop = scrollTop;
     this.#position();
+    if (this.#sideItemId) await this.#renderSide();
+  }
+
+  /**
+   * Where a window beside the large card goes: to its right, or to its left when there isn't
+   * room on the right. Top-aligned with the large card, kept on screen. Null when closed.
+   */
+  besidePosition(width) {
+    if (!this.#el) return null;
+    const r = this.#el.getBoundingClientRect();
+    const vw = window.innerWidth;
+    const right = vw - r.right - GAP - MARGIN >= width || r.left - GAP - MARGIN < width;
+    const left = right ? Math.min(r.right + GAP, vw - width - MARGIN) : Math.max(r.left - GAP - width, MARGIN);
+    return {left: Math.round(left), top: Math.round(Math.max(r.top, MARGIN)), width};
+  }
+
+  /** Show a socketed cypher's large card beside this one, or hide it if it's already showing. */
+  async toggleSide(itemId) {
+    if (this.#side && this.#sideItemId === itemId) return this.closeSide();
+    this.#sideItemId = itemId;
+    return this.#renderSide();
+  }
+
+  closeSide() {
+    if (this.#side) animateOut(this.#side);
+    this.#side = this.#sideItemId = null;
+  }
+
+  async #renderSide() {
+    const sheet = this.#sheet;
+    const item = sheet?.actor.items.get(this.#sideItemId);
+    if (!item) return this.closeSide();
+    const token = this.#token;
+    const html = await this.#renderContent(sheet, item);
+    if (token !== this.#token || !this.#el) return;
+    let el = this.#side;
+    if (!el) {
+      el = this.#side = document.createElement("section");
+      el.className = "ccs-popover is-side";
+      el.setAttribute("role", "dialog");
+      if ("popover" in HTMLElement.prototype) el.setAttribute("popover", "manual");
+      el.addEventListener("click", this.#onSideClick);
+      el._ccsClick = this.#onSideClick;
+      document.body.append(el);
+      el.showPopover?.();
+    }
+    el.setAttribute("aria-label", cs.displayName(item));
+    el.innerHTML = html;
+    applyTheme(el, sheet);
+    applyFrame(el, sheet, cs.cardData(item, sheet.actor).frameKey);
+    this.#positionSide();
+  }
+
+  #positionSide() {
+    if (!this.#side || !this.#el) return;
+    const main = this.#el.getBoundingClientRect();
+    const pos = this.besidePosition(main.width);
+    Object.assign(this.#side.style, {left: `${pos.left}px`, top: `${pos.top}px`, bottom: "auto", width: `${pos.width}px`, height: `${main.height}px`});
+    this.#side.dataset.placement = "side";
   }
 
   reposition() {
@@ -294,13 +375,14 @@ class CardPopoverManager {
       el.style.bottom = "auto";
     }
     el.dataset.placement = growUp ? "up" : "down";
+    this.#positionSide();
   }
 
-  async #runAction(action, event, data = {}) {
+  async #runAction(action, event, data = {}, itemId = this.#itemId) {
     if (action === "close") return this.close({restoreFocus: true});
     const sheet = this.#sheet;
-    const item = sheet?.actor.items.get(this.#itemId);
-    if (!item) return this.close();
+    const item = sheet?.actor.items.get(itemId);
+    if (!item) return itemId === this.#itemId ? this.close() : this.closeSide();
     if (!sheet.isEditable && !READ_ONLY_ACTIONS.has(action)) return;
 
     // Alt-click on archive deletes (confirmed), as on the default sheet. Alt is read from the
@@ -313,7 +395,8 @@ class CardPopoverManager {
         rejectClose: false
       });
       if (!confirmed) return;
-      this.close();
+      if (itemId === this.#itemId) this.close();
+      else this.closeSide();
       return cs.deleteItem(sheet.actor, item);
     }
     return ACTIONS[action]?.(sheet.actor, item, data);
