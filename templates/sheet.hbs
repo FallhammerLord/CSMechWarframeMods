@@ -1,4 +1,4 @@
-<div class="ccs-root{{#if identity.teen}} is-teen{{/if}}{{#unless editable}} is-readonly{{/unless}}">
+<div class="ccs-root{{#if identity.teen}} is-teen{{/if}}{{#if layout.highContrast}} ccs-hc{{/if}}{{#unless editable}} is-readonly{{/unless}}">
   {{#if design.background}}<div class="ccs-backdrop" style="background: {{design.background}};"></div>{{/if}}
   {{#if design.scrim}}<div class="ccs-scrim" style="opacity: {{design.scrim}};"></div>{{/if}}
   {{#if design.icon}}<img class="ccs-bg-icon" src="{{design.icon.src}}" style="opacity: {{design.icon.opacity}};" alt="">{{/if}}

@@ -79,6 +79,8 @@
     {{> ccsText name=@root.settings.cardsTab.path value=@root.settings.cardsTab.value label=(localize "CCS.Settings.CardsTabName")
         placeholder=@root.settings.cardsTab.placeholder}}
     {{> ccsCheck name=@root.settings.portraitTall.path value=@root.settings.portraitTall.value label=(localize "CCS.Settings.PortraitTall")}}
+    {{> ccsCheck name=@root.settings.highContrast.path value=@root.settings.highContrast.value label=(localize "CCS.Settings.HighContrastFrames")}}
+    <p class="ccs-hint">{{localize "CCS.Settings.HighContrastFramesHint"}}</p>
     {{> ccsPath name=@root.settings.armorImage.path value=@root.settings.armorImage.value
         placeholder=@root.settings.armorImage.placeholder label=(localize "CCS.Settings.ArmorImage")}}
   </section>

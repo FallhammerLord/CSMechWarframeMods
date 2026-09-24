@@ -2136,3 +2136,68 @@
   height: 100%;
   margin: 0;
 }
+
+/* --------------------------------------------------------------------------
+   High-contrast frame suite (per actor): training colours that stay distinct for
+   colour-blind players. Tuned from Okabe-Ito; every pair is CIELAB dE >= 31 under
+   protan, deutan and tritan simulation. Rank pips (0-3) give a non-colour cue too.
+   -------------------------------------------------------------------------- */
+
+.ccs-hc {
+  --ccs-tr-inability: #d9621a;
+  --ccs-tr-practiced: #f0a800;
+  --ccs-tr-trained: #10a877;
+  --ccs-tr-specialized: #9ad7fa;
+}
+
+/* --------------------------------------------------------------------------
+   Large card: room for the frame caps, and the same outlined title as the small cards
+   -------------------------------------------------------------------------- */
+
+.ccs-popover .ccs-pop-header {
+  padding-top: 26px;
+}
+
+.ccs-popover .ccs-pop-bar {
+  padding-bottom: 8px;
+}
+
+.ccs-popover .ccs-pop-header h3,
+.ccs-popover .ccs-pop-type {
+  color: #ffffff;
+  text-shadow:
+    -1px -1px 0 #000, 0 -1px 0 #000, 1px -1px 0 #000,
+    -1px 0 0 #000, 1px 0 0 #000,
+    -1px 1px 0 #000, 0 1px 0 #000, 1px 1px 0 #000,
+    0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+.ccs-popover .ccs-pop-type {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+@supports (paint-order: stroke fill) {
+  .ccs-popover .ccs-pop-header h3 {
+    -webkit-text-stroke: 2px #000;
+    paint-order: stroke fill;
+  }
+}
+
+/* Settings window: suite headings */
+.ccs-frames-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+}
+
+.ccs-frames-suite {
+  margin-bottom: 14px;
+}
+
+.ccs-frames-suite-title {
+  margin: 4px 0 2px;
+  border: none;
+  color: var(--ccs-accent);
+  font-size: 1.15rem;
+}

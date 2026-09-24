@@ -106,7 +106,7 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       isGM: game.user.isGM,
       identity: cs.identity(actor),
       design: cs.sheetDesign(actor),
-      layout: {portraitTall: cs.portraitTall(actor).value}
+      layout: {portraitTall: cs.portraitTall(actor).value, highContrast: cs.highContrastFrames(actor).value}
     });
 
     if (limited) {
@@ -175,6 +175,7 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       poolNames: Object.values(cs.poolNames(actor)),
       movement: cs.movementRanges(actor),
       portraitTall: cs.portraitTall(actor),
+      highContrast: cs.highContrastFrames(actor),
       armorImage: cs.armorImage(actor),
       badge: cs.badge(actor),
       cardsTab: cs.cardsTab(actor),

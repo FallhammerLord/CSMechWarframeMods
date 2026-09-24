@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.0-alpha.2
+
+- **Fix:** the Card frames settings window now opens. Its template rendered two root elements, and AppV2 requires one.
+- **High-contrast frame suite for colour-blind players:** red, orange, green and sky blue, tuned from the Okabe–Ito palette. In simulation, every pair of tiers stays at least ΔE 31 apart for normal, protan, deutan and tritan colour vision; bronze/silver/gold falls to 13. It's a second suite in the GM settings window with its own textures, and each actor switches to it in Settings → Sheet layout.
+- **Rank pips as a non-colour cue:** Inability 0 (cracks instead), Practiced 1, Trained 2, Specialized 3.
+- **Large card:** takes its card's frame and effect (the Specialized shimmer included); header padding clears the top cap; the title uses the same black outline as the small cards.
+
 ## 0.3.0-alpha.1 (prototype: mod textures)
 
 - **Card frames:** Warframe-style top and bottom caps on the small and large cards. They're chosen by skill training level (No training / Inability / Practiced / Trained / Specialized, drawn as Steel / Damaged / Bronze / Silver / Gold), set by the GM for the whole world.

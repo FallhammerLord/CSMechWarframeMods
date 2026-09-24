@@ -47,6 +47,14 @@ function animateOut(el) {
   setTimeout(() => el.remove(), 300);
 }
 
+/** Give the large card its small card's frame (rarity) class and the sheet's frame suite. */
+function applyFrame(el, sheet, card) {
+  for (const cls of [...el.classList]) if (cls.startsWith("frame-")) el.classList.remove(cls);
+  const frame = [...card.classList].find(cls => cls.startsWith("frame-"));
+  if (frame) el.classList.add(frame);
+  el.classList.toggle("ccs-hc", !!sheet.element?.querySelector(".ccs-root.ccs-hc"));
+}
+
 class CardPopoverManager {
   #el = null;
   #sheet = null;
@@ -110,6 +118,7 @@ class CardPopoverManager {
     const el = document.createElement("section");
     el.className = "ccs-popover";
     applyTheme(el, sheet);
+    applyFrame(el, sheet, card);
     el.setAttribute("role", "dialog");
     el.setAttribute("aria-label", cs.displayName(item));
     if ("popover" in HTMLElement.prototype) el.setAttribute("popover", "manual");
@@ -173,6 +182,7 @@ class CardPopoverManager {
     const scrollTop = scroller?.scrollTop ?? 0;
     this.#el.innerHTML = html;
     applyTheme(this.#el, sheet);
+    applyFrame(this.#el, sheet, card);
     const next = this.#el.querySelector(".ccs-pop-desc");
     if (next) next.scrollTop = scrollTop;
     this.#position();

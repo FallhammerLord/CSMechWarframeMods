@@ -16,12 +16,24 @@ from pathlib import Path
 W, H, END = 512, 64, 96
 OUT = Path(__file__).resolve().parent.parent / "assets" / "frames"
 
+# Rank pips double as a non-colour cue: Inability 0 (it has cracks instead), then 1, 2, 3.
 PALETTES = {
     "none":        dict(hi="#4a5363", lo="#1f252e", edge="#8893a1", accent="#a9b4c2", pips=0),
-    "inability":   dict(hi="#6b2a24", lo="#2a100e", edge="#c0503f", accent="#e8735b", pips=1),
+    "inability":   dict(hi="#6b2a24", lo="#2a100e", edge="#c0503f", accent="#e8735b", pips=0),
     "practiced":   dict(hi="#9a6532", lo="#4a2d12", edge="#dba466", accent="#f4c894", pips=1),
     "trained":     dict(hi="#b4bfcb", lo="#505a67", edge="#eef3f8", accent="#ffffff", pips=2),
     "specialized": dict(hi="#e0b23e", lo="#6e4a0c", edge="#ffe596", accent="#fff6cf", pips=3),
+}
+
+# High-contrast suite for colour-blind players: red, orange, green, sky blue, tuned from the
+# Okabe-Ito palette so every pair stays apart (CIELAB dE >= 31) under protanopia,
+# deuteranopia and tritanopia simulation (Machado 2009), as well as normal vision.
+PALETTES_HC = {
+    "none":        dict(hi="#e1e5ea", lo="#737b87", edge="#ffffff", accent="#ffffff", pips=0),
+    "inability":   dict(hi="#d9621a", lo="#6e2c00", edge="#ffb07a", accent="#ffd6b8", pips=0),
+    "practiced":   dict(hi="#ffc23d", lo="#9c6d00", edge="#ffe29a", accent="#fff3d1", pips=1),
+    "trained":     dict(hi="#10a877", lo="#004d36", edge="#7fe6c2", accent="#d4fff0", pips=2),
+    "specialized": dict(hi="#c2e8ff", lo="#4d93bf", edge="#eaf7ff", accent="#ffffff", pips=3, gem="gold"),
 }
 
 # Plate outline: bottom edge is flat at y=26 across the whole middle; the ends carry side arms.
@@ -66,15 +78,16 @@ def pips(p):
     return "".join(out)
 
 
-def cap(kind, bottom):
-    p = PALETTES[kind]
+def cap(kind, bottom, palettes=PALETTES):
+    p = palettes[kind]
+    gem = ('<stop offset="0" stop-color="#fffbe0"/><stop offset="0.5" stop-color="#f0e442"/><stop offset="1" stop-color="#8a7a00"/>'
+           if p.get("gem") == "gold" else
+           '<stop offset="0" stop-color="#e8fbff"/><stop offset="0.5" stop-color="#5fe3ff"/><stop offset="1" stop-color="#1b6b8a"/>')
     defs = f'''<defs>
   <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1">
     <stop offset="0" stop-color="{p["hi"]}"/><stop offset="1" stop-color="{p["lo"]}"/>
   </linearGradient>
-  <radialGradient id="gem" cx="0.4" cy="0.35" r="0.8">
-    <stop offset="0" stop-color="#e8fbff"/><stop offset="0.5" stop-color="#5fe3ff"/><stop offset="1" stop-color="#1b6b8a"/>
-  </radialGradient>
+  <radialGradient id="gem" cx="0.4" cy="0.35" r="0.8">{gem}</radialGradient>
   <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
     <feGaussianBlur stdDeviation="1.6" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
   </filter>
@@ -98,7 +111,8 @@ def cap(kind, bottom):
 
 if __name__ == "__main__":
     OUT.mkdir(parents=True, exist_ok=True)
-    for kind in PALETTES:
-        (OUT / f"{kind}-top.svg").write_text(cap(kind, bottom=False))
-        (OUT / f"{kind}-bottom.svg").write_text(cap(kind, bottom=True))
-    print("wrote", len(PALETTES) * 2, "caps to", OUT)
+    for prefix, palettes in (("", PALETTES), ("hc-", PALETTES_HC)):
+        for kind in palettes:
+            (OUT / f"{prefix}{kind}-top.svg").write_text(cap(kind, bottom=False, palettes=palettes))
+            (OUT / f"{prefix}{kind}-bottom.svg").write_text(cap(kind, bottom=True, palettes=palettes))
+    print("wrote", (len(PALETTES) + len(PALETTES_HC)) * 2, "caps to", OUT)

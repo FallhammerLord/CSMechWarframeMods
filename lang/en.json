@@ -140,7 +140,9 @@
       "ArmorImage": "Armor image",
       "Badge": "Badge",
       "BadgeImage": "Image",
-      "BadgeOpacity": "Opacity"
+      "BadgeOpacity": "Opacity",
+      "HighContrastFrames": "High-contrast frames (colour-blind friendly)",
+      "HighContrastFramesHint": "Card frames and training colours use red, orange, green and sky blue instead of bronze, silver and gold. Rank pips on the frames (none to three) also mark the level."
     },
     "Frames": {
       "Title": "Card frames",
@@ -164,23 +166,28 @@
       "Set": {
         "none": {
           "label": "No training",
-          "rarity": "Steel · equipment, cyphers and other untrained items"
+          "rarity": "Steel · equipment, cyphers and other untrained items",
+          "rarityHc": "Light steel"
         },
         "inability": {
           "label": "Inability",
-          "rarity": "Damaged"
+          "rarity": "Damaged",
+          "rarityHc": "Red"
         },
         "practiced": {
           "label": "Practiced",
-          "rarity": "Bronze"
+          "rarity": "Bronze",
+          "rarityHc": "Orange"
         },
         "trained": {
           "label": "Trained",
-          "rarity": "Silver"
+          "rarity": "Silver",
+          "rarityHc": "Green"
         },
         "specialized": {
           "label": "Specialized",
-          "rarity": "Gold"
+          "rarity": "Gold",
+          "rarityHc": "Sky blue"
         }
       },
       "Guide": {
@@ -202,6 +209,16 @@
         "none": "None",
         "glow": "Glow",
         "shimmer": "Shimmer"
+      },
+      "Suite": {
+        "standard": {
+          "label": "Standard frames",
+          "hint": "Warframe-style rarity: steel, damaged, bronze, silver and gold. Used by every character unless their sheet has High-contrast frames turned on."
+        },
+        "contrast": {
+          "label": "High-contrast frames",
+          "hint": "Colour-blind-friendly: red, orange, green and sky blue, chosen to stay distinct for protan, deutan and tritan colour vision. Each character's sheet can switch to these in Settings → Sheet layout."
+        }
       }
     }
   }

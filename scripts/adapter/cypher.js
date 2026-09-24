@@ -309,6 +309,11 @@ export function armorImage(actor) {
   return {path: `flags.${MODULE_ID}.armorImage`, value: clean, placeholder: ARMOR_IMAGE};
 }
 
+/** Colour-blind-friendly frame suite for this actor's cards (module flag). */
+export function highContrastFrames(actor) {
+  return {path: `flags.${MODULE_ID}.highContrastFrames`, value: !!actor.getFlag(MODULE_ID, "highContrastFrames")};
+}
+
 /** Square (default) or double-tall portrait box (module flag). */
 export function portraitTall(actor) {
   return {path: `flags.${MODULE_ID}.portraitTall`, value: !!actor.getFlag(MODULE_ID, "portraitTall")};

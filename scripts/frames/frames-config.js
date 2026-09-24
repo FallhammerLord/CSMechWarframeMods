@@ -5,7 +5,7 @@
 
 import {MODULE_ID, TEMPLATE_PATH, t} from "../constants.js";
 import {
-  FRAME_EFFECTS, FRAME_KEYS, FRAME_SETTING, RECOMMENDED, buildFrameCss, defaultFrames, getFrames, normalizeFrames
+  FRAME_EFFECTS, FRAME_KEYS, FRAME_SETTING, FRAME_SUITES, RECOMMENDED, buildFrameCss, defaultFrames, getFrames, normalizeFrames
 } from "./frames.js";
 
 const {HandlebarsApplicationMixin, ApplicationV2} = foundry.applications.api;
@@ -35,15 +35,23 @@ export class CardFramesConfig extends HandlebarsApplicationMixin(ApplicationV2) 
   async _prepareContext(options) {
     const frames = this.#showDefaults ? defaultFrames() : getFrames();
     this.#showDefaults = false;
+    const effects = Object.fromEntries(FRAME_EFFECTS.map(e => [e, t(`Frames.Effect.${e}`)]));
     return {
       enabled: frames.enabled,
       recommended: RECOMMENDED,
-      sets: FRAME_KEYS.map(key => ({
-        key,
-        label: t(`Frames.Set.${key}.label`),
-        rarity: t(`Frames.Set.${key}.rarity`),
-        ...frames.sets[key],
-        effects: Object.fromEntries(FRAME_EFFECTS.map(e => [e, t(`Frames.Effect.${e}`)]))
+      suites: FRAME_SUITES.map(suite => ({
+        suite,
+        label: t(`Frames.Suite.${suite}.label`),
+        hint: t(`Frames.Suite.${suite}.hint`),
+        contrast: suite === "contrast",
+        sets: FRAME_KEYS.map(key => ({
+          key,
+          suite,
+          label: t(`Frames.Set.${key}.label`),
+          rarity: t(`Frames.Set.${key}.${suite === "contrast" ? "rarityHc" : "rarity"}`),
+          ...frames.suites[suite].sets[key],
+          effects
+        }))
       }))
     };
   }
