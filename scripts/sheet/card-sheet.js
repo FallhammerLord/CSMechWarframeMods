@@ -108,7 +108,8 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       isGM: game.user.isGM,
       identity: cs.identity(actor),
       design: cs.sheetDesign(actor),
-      layout: {portraitTall: cs.portraitTall(actor).value, highContrast: cs.highContrastFrames(actor).value}
+      layout: {portraitTall: cs.portraitTall(actor).value, highContrast: cs.highContrastFrames(actor).value,
+        compact: cs.compactMode(actor).active}
     });
 
     if (limited) {
@@ -138,7 +139,7 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       locked: state.staticStatsLocked,
       pools,
       poolSeparator: cs.poolSeparator(),
-      logo: pools.some(p => p.additional) ? null : context.design.logo,
+      logo: pools.some(p => p.additional) || context.layout.compact ? null : context.design.logo,
       damageTrack: cs.damageTrack(actor),
       stress: cs.stress(actor),
       armor: cs.armorTotals(actor),
@@ -178,6 +179,7 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
       movement: cs.movementRanges(actor),
       portraitTall: cs.portraitTall(actor),
       highContrast: cs.highContrastFrames(actor),
+      compact: cs.compactMode(actor),
       armorImage: cs.armorImage(actor),
       badge: cs.badge(actor),
       cardsTab: cs.cardsTab(actor),
@@ -333,12 +335,16 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
    */
   static MIN_WIDTH = {square: 800, tall: 835};
 
+  /** Floors for the compact layout; the measured width normally governs. */
+  static MIN_WIDTH_COMPACT = {square: 520, tall: 560};
+
   /** Minimum width measured from the rendered header in the live client (fonts included). */
   #measuredMinWidth = 0;
 
   get minWidth() {
-    const fallback = cs.portraitTall(this.actor).value ? CypherCardSheet.MIN_WIDTH.tall : CypherCardSheet.MIN_WIDTH.square;
-    return Math.max(fallback, this.#measuredMinWidth);
+    const tall = cs.portraitTall(this.actor).value;
+    const floors = cs.compactMode(this.actor).active ? CypherCardSheet.MIN_WIDTH_COMPACT : CypherCardSheet.MIN_WIDTH;
+    return Math.max(tall ? floors.tall : floors.square, this.#measuredMinWidth);
   }
 
   /**
@@ -351,17 +357,44 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     const header = top?.querySelector(".ccs-header");
     const content = this.element?.querySelector(".window-content");
     if (!header || !content) return;
-    const previous = header.style.width;
-    header.style.width = "min-content";
-    const headerMin = header.getBoundingClientRect().width;
-    header.style.width = previous;
     const style = getComputedStyle(top);
-    const portrait = top.querySelector(".ccs-portrait-wrap")?.getBoundingClientRect().width ?? 0;
     const padding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
     const chrome = this.element.offsetWidth - content.clientWidth;
-    this.#measuredMinWidth = Math.ceil(portrait + (parseFloat(style.columnGap) || 0) + headerMin + padding + chrome + 4);
+    const portrait = top.querySelector(".ccs-portrait-wrap")?.getBoundingClientRect().width ?? 0;
+    const gap = parseFloat(style.columnGap) || 0;
+    const topWidth = top.classList.contains("is-compact") ? this.#compactTopWidth(top, portrait, gap) : (() => {
+      const previous = header.style.width;
+      header.style.width = "min-content";
+      const headerMin = header.getBoundingClientRect().width;
+      header.style.width = previous;
+      return portrait + gap + headerMin;
+    })();
+    this.#measuredMinWidth = Math.ceil(topWidth + padding + chrome + 4);
     this.element.style.setProperty("--ccs-sheet-min-width", `${this.minWidth}px`);
     if (this.position.width < this.minWidth) this.setPosition({width: this.minWidth});
+  }
+
+  /**
+   * Compact: the header sits on the pools' three equal columns. The narrowest top row is the one
+   * where a third still fits Tier/Effort/XP and the identity block fits its two-thirds share.
+   */
+  #compactTopWidth(top, portrait, gap) {
+    const minContent = el => {
+      if (!el) return 0;
+      const previous = el.style.width;
+      el.style.width = "min-content";
+      const width = el.getBoundingClientRect().width;
+      el.style.width = previous;
+      return width;
+    };
+    const vitals = minContent(top.querySelector(".ccs-vitals"));
+    const identity = minContent(top.querySelector(".ccs-identity"));
+    if (top.classList.contains("is-tall")) {
+      const third = Math.max(vitals, (identity - gap) / 2);
+      return portrait + (3 * gap) + (3 * third);
+    }
+    const third = Math.max(vitals, (identity + portrait) / 2);
+    return (3 * third) + (2 * gap);
   }
 
   /** Every move and resize (including dragging the resize handle) passes through here. */

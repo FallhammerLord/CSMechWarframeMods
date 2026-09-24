@@ -143,6 +143,10 @@
       "Badge": "Badge",
       "BadgeImage": "Image",
       "BadgeOpacity": "Opacity",
+      "Compact": "Compact layout",
+      "CompactHint": "Three pools, with Tier, Effort and XP above the third, and a narrower sheet.",
+      "CompactBlocksPool": "Turn off Compact layout to use the Additional Pool.",
+      "PoolBlocksCompact": "Turn off the Additional Pool to use Compact layout.",
       "HighContrastFrames": "High-contrast frames (colour-blind friendly)",
       "HighContrastFramesHint": "Card frames and training colours use red, orange, green and sky blue instead of bronze, silver and gold. Rank pips on the frames (none to three) also mark the level."
     },

@@ -1,4 +1,33 @@
-<div class="ccs-top{{#if layout.portraitTall}} is-tall{{/if}}">
+{{#*inline "ccsName"}}
+<input class="ccs-name" type="text" name="{{identity.namePath}}" value="{{identity.name}}" data-tooltip="{{identity.name}}" data-tooltip-value
+             placeholder="{{localize 'CYPHERSYSTEM.Name'}}" aria-label="{{localize 'CYPHERSYSTEM.Name'}}">
+{{/inline}}
+{{#*inline "ccsForm"}}
+{{#if identity.showFormSelect}}
+        <select name="system.basic.unmaskedForm" aria-label="{{localize 'CCS.Header.Form'}}">
+          {{selectOptions settings.choices.unmaskedForm selected=system.basic.unmaskedForm}}
+        </select>
+      {{/if}}
+{{/inline}}
+{{#*inline "ccsDescriptor"}}
+<input type="text" name="{{identity.descriptorPath}}" value="{{identity.descriptor}}" data-tooltip="{{identity.descriptor}}" data-tooltip-value
+             placeholder="{{localize 'CYPHERSYSTEM.Descriptor'}}" aria-label="{{localize 'CYPHERSYSTEM.Descriptor'}}">
+{{/inline}}
+{{#*inline "ccsType"}}
+<input type="text" name="system.basic.type" value="{{identity.type}}" data-tooltip="{{identity.type}}" data-tooltip-value
+               placeholder="{{localize 'CYPHERSYSTEM.Type'}}" aria-label="{{localize 'CYPHERSYSTEM.Type'}}">
+{{/inline}}
+{{#*inline "ccsFocus"}}
+<input type="text" name="system.basic.focus" value="{{identity.focus}}" data-tooltip="{{identity.focus}}" data-tooltip-value {{#if identity.focusLocked}}disabled{{/if}}
+               placeholder="{{localize 'CYPHERSYSTEM.Focus'}}" aria-label="{{localize 'CYPHERSYSTEM.Focus'}}">
+{{/inline}}
+{{#*inline "ccsSentenceField"}}
+{{#if identity.showSentence}}
+  <input type="text" name="system.basic.additionalSentence" value="{{identity.sentence}}" data-tooltip="{{identity.sentence}}" data-tooltip-value {{#if identity.focusLocked}}disabled{{/if}}
+         placeholder="{{identity.sentencePlaceholder}}" aria-label="{{identity.sentencePlaceholder}}">
+{{/if}}
+{{/inline}}
+<div class="ccs-top{{#if layout.portraitTall}} is-tall{{/if}}{{#if layout.compact}} is-compact{{/if}}">
   <div class="ccs-portrait-wrap">
     <img class="ccs-portrait" src="{{identity.img}}" alt="{{identity.name}}"
          {{#if editable}}data-action="editImage" data-path="{{identity.imgPath}}" role="button" tabindex="0" title="{{localize 'CCS.Header.EditImage'}}"{{/if}}>
@@ -18,37 +47,58 @@
 
 <header class="ccs-header">
   <div class="ccs-identity">
+    {{#if layout.compact}}
+      {{!-- Compact: "Name is a Descriptor Type" / "who Focus (sentence)". --}}
+      <div class="ccs-sentence ccs-sentence-compact">
+        {{> ccsName}}
+        <span class="ccs-joiner">{{identity.isLabel}}</span>
+        {{> ccsDescriptor}}
+        {{#unless identity.teen}}{{> ccsType}}{{/unless}}
+      </div>
+      <div class="ccs-sentence ccs-sentence-compact">
+        {{#unless identity.teen}}
+          <span class="ccs-joiner">{{localize 'CYPHERSYSTEM.Who'}}</span>
+          {{> ccsFocus}}
+          {{> ccsSentenceField}}
+        {{/unless}}
+        {{> ccsForm}}
+      </div>
+    {{else}}
     <div class="ccs-row">
-      <input class="ccs-name" type="text" name="{{identity.namePath}}" value="{{identity.name}}" data-tooltip="{{identity.name}}" data-tooltip-value
-             placeholder="{{localize 'CYPHERSYSTEM.Name'}}" aria-label="{{localize 'CYPHERSYSTEM.Name'}}">
-      {{#if identity.showFormSelect}}
-        <select name="system.basic.unmaskedForm" aria-label="{{localize 'CCS.Header.Form'}}">
-          {{selectOptions settings.choices.unmaskedForm selected=system.basic.unmaskedForm}}
-        </select>
-      {{/if}}
+      {{> ccsName}}
+      {{> ccsForm}}
     </div>
     <div class="ccs-sentence">
       <span class="ccs-joiner">{{identity.isLabel}}</span>
-      <input type="text" name="{{identity.descriptorPath}}" value="{{identity.descriptor}}" data-tooltip="{{identity.descriptor}}" data-tooltip-value
-             placeholder="{{localize 'CYPHERSYSTEM.Descriptor'}}" aria-label="{{localize 'CYPHERSYSTEM.Descriptor'}}">
+      {{> ccsDescriptor}}
       {{#unless identity.teen}}
-        <input type="text" name="system.basic.type" value="{{identity.type}}" data-tooltip="{{identity.type}}" data-tooltip-value
-               placeholder="{{localize 'CYPHERSYSTEM.Type'}}" aria-label="{{localize 'CYPHERSYSTEM.Type'}}">
+        {{> ccsType}}
         <span class="ccs-joiner">{{localize 'CYPHERSYSTEM.Who'}}</span>
-        <input type="text" name="system.basic.focus" value="{{identity.focus}}" data-tooltip="{{identity.focus}}" data-tooltip-value {{#if identity.focusLocked}}disabled{{/if}}
-               placeholder="{{localize 'CYPHERSYSTEM.Focus'}}" aria-label="{{localize 'CYPHERSYSTEM.Focus'}}">
-        {{#if identity.showSentence}}
-          <input type="text" name="system.basic.additionalSentence" value="{{identity.sentence}}" data-tooltip="{{identity.sentence}}" data-tooltip-value {{#if identity.focusLocked}}disabled{{/if}}
-                 placeholder="{{identity.sentencePlaceholder}}" aria-label="{{identity.sentencePlaceholder}}">
-        {{/if}}
+        {{> ccsFocus}}
+        {{> ccsSentenceField}}
       {{/unless}}
     </div>
+    {{/if}}
     <div class="ccs-advancement">
       <span class="ccs-label">{{localize 'CCS.Header.Advancement'}}</span>
       {{#each identity.advancement}}
-        <label class="ccs-check">
-          <input type="checkbox" name="{{path}}" {{checked checked}} {{#if @root.locked}}disabled{{/if}}> {{label}}
-        </label>
+        {{#if @root.layout.compact}}
+          {{!-- Icon checkboxes: filled when checked (shape, not only colour); the name is the tooltip. --}}
+          <label class="ccs-adv-icon" data-tooltip="{{label}}">
+            <input type="checkbox" name="{{path}}" {{checked checked}} {{#if @root.locked}}disabled{{/if}} aria-label="{{label}}">
+            <svg class="ccs-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              {{#if (eq key "stats")}}<path fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" d="M5.5 19v-5M12 19V9.5M18.5 19V5"/>{{/if}}
+              {{#if (eq key "effort")}}<path fill="currentColor" d="M13.5 2 4.5 13.5h6.2L9.8 22l9.2-12h-6.3z"/>{{/if}}
+              {{#if (eq key "edge")}}<path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" d="M12 2.5 19.5 12 12 21.5 4.5 12z"/><path fill="currentColor" d="M12 2.5 19.5 12H4.5z" opacity="0.55"/>{{/if}}
+              {{#if (eq key "skill")}}<path fill="currentColor" d="m12 2.8 2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3-4.6-4.4 6.3-.9z"/>{{/if}}
+              {{#if (eq key "other")}}<g fill="currentColor"><circle cx="5.5" cy="12" r="2.3"/><circle cx="12" cy="12" r="2.3"/><circle cx="18.5" cy="12" r="2.3"/></g>{{/if}}
+            </svg>
+          </label>
+        {{else}}
+          <label class="ccs-check">
+            <input type="checkbox" name="{{path}}" {{checked checked}} {{#if @root.locked}}disabled{{/if}}> {{label}}
+          </label>
+        {{/if}}
       {{/each}}
       <button type="button" class="ccs-icon-btn" data-action="resetAdvancement" title="{{localize 'CYPHERSYSTEM.ResetAdvancement'}}"
               aria-label="{{localize 'CYPHERSYSTEM.ResetAdvancement'}}" {{#unless editable}}disabled{{/unless}}>

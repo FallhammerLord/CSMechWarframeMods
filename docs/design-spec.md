@@ -346,7 +346,17 @@ Levels 3–5 fit in the sheet's Settings tab as a small grid of dropdowns.
 
 ---
 
-## 14. Catalogue: "standard window" (scaled-down) mode (not built)
+## 14. Compact layout (built in 0.4.0-alpha.1) and the earlier "standard window" catalogue
+
+**What was built** (a layout change, not a scale; text and 24px targets keep their sizes):
+- Per-actor flag `flags.cypher-card-sheet.compact`, blocked while the Additional Pool is on and vice versa (the blocked toggle is disabled with a tooltip; nothing is switched automatically). An actor with both on (e.g. the pool enabled from the default sheet) shows the full layout, and the Compact toggle stays enabled so it can be turned off.
+- `.ccs-top.is-compact` uses three equal columns from `--ccs-third`; `.ccs-header` is `display: contents` so the identity block takes two thirds (less the portrait when square) and Tier/Effort/XP takes the third, directly over the third pool. Tall portrait: the portrait spans both rows and the thirds are taken from the remaining width.
+- Two sentence rows with equal-width fields; Advancement as icon checkboxes.
+- Minimum width: the smallest top row where a third fits Tier/Effort/XP and the identity block fits its share, measured in the client (`#compactTopWidth`). Floors 520px / 560px. Verified in Chromium: ~570px square, ~650px tall, with no overflow above those widths and the vitals column matching the third pool to the pixel.
+
+The catalogue below was the original scoping.
+
+### Original catalogue: "standard window" (scaled-down) mode
 
 **Goal:** a smaller sheet, about the size of the system's default PC sheet (650 × 750), that keeps every function of the full card sheet.
 

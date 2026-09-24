@@ -1,5 +1,5 @@
 {{#*inline "ccsCheck"}}
-  <label class="ccs-check"><input type="checkbox" name="{{name}}" {{checked value}}> {{label}}</label>
+  <label class="ccs-check{{#if disabled}} is-disabled{{/if}}" {{#if tooltip}}data-tooltip="{{tooltip}}"{{/if}}><input type="checkbox" name="{{name}}" {{checked value}} {{#if disabled}}disabled{{/if}}> {{label}}</label>
 {{/inline}}
 {{#*inline "ccsText"}}
   <label class="ccs-field"><span>{{label}}</span><input type="text" name="{{name}}" value="{{value}}" placeholder="{{placeholder}}"></label>
@@ -50,14 +50,16 @@
     <h4 class="ccs-fieldset-title">{{localize 'CCS.Settings.General'}}</h4>
     {{#if @root.identity.teen}}
       {{> ccsCheck name="system.teen.settings.general.rollTwoD20" value=@root.settings.teenGeneral.rollTwoD20 label=(localize "CYPHERSYSTEM.RollTwoD20")}}
-      {{> ccsCheck name="system.teen.settings.general.additionalPool.active" value=@root.settings.teenGeneral.additionalPool.active label=(localize "CYPHERSYSTEM.AdditionalPoolSetting")}}
+      {{> ccsCheck name="system.teen.settings.general.additionalPool.active" value=@root.settings.teenGeneral.additionalPool.active label=(localize "CYPHERSYSTEM.AdditionalPoolSetting")
+          disabled=@root.settings.compact.active tooltip=(ifThen @root.settings.compact.active (localize "CCS.Settings.CompactBlocksPool") "")}}
       {{> ccsText name="system.teen.settings.general.additionalPool.name" value=@root.settings.teenGeneral.additionalPool.name label=(localize "CCS.Settings.Label") placeholder=(localize "CYPHERSYSTEM.AdditionalPool")}}
     {{else}}
       {{> ccsSelect name="system.settings.general.gameMode" value=s.general.gameMode choices=@root.settings.choices.gameMode label=(localize "CYPHERSYSTEM.GameMode")}}
       {{> ccsCheck name="system.settings.general.additionalSentence.active" value=s.general.additionalSentence.active label=(localize "CYPHERSYSTEM.AdditionalSentenceField")}}
       {{> ccsText name="system.settings.general.additionalSentence.label" value=s.general.additionalSentence.label label=(localize "CCS.Settings.Label") placeholder=(localize "CYPHERSYSTEM.AdditionalSentence")}}
       {{> ccsCheck name="system.settings.general.rollTwoD20" value=s.general.rollTwoD20 label=(localize "CYPHERSYSTEM.RollTwoD20")}}
-      {{> ccsCheck name="system.settings.general.additionalPool.active" value=s.general.additionalPool.active label=(localize "CYPHERSYSTEM.AdditionalPoolSetting")}}
+      {{> ccsCheck name="system.settings.general.additionalPool.active" value=s.general.additionalPool.active label=(localize "CYPHERSYSTEM.AdditionalPoolSetting")
+          disabled=@root.settings.compact.active tooltip=(ifThen @root.settings.compact.active (localize "CCS.Settings.CompactBlocksPool") "")}}
       {{> ccsText name="system.settings.general.additionalPool.label" value=s.general.additionalPool.label label=(localize "CCS.Settings.Label") placeholder=(localize "CYPHERSYSTEM.AdditionalPool")}}
       {{#if s.general.additionalPool.active}}
         {{> ccsCheck name="system.settings.general.additionalPool.hasEdge" value=s.general.additionalPool.hasEdge label=(localize "CYPHERSYSTEM.AdditionalPoolHasEdge")}}
@@ -78,6 +80,10 @@
     <h4 class="ccs-fieldset-title">{{localize 'CCS.Settings.Layout'}}</h4>
     {{> ccsText name=@root.settings.cardsTab.path value=@root.settings.cardsTab.value label=(localize "CCS.Settings.CardsTabName")
         placeholder=@root.settings.cardsTab.placeholder}}
+    {{> ccsCheck name=@root.settings.compact.path value=@root.settings.compact.value label=(localize "CCS.Settings.Compact")
+        disabled=(and @root.settings.compact.blocked (not @root.settings.compact.value))
+        tooltip=(ifThen @root.settings.compact.blocked (localize "CCS.Settings.PoolBlocksCompact") "")}}
+    <p class="ccs-hint">{{#if @root.settings.compact.blocked}}{{localize "CCS.Settings.PoolBlocksCompact"}}{{else}}{{localize "CCS.Settings.CompactHint"}}{{/if}}</p>
     {{> ccsCheck name=@root.settings.portraitTall.path value=@root.settings.portraitTall.value label=(localize "CCS.Settings.PortraitTall")}}
     {{> ccsCheck name=@root.settings.highContrast.path value=@root.settings.highContrast.value label=(localize "CCS.Settings.HighContrastFrames")}}
     <p class="ccs-hint">{{localize "CCS.Settings.HighContrastFramesHint"}}</p>

@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.0-alpha.1 (compact layout)
+
+- **Compact layout** (per actor, Settings → Sheet layout):
+  - Three pools; Tier, Effort and XP sit directly above the third pool, on the same column.
+  - Sentence in two rows: "Name *is a* Descriptor Type" / "*who* Focus (additional sentence)", equal-width fields that never run past the second pool. Full text is in each field's tooltip.
+  - Advancement as icon checkboxes (pools, effort, edge, skill, other): outlined when open, filled when taken; the name is the tooltip.
+  - Minimum width drops from 800px to about 570px (square portrait) or 650px (tall), measured in the client. Below that, fields would overlap.
+  - The world logo slot is hidden, since it used the fourth pool position.
+- **Compact and Additional Pool exclude each other:** while one is on, the other's toggle is greyed out with a tooltip saying which to turn off. Neither is ever switched for the player; the Additional Pool is a system setting the default sheet also reads.
+
+**Stable before this:** 0.3.0, commit `b649631` (local tag `v0.3.0`).
+
 ## 0.3.0 — stable
 
 The card frames prototype (0.3.0-alpha.1 to alpha.4), tested in a live world and marked stable. No changes since alpha.4. Highlights:

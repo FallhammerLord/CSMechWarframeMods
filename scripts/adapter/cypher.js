@@ -322,6 +322,23 @@ export function highContrastFrames(actor) {
   return {path: `flags.${MODULE_ID}.highContrastFrames`, value: !!actor.getFlag(MODULE_ID, "highContrastFrames")};
 }
 
+/** Whether the actor's Additional Pool (a system setting, read by the default sheet too) is on. */
+export function additionalPoolActive(actor) {
+  const general = isTeen(actor) ? actor.system.teen.settings.general : actor.system.settings.general;
+  return !!general.additionalPool?.active;
+}
+
+/**
+ * Compact layout (module flag): three pools, Tier/Effort/XP over the third, a two-row sentence
+ * and a smaller minimum width. It needs the fourth pool slot, so it is blocked while the
+ * Additional Pool is on, and vice versa; neither setting is ever switched for the player.
+ */
+export function compactMode(actor) {
+  const flag = !!actor.getFlag(MODULE_ID, "compact");
+  const blocked = additionalPoolActive(actor);
+  return {path: `flags.${MODULE_ID}.compact`, value: flag, blocked, active: flag && !blocked};
+}
+
 /** Square (default) or double-tall portrait box (module flag). */
 export function portraitTall(actor) {
   return {path: `flags.${MODULE_ID}.portraitTall`, value: !!actor.getFlag(MODULE_ID, "portraitTall")};
