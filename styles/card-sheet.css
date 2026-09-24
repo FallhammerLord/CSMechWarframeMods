@@ -1463,6 +1463,23 @@
   text-shadow: 0 0 3px #000, 0 1px 2px #000;
 }
 
+/* A linked attack's charges (spec §17), in the free top-left corner */
+.ccs-card-charge {
+  position: absolute;
+  top: 3px;
+  left: 6px;
+  z-index: 1;
+  padding: 0 4px;
+  border: 1px solid var(--frame);
+  border-radius: 999px;
+  background: rgba(16, 21, 29, 0.8);
+  color: var(--ccs-on-art);
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1.35;
+  font-variant-numeric: tabular-nums;
+}
+
 .ccs-fav {
   color: #f0cd6e;
 }
@@ -1901,6 +1918,13 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
+}
+
+.ccs-pop-resource-label em {
+  font-style: normal;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .ccs-pop-resource-value {

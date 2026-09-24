@@ -20,6 +20,9 @@
       {{#if card.archived}}<i class="fa-solid fa-box-archive" title="{{localize 'CCS.Card.Archived'}}"></i>{{/if}}
       {{#if card.favorite}}<i class="fa-solid fa-star ccs-fav" title="{{localize 'CCS.Action.Favorite'}}"></i>{{/if}}
     </span>
+    {{#if card.charge}}
+      <span class="ccs-card-charge"><span class="ccs-visually-hidden">{{card.charge.label}}: </span>{{card.charge.text}}</span>
+    {{/if}}
     <span class="ccs-card-name">{{card.name}}</span>
     {{!-- The item's key number (damage, armor, cost, quantity, level), large and centred. --}}
     <span class="ccs-card-value{{#unless card.value}} is-empty{{/unless}}">{{card.value}}</span>

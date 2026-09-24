@@ -20,15 +20,19 @@ const ACTIONS = {
   castSpell: (actor, item) => cs.castSpell(actor, item),
   quantityDown: (actor, item) => cs.adjustQuantity(item, -1),
   quantityUp: (actor, item) => cs.adjustQuantity(item, 1),
-  resourceDown: (actor, item) => cs.adjustResource(actor, item, -1),
-  resourceUp: (actor, item) => cs.adjustResource(actor, item, 1),
-  socketPick: (actor, item, data) => pickSocket(actor, item, Number(data.slot)),
+  // Charges and sockets act on the artifact: the item itself, or an attack's linked artifact.
+  resourceDown: (actor, item) => cs.adjustResource(actor, cs.artifactHost(actor, item), -1),
+  resourceUp: (actor, item) => cs.adjustResource(actor, cs.artifactHost(actor, item), 1),
+  socketPick: (actor, item, data) => pickSocket(actor, cs.artifactHost(actor, item), Number(data.slot)),
   useSocketed: (actor, item, data) => useSocketed(actor, actor.items.get(data.cypherId)),
   unsocketCypher: (actor, item, data) => {
     const cypher = actor.items.get(data.cypherId);
     return cypher && cs.unsocketCypher(cypher);
   },
-  refreshSockets: (actor, item) => cs.refreshSockets(actor, item),
+  refreshSockets: (actor, item) => {
+    const host = cs.artifactHost(actor, item);
+    return host && cs.refreshSockets(actor, host);
+  },
   damageDown: (actor, item) => cs.adjustLastingDamage(item, -1),
   damageUp: (actor, item) => cs.adjustLastingDamage(item, 1),
   identify: (actor, item) => cs.identify(actor, item),
@@ -47,6 +51,7 @@ const READ_ONLY_ACTIONS = new Set(["sendToChat"]);
 
 /** Choose a cypher for an empty socket from the eligible ones (matching identifier). */
 async function pickSocket(actor, artifact, slot) {
+  if (!artifact) return;
   const {key} = cs.socketSettings(artifact);
   if (!key) return ui.notifications.warn(t("Socket.NoKey", {name: artifact.name}));
   const eligible = cs.eligibleCyphers(actor, artifact);

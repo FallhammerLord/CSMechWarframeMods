@@ -85,6 +85,18 @@ function poolLabel(pool, actor) {
   return L("AnyPool");
 }
 
+/**
+ * The artifact holding an item's charges and sockets: the artifact itself, or an attack's linked
+ * artifact (spec §17). The artifact keeps the only copy, so linked cards always agree.
+ */
+export function artifactHost(actor, item) {
+  if (item.type === "artifact") return item;
+  if (item.type !== "attack") return null;
+  const id = get(item, `flags.${MODULE_ID}.linkedArtifact`);
+  const host = id ? actor?.items.find(i => i.id === id) : null;
+  return host?.type === "artifact" ? host : null;
+}
+
 /** An identified artifact's named counter (spec §15), or null. */
 export function resourceOf(item) {
   if (item.type !== "artifact" || item.system.basic?.identified === false) return null;
@@ -161,6 +173,14 @@ function trainingOf(item) {
   return {key: rating.toLowerCase(), label: L(rating)};
 }
 
+/** Sockets for an artifact or linked attack, and a linked attack's charge badge. */
+function linkedCardData(actor, item) {
+  const host = artifactHost(actor, item);
+  if (!host) return {sockets: null, charge: null};
+  const r = host === item ? null : resourceOf(host);
+  return {sockets: socketView(actor, host), charge: r ? {label: r.label, text: `${r.value}/${r.max}`} : null};
+}
+
 /** Everything the card template needs for one item. */
 export function cardData(item, actor) {
   const b = item.system.basic ?? {};
@@ -192,7 +212,7 @@ export function cardData(item, actor) {
     depletion: item.type === "artifact" && identified && b.depletion ? String(b.depletion) : "",
     isArmor: item.type === "armor",
     isAmmo: item.type === "ammo",
-    sockets: item.type === "artifact" ? socketView(actor, item) : null,
+    ...linkedCardData(actor, item),
     worn: item.type === "armor" && item.system.active !== false,
     spell: item.type === "ability" && item.system.settings?.general?.sorting === "Spell",
     identified,

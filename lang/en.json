@@ -251,6 +251,13 @@
       "Reusable": "Reusable after refresh",
       "GmOnly": "Only the GM can change these."
     },
+    "Link": {
+      "Title": "Linked artifact (Cypher Card Sheet)",
+      "Artifact": "Artifact",
+      "None": "None",
+      "Hint": "The attack card shows and uses this artifact's charges and sockets.",
+      "Unowned": "Link this attack once it belongs to a character, alongside its artifact."
+    },
     "Resource": {
       "Title": "Resource (Cypher Card Sheet)",
       "Name": "Name",

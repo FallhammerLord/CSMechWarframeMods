@@ -3,7 +3,7 @@
  * stored messages are unchanged.
  * - All-in-One roll dialog and item sheets follow the sheet's dark theme.
  * - The roll dialog and roll chat cards show custom pool names.
- * - Artifact and cypher item sheets get the resource and socket fields (spec §15, §16).
+ * - Artifact, cypher and attack item sheets get the resource, socket and link fields (spec §15-17).
  * Baseline: cyphersystem v3.5.2.
  */
 
@@ -64,7 +64,7 @@ function onRenderItemSheet(app, html) {
   const item = app.document ?? app.object;
   const root = rootOf(app, html);
   if (!root || !item) return;
-  if (["artifact", "cypher"].includes(item.type)) addSheetFields(root, item, app.isEditable);
+  if (["artifact", "cypher", "attack"].includes(item.type)) addSheetFields(root, item, app.isEditable);
   const actor = item.parent;
   if (usesCardSheet(actor)) applySystemDark(root, effectiveTheme(actor.sheet) !== "theme-light", "ccs-item-sheet");
 }
@@ -130,12 +130,28 @@ export function socketFieldsHtml(item, editable = true) {
   return fieldsSection(t("Socket.CypherTitle"), rows, note);
 }
 
+/** An attack's link to the artifact whose charges and sockets it shares (spec §17). GM-only. */
+export function linkFieldsHtml(item, editable = true) {
+  const gm = editable && game.user.isGM;
+  const off = gm ? "" : " disabled";
+  if (!item.parent) return fieldsSection(t("Link.Title"), [], t("Link.Unowned"));
+  const artifacts = item.parent.items.filter(i => i.type === "artifact");
+  const current = item.flags?.[MODULE_ID]?.linkedArtifact ?? "";
+  const options = [`<option value="">${t("Link.None")}</option>`]
+    .concat(artifacts.map(a => `<option value="${a.id}"${a.id === current ? " selected" : ""}>${esc(a.name)}</option>`)).join("");
+  return fieldsSection(t("Link.Title"), [
+    settingsRow(t("Link.Artifact"), `<select class="auto-margin settings-input" name="${flagPath("linkedArtifact")}"${off}>${options}</select>`)
+  ], editable && !gm ? t("Socket.GmOnly") : t("Link.Hint"));
+}
+
 function addSheetFields(root, item, editable) {
   const tab = root.querySelector('.tab[data-tab="settings"]');
   if (!tab || tab.querySelector(".ccs-sheet-fields")) return;
-  const html = item.type === "artifact"
-    ? resourceFieldsHtml(item, editable) + socketFieldsHtml(item, editable)
-    : socketFieldsHtml(item, editable);
+  const html = {
+    artifact: () => resourceFieldsHtml(item, editable) + socketFieldsHtml(item, editable),
+    cypher: () => socketFieldsHtml(item, editable),
+    attack: () => linkFieldsHtml(item, editable)
+  }[item.type]();
   tab.insertAdjacentHTML("afterbegin", html);
 }
 

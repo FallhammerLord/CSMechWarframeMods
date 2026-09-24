@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.7.0 — linked attacks
+
+- **Attacks can link to an artifact (spec §17):** for artifacts that are also attacks, such as a Fire Rod. The GM picks a **Linked artifact** on the attack's item sheet (Settings tab). Several attacks can link to one artifact.
+  - The artifact keeps the only copy of its charges and sockets; linked attack cards read and act on it, so every card always agrees.
+  - Attack small card: damage and training unchanged; a charge badge (`3/5`) in the top-left corner, and the artifact's sockets beside the d20.
+  - Attack large card: the artifact's Charges stepper and Sockets section, labelled with the artifact's name.
+  - Charges are spent by hand; rolling an attack doesn't spend one.
+- The link is by item id within one character: moving both items to another character needs the link picked again.
+- Every existing card and sheet state is unchanged (snapshot check).
+
 ## 0.6.0 — cypher sockets
 
 - **Cypher sockets (spec §16):** artifacts can hold up to three cyphers, materia-style.

@@ -3,7 +3,7 @@
 import {MODULE_ID, t} from "../constants.js";
 import * as sys from "./system-imports.js";
 import {L, alt, callApi, capitalize} from "./shared.js";
-import {CARD_TYPES, ROLL_TYPES, cardData, cypherType, isFormula, isZeroCost, itemRollsEnabled, resourceOf} from "./items.js";
+import {CARD_TYPES, ROLL_TYPES, artifactHost, cardData, cypherType, isFormula, isZeroCost, itemRollsEnabled, resourceOf} from "./items.js";
 import {cypherSocket, socketView} from "./sockets.js";
 
 /** d20: the default sheet's exact call (actor-sheet.js `.item-roll`), else post to chat. */
@@ -158,7 +158,7 @@ export async function rollDepletion(actor, item) {
 
 /** Spend or refill an artifact's resource, within 0 to max. Optionally rolls depletion at 0. */
 export async function adjustResource(actor, item, direction) {
-  const r = resourceOf(item);
+  const r = item && resourceOf(item);
   if (!r) return;
   const value = Math.clamp(r.value + (alt() ? 10 : 1) * direction, 0, r.max);
   if (value === r.value) return;
@@ -217,11 +217,14 @@ export function itemControls(actor, item) {
 /** The large card: facts row, description and controls. */
 export async function itemDetail(actor, item) {
   const card = cardData(item, actor);
-  const resource = resourceOf(item);
+  const host = artifactHost(actor, item);
+  const linked = host && host !== item ? host : null;
+  const resource = host ? resourceOf(host) : null;
+  if (resource && linked) resource.source = linked.name;
   const b = item.system.basic ?? {};
   const facts = [];
   if (card.training) facts.push(card.training.label);
-  if (card.value && !resource) facts.push(card.value);
+  if (card.value && !(resource && !linked)) facts.push(card.value);
   if (card.detail) facts.push(card.detail);
   if (item.type === "attack" && b.type) facts.push(b.type);
   if (item.type === "armor" && b.type) facts.push(b.type);
@@ -239,7 +242,8 @@ export async function itemDetail(actor, item) {
   const description = card.identified
     ? await TextEditor.enrichHTML(item.system.description ?? "", {secrets: actor.isOwner, relativeTo: item})
     : `<p class="ccs-muted">${t("Popover.Unidentified")}</p>`;
-  const sockets = item.type === "artifact" ? socketView(actor, item) : null;
+  const sockets = host ? socketView(actor, host) : null;
+  if (sockets && linked) sockets.source = linked.name;
   return {card, facts, resource, sockets, description, controls: itemControls(actor, item)};
 }
 

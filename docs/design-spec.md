@@ -455,3 +455,15 @@ Materia-style slots: an artifact holds up to three cyphers. A socketed cypher st
 **Frames:** no new frame sets; sockets take the card's frame colour.
 
 **Build order:** §15 first (small, self-contained), then §16.
+
+## 17. Linked attacks (built in 0.7.0)
+
+Some artifacts are also attacks (a Fire Rod). The attack links to its artifact; the artifact keeps the only copy of the charges (§15) and sockets (§16), so the cards never disagree.
+
+- **Data:** `flags.cypher-card-sheet.linkedArtifact` on the attack: the artifact's item id on the same actor. `artifactHost(actor, item)` resolves an artifact to itself and an attack to its linked artifact (null if the link is missing or points elsewhere).
+- **Setup:** GM-only select on the attack's item sheet, Settings tab, listing the actor's artifacts. Shown only for owned attacks. Several attacks can link to one artifact.
+- **Attack small card:** damage and training unchanged. A charge badge (`3/5`) in the top-left corner; the artifact's sockets beside the d20.
+- **Attack large card:** the artifact's Charges stepper and Sockets section, labelled "· <artifact name>". All charge and socket actions act on the artifact.
+- **Manual spending:** an attack roll doesn't spend a charge (accidental clicks).
+- **Limit:** links are item ids; moving both items to another actor needs relinking (same transfer gap as §16).
+

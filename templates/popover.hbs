@@ -11,7 +11,7 @@
 </header>
 {{#if resource}}
   <div class="ccs-pop-resource">
-    <span class="ccs-pop-resource-label">{{resource.label}}</span>
+    <span class="ccs-pop-resource-label">{{resource.label}}{{#if resource.source}} <em>· {{resource.source}}</em>{{/if}}</span>
     {{#if editable}}
       <button type="button" class="ccs-pop-control" data-popover-action="resourceDown"
               data-tooltip="{{localize 'CCS.Resource.Spend'}}" aria-label="{{localize 'CCS.Resource.Spend'}}: {{resource.label}}">
@@ -30,7 +30,7 @@
 {{#if sockets}}
   <section class="ccs-pop-sockets" aria-label="{{localize 'CCS.Socket.Title'}}">
     <div class="ccs-pop-sockets-head">
-      <span class="ccs-pop-resource-label">{{localize 'CCS.Socket.Title'}}</span>
+      <span class="ccs-pop-resource-label">{{localize 'CCS.Socket.Title'}}{{#if sockets.source}} <em>· {{sockets.source}}</em>{{/if}}</span>
       {{#if (and editable sockets.anySpent)}}
         <button type="button" class="ccs-pop-control" data-popover-action="refreshSockets"
                 data-tooltip="{{localize 'CCS.Socket.Refresh'}}" aria-label="{{localize 'CCS.Socket.Refresh'}}">
