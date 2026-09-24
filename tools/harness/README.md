@@ -45,3 +45,15 @@ to run one state. Comparing `out/render.log` with `baseline/render.log` checks t
 
 The stand-ins for core Foundry styles are minimal, so this can't catch every interaction with
 core CSS. Test in Foundry before release.
+
+## Large card behaviour
+
+```sh
+node popover-test.mjs
+```
+
+Drives the large card in Chromium, in a normal page and inside an iframe (standing in for a
+detached window): picker panel placement, sockets, inline confirmations, Escape and outside
+clicks. Serves the module over a local HTTP server, since browsers block module imports from
+`file://`.
+

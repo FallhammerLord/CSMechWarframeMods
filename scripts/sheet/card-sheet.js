@@ -6,6 +6,7 @@
 import {MODULE_ID, TEMPLATE_PATH, t} from "../constants.js";
 import * as cs from "../adapter/cypher.js";
 import {CardPopover} from "./popover.js";
+import {ensureFrameStyles} from "../frames/frames.js";
 
 const {HandlebarsApplicationMixin, DialogV2} = foundry.applications.api;
 const {ActorSheetV2} = foundry.applications.sheets;
@@ -195,7 +196,9 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     // Minimum width: measure the header now and again once web fonts have loaded, then widen
     // the window if it's narrower (e.g. after switching to the tall portrait).
     this.#measureMinWidth();
-    document.fonts?.ready.then(() => this.rendered && this.#measureMinWidth());
+    root.ownerDocument.fonts?.ready.then(() => this.rendered && this.#measureMinWidth());
+    // A detached sheet lives in its own window, which needs the generated frame styles too.
+    ensureFrameStyles(root.ownerDocument);
     root.style.setProperty("--ccs-sheet-min-width", `${this.minWidth}px`);
 
     // Armor menu: close on a click outside the tile or on Escape.
@@ -208,10 +211,11 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         this.view.armorMenu = false;
         this.render();
       };
-      document.addEventListener("pointerdown", event => {
+      const doc = root.ownerDocument;
+      doc.addEventListener("pointerdown", event => {
         if (!tile?.contains(event.target)) close();
       }, {capture: true, signal: abort.signal});
-      document.addEventListener("keydown", event => {
+      doc.addEventListener("keydown", event => {
         if (event.key === "Escape") { event.stopPropagation(); close(); }
       }, {capture: true, signal: abort.signal});
     }
@@ -260,11 +264,11 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
   }
 
   #portraitMenu() {
-    const show = (src, title) => new foundry.applications.apps.ImagePopout({
+    const show = (src, title) => this.#openApp(new foundry.applications.apps.ImagePopout({
       src,
       uuid: this.actor.uuid,
       window: {title}
-    }).render({force: true});
+    }), app => app.render({force: true}));
     const tokenSrc = () => this.actor.prototypeToken?.texture?.src;
     return [
       {
@@ -285,6 +289,31 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
         onClick: (event, target) => CypherCardSheet.#onEditImage.call(this, event, target)
       }
     ];
+  }
+
+  /** Whether the sheet is in its own browser window (v14 Detach Window). */
+  get #detached() {
+    return !!this.element && this.element.ownerDocument !== document;
+  }
+
+  /**
+   * Open a window the sheet owns. Detached, it opens as a child, in the sheet's window; attached,
+   * exactly as before (`open`).
+   */
+  #openApp(app, open) {
+    if (this.#detached && typeof this.renderChild === "function") return this.renderChild(app, {force: true});
+    return open(app);
+  }
+
+  /** Moving between windows: the large card lives in the old window, so close it. */
+  _onDetach(...args) {
+    CardPopover.closeFor(this);
+    return super._onDetach?.(...args);
+  }
+
+  _onAttach(...args) {
+    CardPopover.closeFor(this);
+    return super._onAttach?.(...args);
   }
 
   async _onFirstRender(context, options) {
@@ -478,22 +507,22 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     if (!this.isEditable) return;
     const attr = target.dataset.path;
     const FilePicker = foundry.applications.apps.FilePicker.implementation;
-    return new FilePicker({
+    return this.#openApp(new FilePicker({
       type: "image",
       current: foundry.utils.getProperty(this.actor, attr),
       callback: path => this.actor.update({[attr]: path})
-    }).browse();
+    }), picker => picker.browse());
   }
 
   static async #onPickFile(event, target) {
     if (!this.isEditable) return;
     const attr = target.dataset.target;
     const FilePicker = foundry.applications.apps.FilePicker.implementation;
-    return new FilePicker({
+    return this.#openApp(new FilePicker({
       type: "image",
       current: foundry.utils.getProperty(this.actor, attr),
       callback: path => this.actor.update({[attr]: path})
-    }).browse();
+    }), picker => picker.browse());
   }
 
   static #onTogglePopover(event, target) {

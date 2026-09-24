@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.10.0 — detached windows
+
+- **Socket picker is a panel beside the large card** (left or right, by room), matching its height, instead of a separate dialog. Choosing a cypher sockets it at once; the panel explains when nothing is eligible.
+- **Confirmations are inline:** using a single-use socketed cypher, and Alt-click delete, ask in a bar inside the large card instead of a dialog.
+- **Escape steps back one layer:** a confirmation, then the side panel, then the large card.
+- **Detach Window (v14) support:**
+  - The large card, side card and picker open in the sheet's own window, positioned and sized to it, and close on outside clicks and Escape there.
+  - The large card closes when the sheet is detached or re-attached.
+  - The generated card-frame styles are added to a detached sheet's window.
+  - A detached sheet opens its image pickers and artwork viewer as its children, in its window. Attached, they open exactly as before.
+  - Theme and fonts are read from the sheet's own window.
+- **Still in the main window when detached:** the system's All-in-One roll dialog and item sheets (the system's older window framework can't follow), the portrait's right-click menu, the add-item dialog and the tag-delete confirmation.
+- Every card and sheet state is unchanged (snapshot check). New `tools/harness/popover-test.mjs` checks the large card's behaviour in a normal page and in an iframe standing in for a detached window.
+
 ## 0.9.0
 
 - **Effect stars are independent:** minor and major can both be lit, so a banked effect waits for later. A natural 19 or 20 lights its star; no roll clears one. Click a star to turn it on or off. Tooltips read "Minor effect" and "Major effect". A star lit under 0.8.x carries over.

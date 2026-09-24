@@ -476,3 +476,14 @@ Some artifacts are also attacks (a Fire Rod), or pair with other items. Any card
 - **Roll effect stars:** independent since 0.9.0, in `flags.cypher-card-sheet.effects = {minor, major}` (the 0.8.0 `effect` flag is read and replaced). A natural 19 or 20 while not impaired lights that star on the rolling client; no roll clears one, since effects can be banked. The portrait shows two 4-point stars stacked on its left (0.8.1), both toggles: click to light by hand or to clear. Colours are the training tokens (minor = trained, major = specialized), so the high-contrast suite recolours them; lit is filled and glowing, unlit an outline, major larger.
 - **Child windows:** dialogs opened from the large card carry `ccs-pop-child`; clicks and Escape inside them don't close the large card (0.8.1).
 
+## 19. Detached windows (built in 0.10.0)
+
+v14 can detach any ApplicationV2 into its own browser window. Module code still runs in the main window's context, so the global `document` and `window` are the main ones.
+
+- **Large card (popover.js):** built with the main document and appended to the sheet's `ownerDocument` body (adopted); sizing, Escape, outside clicks and resize use the sheet's window. The sheet closes it in `_onDetach` / `_onAttach`.
+- **Side panel:** one slot beside the large card, showing a socketed cypher's card or the socket picker (no separate dialog). Confirmations are an inline bar above the action bar. Escape backs out: confirmation, side panel, large card.
+- **Frames:** `ensureFrameStyles(doc)` adds the generated `<style>` to a sheet's window on render; `applyFrameStyles` updates every such window.
+- **Child windows:** detached, the sheet opens FilePicker and ImagePopout with `renderChild`, so they open in its window; attached, unchanged.
+- **Not covered:** the system's AppV1 windows (All-in-One dialog, item sheets), the portrait ContextMenu (`fixed`, appended to the main body), `Item.createDialog`, and the tag-delete DialogV2.
+- **Test:** `tools/harness/popover-test.mjs` runs the large card attached and inside an iframe (a separate document and window).
+

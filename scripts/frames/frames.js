@@ -148,13 +148,32 @@ export function buildFrameCss(frames, scope = "") {
 
 const STYLE_ID = "ccs-card-frames";
 
-/** Write the live frame rules into the page. Called at ready and whenever the setting changes. */
-export function applyFrameStyles() {
-  let style = document.getElementById(STYLE_ID);
+/** Documents holding the frame rules: the main page, plus any detached sheet windows. */
+const styledDocuments = new Set(globalThis.document ? [globalThis.document] : []);
+
+function writeFrameStyles(doc, css) {
+  let style = doc.getElementById(STYLE_ID);
   if (!style) {
+    // Built with the main document; the detached window adopts it on append.
     style = document.createElement("style");
     style.id = STYLE_ID;
-    document.head.append(style);
+    doc.head.append(style);
   }
-  style.textContent = buildFrameCss(getFrames());
+  style.textContent = css;
+}
+
+/** Write the live frame rules into every styled document. Called at ready and on setting change. */
+export function applyFrameStyles() {
+  const css = buildFrameCss(getFrames());
+  for (const doc of styledDocuments) {
+    if (doc !== document && doc.defaultView?.closed !== false) styledDocuments.delete(doc);
+    else writeFrameStyles(doc, css);
+  }
+}
+
+/** Give a detached window the frame rules (dynamically injected styles aren't copied over). */
+export function ensureFrameStyles(doc) {
+  if (!doc || styledDocuments.has(doc)) return;
+  styledDocuments.add(doc);
+  writeFrameStyles(doc, buildFrameCss(getFrames()));
 }

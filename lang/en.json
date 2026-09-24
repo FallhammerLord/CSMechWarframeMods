@@ -98,6 +98,7 @@
       "SendToChat": "Send to chat",
       "Archive": "Archive",
       "Unarchive": "Unarchive",
+      "DeleteTitle": "Delete item",
       "Delete": "Delete",
       "Edit": "Edit",
       "Pay": "Pay points",
@@ -118,7 +119,8 @@
     "Popover": {
       "Close": "Close",
       "Unidentified": "This item has not been identified yet.",
-      "DeleteTitle": "Delete item",
+      "Delete": "Delete",
+      "Cancel": "Cancel",
       "DeleteConfirm": "Delete <strong>{name}</strong> permanently? This cannot be undone. Archive it instead to keep it."
     },
     "Settings": {
@@ -241,11 +243,11 @@
       "Unsocket": "Unsocket (back to Cyphers)",
       "Show": "Show this cypher's card",
       "Refresh": "Refresh sockets (clear spent marks)",
-      "PickTitle": "Socket a cypher: {name}",
-      "Insert": "Socket",
+      "PickHeading": "Choose a cypher",
+      "Cancel": "Cancel",
+      "UseShort": "Use",
       "NoKey": "{name} has no socket identifier. The GM sets it on the artifact's item sheet.",
       "NoneEligible": "No eligible cyphers. This artifact accepts cyphers with the identifier \"{key}\".",
-      "UseTitle": "Use cypher",
       "UseConfirm": "Use <b>{name}</b>? It will be posted to chat and archived.",
       "ArtifactTitle": "Sockets (Cypher Card Sheet)",
       "CypherTitle": "Socket (Cypher Card Sheet)",

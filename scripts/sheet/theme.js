@@ -1,9 +1,9 @@
 /**
- * The sheet's theme: the nearest `.themed` ancestor (per-document choice), else <body> (the
- * global UI theme). "theme-light", "theme-dark" or undefined.
+ * The sheet's theme: the nearest `.themed` ancestor (per-document choice), else the <body> of the
+ * sheet's window (the global UI theme). "theme-light", "theme-dark" or undefined.
  */
 export function effectiveTheme(sheet) {
-  const themed = sheet?.element?.closest?.(".themed") ?? document.body;
+  const themed = sheet?.element?.closest?.(".themed") ?? sheet?.element?.ownerDocument?.body ?? document.body;
   const [, theme] = themed.className.match(/(?:^|\s)(theme-\w+)/) ?? [];
   return theme;
 }

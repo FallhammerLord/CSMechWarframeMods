@@ -2079,24 +2079,35 @@
   font-style: normal;
 }
 
-/* Socket picker dialog */
-.ccs-socket-choices {
+/* Socket picker panel, beside the large card */
+.ccs-popover .ccs-socket-choices {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  max-height: 320px;
-  overflow-y: auto;
 }
 
-.ccs-socket-choice {
+.ccs-popover .ccs-socket-choice {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 4px;
-  cursor: pointer;
+  width: 100%;
+  min-height: 36px;
+  padding: 3px 6px;
+  border: 1px solid var(--ccs-line);
+  border-radius: var(--ccs-radius);
+  background: var(--ccs-panel);
+  color: var(--ccs-text);
+  font-size: 0.9rem;
+  text-align: left;
+}
+
+.ccs-popover .ccs-socket-choice:hover,
+.ccs-popover .ccs-socket-choice:focus-visible {
+  border-color: var(--ccs-accent);
 }
 
 .ccs-socket-choice img {
+  flex: 0 0 28px;
   width: 28px;
   height: 28px;
   border: none;
@@ -2105,6 +2116,39 @@
 
 .ccs-socket-choice span:first-of-type {
   flex: 1;
+}
+
+/* Inline confirmation, above the action bar */
+.ccs-pop-confirm {
+  display: flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  padding: 8px 10px;
+  border-top: 1px solid var(--ccs-danger);
+  background: var(--ccs-danger-soft);
+}
+
+.ccs-pop-confirm p {
+  flex: 1 1 100%;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.ccs-popover .ccs-pop-confirm .ccs-btn {
+  height: 28px;
+  padding: 0 12px;
+  border: 1px solid var(--ccs-line-strong);
+  border-radius: 4px;
+  background: var(--ccs-panel-2);
+  color: var(--ccs-text);
+}
+
+.ccs-popover .ccs-pop-confirm .ccs-btn.is-danger {
+  border-color: var(--ccs-danger);
+  color: var(--ccs-danger);
 }
 
 .ccs-pop-desc {
