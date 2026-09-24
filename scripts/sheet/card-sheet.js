@@ -17,6 +17,7 @@ export const PARTIALS = [
   `${TEMPLATE_PATH}/parts/header.hbs`,
   `${TEMPLATE_PATH}/parts/status.hbs`,
   `${TEMPLATE_PATH}/parts/cards.hbs`,
+  `${TEMPLATE_PATH}/parts/toolbar.hbs`,
   `${TEMPLATE_PATH}/parts/card.hbs`,
   `${TEMPLATE_PATH}/parts/settings.hbs`
 ];
@@ -187,9 +188,11 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     await super._onRender(context, options);
     const root = this.element;
 
-    // Minimum width follows the portrait mode; widen the window if the mode just changed.
+    // Minimum width: measure the header now and again once web fonts have loaded, then widen
+    // the window if it's narrower (e.g. after switching to the tall portrait).
+    this.#measureMinWidth();
+    document.fonts?.ready.then(() => this.rendered && this.#measureMinWidth());
     root.style.setProperty("--ccs-sheet-min-width", `${this.minWidth}px`);
-    if (this.position.width < this.minWidth) this.setPosition({width: this.minWidth});
 
     // Armor menu: close on a click outside the tile or on Escape.
     this.#armorMenuAbort?.abort();
@@ -286,8 +289,35 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
    */
   static MIN_WIDTH = {square: 800, tall: 835};
 
+  /** Minimum width measured from the rendered header in the live client (fonts included). */
+  #measuredMinWidth = 0;
+
   get minWidth() {
-    return cs.portraitTall(this.actor).value ? CypherCardSheet.MIN_WIDTH.tall : CypherCardSheet.MIN_WIDTH.square;
+    const fallback = cs.portraitTall(this.actor).value ? CypherCardSheet.MIN_WIDTH.tall : CypherCardSheet.MIN_WIDTH.square;
+    return Math.max(fallback, this.#measuredMinWidth);
+  }
+
+  /**
+   * Measure the narrowest window that fits the header: portrait column + the header at its
+   * min-content width (advancement row on one line, Tier/Effort/XP) + padding + window chrome.
+   * Measured in the client because Foundry's fonts and button styles differ from any fixed guess.
+   */
+  #measureMinWidth() {
+    const top = this.element?.querySelector(".ccs-top");
+    const header = top?.querySelector(".ccs-header");
+    const content = this.element?.querySelector(".window-content");
+    if (!header || !content) return;
+    const previous = header.style.width;
+    header.style.width = "min-content";
+    const headerMin = header.getBoundingClientRect().width;
+    header.style.width = previous;
+    const style = getComputedStyle(top);
+    const portrait = top.querySelector(".ccs-portrait-wrap")?.getBoundingClientRect().width ?? 0;
+    const padding = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+    const chrome = this.element.offsetWidth - content.clientWidth;
+    this.#measuredMinWidth = Math.ceil(portrait + (parseFloat(style.columnGap) || 0) + headerMin + padding + chrome + 4);
+    this.element.style.setProperty("--ccs-sheet-min-width", `${this.minWidth}px`);
+    if (this.position.width < this.minWidth) this.setPosition({width: this.minWidth});
   }
 
   /** Every move and resize (including dragging the resize handle) passes through here. */
@@ -371,6 +401,9 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     }
     for (const panel of this.element.querySelectorAll(".ccs-panel")) {
       panel.hidden = panel.dataset.tab !== tab;
+    }
+    for (const bar of this.element.querySelectorAll("[data-tab-owner]")) {
+      bar.hidden = bar.dataset.tabOwner !== tab;
     }
   }
 

@@ -33,6 +33,11 @@
       </div>
     </nav>
 
+    {{!-- The card toolbar stays fixed above the scrolling area. --}}
+    <div class="ccs-toolbar-bar" data-tab-owner="cards" {{#unless (eq view.tab "cards")}}hidden{{/unless}}>
+      {{> "modules/cypher-card-sheet/templates/parts/toolbar.hbs"}}
+    </div>
+
     <div class="ccs-scroll">
       <section class="ccs-panel" data-tab="cards" role="tabpanel" {{#unless (eq view.tab "cards")}}hidden{{/unless}}>
         {{> "modules/cypher-card-sheet/templates/parts/cards.hbs"}}

@@ -1,0 +1,21 @@
+<div class="ccs-toolbar">
+  <div class="ccs-segment" role="group" aria-label="{{localize 'CCS.Grid.Filter'}}">
+    {{#each families}}
+      <button type="button" class="{{#if active}}active{{/if}}" data-action="setFamily" data-family="{{id}}" aria-pressed="{{active}}">{{label}}</button>
+    {{/each}}
+  </div>
+  <label class="ccs-field">
+    <span>{{localize 'CCS.Grid.GroupBy'}}</span>
+    <select data-ccs-local data-ccs-group-mode>{{selectOptions groupModes selected=view.mode}}</select>
+  </label>
+  <label class="ccs-field ccs-search">
+    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+    <input type="search" data-ccs-local data-ccs-search placeholder="{{localize 'CCS.Grid.Search'}}" aria-label="{{localize 'CCS.Grid.Search'}}">
+  </label>
+  <label class="ccs-check">
+    <input type="checkbox" name="system.settings.general.hideArchive" {{checked hideArchive}}> {{localize 'CCS.Grid.HideArchived'}}
+  </label>
+  {{#if editable}}
+    <button type="button" class="ccs-btn" data-action="createItem"><i class="fa-solid fa-plus"></i> {{localize 'CCS.Grid.AddItem'}}</button>
+  {{/if}}
+</div>
