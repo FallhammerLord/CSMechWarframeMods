@@ -248,6 +248,41 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     }
   }
 
+  /** Right-click menu on the portrait: view artwork (as in the Actors directory), change portrait. */
+  _attachFrameListeners() {
+    super._attachFrameListeners();
+    const ContextMenu = foundry.applications.ux.ContextMenu.implementation;
+    new ContextMenu(this.element, ".ccs-portrait", this.#portraitMenu(), {jQuery: false, fixed: true});
+  }
+
+  #portraitMenu() {
+    const show = (src, title) => new foundry.applications.apps.ImagePopout({
+      src,
+      uuid: this.actor.uuid,
+      window: {title}
+    }).render({force: true});
+    const tokenSrc = () => this.actor.prototypeToken?.texture?.src;
+    return [
+      {
+        label: "CCS.Header.ViewArt",
+        icon: "fa-solid fa-image",
+        onClick: (event, target) => show(target.getAttribute("src"), cs.identity(this.actor).name || this.actor.name)
+      },
+      {
+        label: "CCS.Header.ViewTokenArt",
+        icon: "fa-solid fa-circle-user",
+        visible: () => !!tokenSrc() && tokenSrc() !== cs.identity(this.actor).img,
+        onClick: () => show(tokenSrc(), this.actor.prototypeToken?.name || this.actor.name)
+      },
+      {
+        label: "CCS.Header.EditImage",
+        icon: "fa-solid fa-pen-to-square",
+        visible: () => this.isEditable,
+        onClick: (event, target) => CypherCardSheet.#onEditImage.call(this, event, target)
+      }
+    ];
+  }
+
   async _onFirstRender(context, options) {
     await super._onFirstRender(context, options);
     const root = this.element;

@@ -1853,3 +1853,27 @@
   border-color: var(--ccs-accent);
   box-shadow: none;
 }
+
+/* --------------------------------------------------------------------------
+   Small card text outline
+   A medium black outline around the white text on card art, for contrast over bright images.
+   Drawn with shadows (no layout change): eight 1px offsets plus a soft drop shadow. Where
+   supported, paint-order puts a real stroke behind the fill as well.
+   -------------------------------------------------------------------------- */
+
+.ccs-card .ccs-card-top,
+.ccs-card .ccs-card-name,
+.ccs-card .ccs-card-foot {
+  text-shadow:
+    -1px -1px 0 #000, 0 -1px 0 #000, 1px -1px 0 #000,
+    -1px 0 0 #000, 1px 0 0 #000,
+    -1px 1px 0 #000, 0 1px 0 #000, 1px 1px 0 #000,
+    0 1px 3px rgba(0, 0, 0, 0.9);
+}
+
+@supports (paint-order: stroke fill) {
+  .ccs-card .ccs-card-name {
+    -webkit-text-stroke: 2px #000;
+    paint-order: stroke fill;
+  }
+}

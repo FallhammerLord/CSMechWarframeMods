@@ -20,7 +20,9 @@
       "Form": "Form",
       "Advancement": "Advancement",
       "XpDown": "Remove XP",
-      "XpUp": "Add XP"
+      "XpUp": "Add XP",
+      "ViewArt": "View character artwork",
+      "ViewTokenArt": "View token artwork"
     },
     "Pool": {
       "Roll": "Roll {pool}",
