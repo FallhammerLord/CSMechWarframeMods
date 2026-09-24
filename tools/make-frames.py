@@ -54,8 +54,8 @@ def ornaments(kind, p, bottom=False):
         parts.append(f'<path d="M30,4 L38,12 L33,18 L44,24" fill="none" stroke="#120706" stroke-width="2.2" stroke-linecap="round"/>')
         parts.append(f'<path d="M62,2 L58,10 L66,15" fill="none" stroke="#120706" stroke-width="1.8" stroke-linecap="round"/>')
         parts.append(f'<path d="M9,44 L14,48 L10,53" fill="none" stroke="{p["accent"]}" stroke-width="1.5" opacity="0.8"/>')
-    if kind in ("practiced", "trained", "specialized"):
-        # Rivets near the corner.
+    if kind in ("practiced", "trained", "specialized") and not bottom:
+        # Rivets near the corner (the bottom cap gives the space to the rank pips).
         parts.append(f'<circle cx="26" cy="13" r="3.2" fill="{p["lo"]}" stroke="{p["edge"]}" stroke-width="1.4"/>')
     if kind in ("trained", "specialized") and not bottom:
         # Chevrons pointing inward.
@@ -70,11 +70,14 @@ def ornaments(kind, p, bottom=False):
 
 
 def pips(p):
-    """Rank pips in both ends of the bottom cap (drawn in top-cap coordinates, then mirrored)."""
+    """Rank pips in both ends of the bottom cap (drawn in top-cap coordinates, then mirrored).
+    Sized to read as information at card scale (~7.5px), with a dark outline for
+    contrast against the plate, and kept inside the unstretched end (x < 96)."""
     out = []
     for i in range(p["pips"]):
-        x = 44 + i * 13
-        out.append(f'<rect x="{x - 3}" y="11" width="6" height="6" transform="rotate(45 {x} 14)" fill="{p["accent"]}" opacity="0.95"/>')
+        x = 32 + i * 24
+        out.append(f'<rect x="{x - 7.75}" y="5.25" width="15.5" height="15.5" transform="rotate(45 {x} 13)" '
+                   f'fill="{p["accent"]}" stroke="{p["lo"]}" stroke-width="2"/>')
     return "".join(out)
 
 

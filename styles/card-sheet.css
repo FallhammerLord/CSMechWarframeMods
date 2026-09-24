@@ -1653,7 +1653,7 @@
 }
 
 .ccs-card .ccs-cap-top { top: 0; --cap-h: 14px; }
-.ccs-card .ccs-cap-bottom { bottom: 0; --cap-h: 18px; }
+.ccs-card .ccs-cap-bottom { bottom: 0; --cap-h: 22px; }
 .ccs-popover .ccs-cap-top,
 .ccs-frames-large .ccs-cap-top { top: 0; --cap-h: 22px; }
 .ccs-popover .ccs-cap-bottom,

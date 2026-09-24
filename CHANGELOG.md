@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.2
+
+- **Rank pips readable:** the training pips on the bottom frame caps are about three times larger (roughly 7.5px on screen, up from 2.4px), with a dark outline against the plate. The small card's bottom cap is 22px tall (was 18px), matching the large card; the bottom caps drop their corner rivets to make room.
+
 ## 0.4.1 — code tidy-up
 
 No intended visual or behaviour change except the first item.
