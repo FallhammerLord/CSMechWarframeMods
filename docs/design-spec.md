@@ -397,24 +397,46 @@ The catalogue below was the original scoping.
 
 ---
 
-## 15. Artifact resource pools (design only, not built)
+## 15. Artifact resource (designed, not built)
 
-Some artifacts carry their own pool: charges, a battery, an energy reserve. The system has no field for this, so the pool lives in item flags and works on either sheet.
+A named counter on an artifact: charges, battery, heat. Module data only; the system and the default sheet ignore it but keep it.
 
-**Data** (`flags.cypher-card-sheet.pool` on the artifact):
-- `value`, `max`: current and maximum.
-- `label`: what the pool is called ("Charges", "Energy"). Default "Charges".
-- `recharge`: optional text rule ("regains 1 per ten hours") shown only; no automation.
-- `depleteAtZero`: optional; when true, spending the last point triggers the depletion roll.
+**Data** (`flags.cypher-card-sheet.resource` on the artifact):
+- `label`: the resource's name ("Charges"). Empty means no resource.
+- `value`, `max`.
+- `depleteAtZero` (optional): spending the last point triggers the depletion roll.
 
-**Small card:** the pool replaces the centred number as `value / max`, with the label under it. A thin bar along the bottom cap shows the fraction, with the numbers as the non-colour cue.
+**Small card:** the resource is the card's centred number (`3 / 5`), its name in the foot line (artifacts have no training label). No −/+ on the small card: the artifact's main action stays the d20, and the button row belongs to sockets (§16). Ammo keeps its own −/+.
 
-**Large card:** a stepper row (− value / max +), like quantity on ammo. The item's rolls can spend from it: a "Cost" field of N points adds a Spend button that subtracts N, refusing below zero.
+**Large card:** a stepper row, `Charges  − 3 / 5 +` (Alt: ten). Label and max are edited here and on the system's artifact item sheet (fields added through the `renderCypherItemSheet` hook).
 
-**Editing:** fields in the artifact's own item sheet would need a system hook, so the first cut edits them in the large card (GM or owner), behind a "Has resource pool" toggle.
+**Rules:** no automatic recharge; refills are a manual + or an edit. Value stays within 0 to max.
 
-**Open questions:**
-- Should the pool reset on a recovery roll or on a manual button only? Proposal: manual only; recharge rules vary too much.
-- Do cyphers need the same? Proposal: no; they're single-use.
-- Should it show on the default sheet? Flags survive, but the default sheet won't display them. Acceptable for a module feature.
+**Must not change existing cards:** nothing renders unless `label` is set. Checked with the harness snapshot: every existing state identical.
 
+## 16. Cypher sockets (designed, not built)
+
+Materia-style slots: an artifact holds up to three cyphers. A socketed cypher stays a normal item on the actor; the artifact stores links to it.
+
+**Data:**
+- Artifact: `flags.cypher-card-sheet.sockets = {count: 0-3, ids: [cypherId|null, …]}`.
+- Cypher: `flags.cypher-card-sheet.socket = {artifactId, reusable, spent}`.
+
+**Rules:**
+- Cyphers are single-use. Use posts the cypher to chat as the system does, then removes it; the socket empties. Buying the same cypher again is a new item dropped in.
+- Campaign option, per cypher: **Reusable**. Use marks it spent instead of removing it. **Refresh sockets** on the large card clears spent marks (after an intervening scene, at the table's call; no automation).
+- Socketed cyphers don't count toward the cypher limit: they leave the Cyphers group (and its count) and appear only in their artifact's sockets.
+- Housekeeping: a deleted or transferred cypher empties its socket. Transferring the artifact carries its socketed cyphers with it (custom drop handling; the system's drop logic knows nothing of sockets).
+
+**Small card:** up to three 18px sockets left of the d20, depletion on the right (row ≈ 126px of 148px). Sockets are spaced so the 24px target-size spacing exception holds. States by shape, not only colour:
+- empty: dashed ring
+- filled: the cypher's icon in a solid ring in the frame colour
+- spent: dimmed, with a diagonal slash.
+
+Clicking a filled socket opens the large card; dropping a cypher on the artifact card sockets it into the first empty slot.
+
+**Large card:** a Sockets section under the facts row, one wider slot per socket: cypher icon and name, **Use**, **Unsocket** (returns it to the Cyphers group). The socket count (0-3) is set here and on the artifact item sheet. **Refresh sockets** shows when any socket is spent.
+
+**Frames:** no new frame sets; sockets take the card's frame colour.
+
+**Build order:** §15 first (small, self-contained), then §16.
