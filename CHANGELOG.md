@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.0-rc.1 — stability pass
+
+No change to the sheet. This release candidate becomes 1.0.0 once the live-world checklist passes.
+
+- **Release checklist** (`docs/testing-checklist.md`): about 15 minutes in a live world, covering what the harness can't reach (All-in-One rolls, costs, sockets, charges, effect stars, player view, detached windows). Run it before a release and after any Foundry or Cypher System update.
+- **Unit tests** (`tools/harness/unit-test.mjs`, 12 tests): depletion parsing, socket layout and eligibility, charges, artifact links, effect stars. No browser or system checkout needed.
+- **README** brought up to date: the full feature list, Known limitations, and how to test.
+- Compatibility unchanged: Foundry 14, Cypher System 3.5.0 to 3.5.2 (verified). Foundry warns on newer versions.
+
 ## 0.10.2
 
 - **Edit opens the item sheet beside the large card** (right, else left, kept on screen) instead of behind it. Clicking or typing in that item sheet keeps the large card open, and Escape there goes to the item sheet. Clicking anywhere else still closes the large card.

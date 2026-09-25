@@ -19,6 +19,15 @@ export PLAYWRIGHT_MODULES=/path/to/global/node_modules/   # where playwright is 
 export CHROMIUM_PATH=/path/to/chromium                    # optional
 ```
 
+## Unit tests
+
+```sh
+node unit-test.mjs
+```
+
+Tests the adapter's own logic with Foundry mocked: depletion parsing, socket layout and
+eligibility, charges, artifact links and effect stars. Needs no system checkout or browser.
+
 ## Render
 
 ```sh
