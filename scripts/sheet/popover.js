@@ -57,7 +57,7 @@ const ACTIONS = {
   toggleTemporary: (actor, item) => cs.toggleTemporary(item),
   toggleFavorite: (actor, item) => cs.toggleFavorite(item),
   sendToChat: (actor, item) => cs.sendToChat(actor, item),
-  editItem: (actor, item) => item.sheet.render(true),
+  editItem: (actor, item, data, m) => m.openEditor(item),
   archiveItem: (actor, item) => cs.toggleArchive(item)
 };
 
@@ -147,9 +147,21 @@ class CardPopoverManager {
   #preview = null;
   /** An open inline confirmation's resolver. */
   #confirming = null;
+  /** Item sheets opened from the large card: working in them doesn't close it. */
+  #editors = new Set();
+
+  /** Whether a DOM node is inside one of those item sheets. */
+  #inEditor(node) {
+    if (!node?.nodeType) return false;
+    for (const app of this.#editors) {
+      const el = app.element?.[0] ?? app.element;
+      if (el?.contains?.(node)) return true;
+    }
+    return false;
+  }
 
   #onKeyDown = event => {
-    if (event.key !== "Escape" || !this.#el) return;
+    if (event.key !== "Escape" || !this.#el || this.#inEditor(event.target)) return;
     event.preventDefault();
     event.stopPropagation();
     event.stopImmediatePropagation();
@@ -163,6 +175,7 @@ class CardPopoverManager {
     if (!this.#el) return;
     const target = event.target;
     if (this.#el.contains(target) || this.#side?.contains(target) || this.#preview?.contains(target)) return;
+    if (this.#inEditor(target)) return;
     // Card clicks are handled by the card itself (toggle / switch).
     if (target.closest?.(".ccs-card")) return;
     this.close();
@@ -254,6 +267,7 @@ class CardPopoverManager {
     animateOut(this.#el);
     const anchor = this.#anchor;
     this.#setAnchor(null);
+    this.#editors.clear();
     this.#el = this.#sheet = this.#itemId = this.#groupKey = null;
     if (restoreFocus) anchor?.querySelector(".ccs-card-body")?.focus();
   }
@@ -306,6 +320,28 @@ class CardPopoverManager {
     const right = vw - r.right - GAP - MARGIN >= width || r.left - GAP - MARGIN < width;
     const left = right ? Math.min(r.right + GAP, vw - width - MARGIN) : Math.max(r.left - GAP - width, MARGIN);
     return {left: Math.round(left), top: Math.round(Math.max(r.top, MARGIN)), width};
+  }
+
+  /**
+   * Open an item's sheet beside the large card (right, else left), clamped to the window. A
+   * detached sheet's large card is in another window, so there the item sheet opens as usual.
+   */
+  openEditor(item) {
+    const app = item.sheet;
+    if (!app) return;
+    this.#editors.add(app);
+    const V2 = foundry.applications.api?.ApplicationV2;
+    const v2 = V2 && app instanceof V2;
+    if (this.#doc !== document) return v2 ? app.render({force: true}) : app.render(true);
+    const width = Number(app.position?.width) || Number(app.options?.width ?? app.options?.position?.width) || 575;
+    const height = Number(app.position?.height) || Number(app.options?.height ?? app.options?.position?.height) || 675;
+    const pos = this.besidePosition(width);
+    const vh = this.#win.innerHeight;
+    const position = {left: pos.left, top: Math.max(Math.min(pos.top, vh - height - MARGIN), MARGIN)};
+    if (app.rendered) app.setPosition(position);
+    // An AppV1 sheet's first render places itself from its stored position.
+    else if (!v2 && app.position) Object.assign(app.position, position);
+    return v2 ? app.render({force: true, position}) : app.render(true, position);
   }
 
   /** Show a socketed cypher's large card beside this one, or hide it if it's already showing. */

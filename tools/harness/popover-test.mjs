@@ -71,7 +71,22 @@ await page.evaluate(async () => {
         const last = keys.at(-1);
         o[last] = v && typeof v === "object" && o[last] && typeof o[last] === "object" ? {...o[last], ...v} : v;
       }
-    }, get sheet() { return {render() {}}; }});
+    }, get sheet() { return (window.itemSheets ??= {})[id] ??= fakeSheet(id); }});
+  // Stand-in for the system's AppV1 item sheet: opens in the main document at its stored position.
+  const fakeSheet = id => ({position: {width: 575, height: 675, left: null, top: null}, rendered: false, element: null,
+    setPosition(p) { Object.assign(this.position, p); if (this.element) Object.assign(this.element[0].style, {left: `${this.position.left}px`, top: `${this.position.top}px`}); },
+    render() {
+      if (!this.rendered) {
+        const el = document.createElement("div");
+        el.className = "app item-sheet"; el.dataset.item = id;
+        el.style.cssText = `position:fixed;width:${this.position.width}px;height:${this.position.height}px;background:#555`;
+        el.innerHTML = "<input>";
+        document.body.append(el);
+        this.element = [el]; this.rendered = true;
+      }
+      this.setPosition({});
+      return this;
+    }});
   const rod = mk("rod", "artifact", "Lightning rod", {sockets: {enabled: true, count: 3, key: "rod"}});
   const fire = mk("fire", "cypher", "Fire shard", {socket: {enabled: true, key: "rod", artifactId: "rod", slot: 0}});
   const bolt = mk("bolt", "cypher", "Bolt shard", {socket: {enabled: true, key: "ROD "}});
@@ -200,6 +215,31 @@ for (const inFrame of [false, true]) {
     const preview3 = await q(".ccs-popover.is-preview");
     check(`${where}: without room outward, the preview flanks the large card`, preview3?.placement === "flank" && preview3.right <= main3.left + 1);
     await escape(); await escape(); await wait(50);
+
+    // Edit opens the item sheet beside the large card; working in it keeps the card open.
+    await page.evaluate(() => window.sheetDoc.querySelector(".ccs-sheet").remove());
+    await mountSheet(40, 500, false);
+    await open(); await wait(200);
+    const main4 = await q(".ccs-popover:not(.is-side)");
+    await click('[data-popover-action="editItem"]'); await wait(50);
+    const editor = await page.evaluate(() => { const r = document.querySelector(".item-sheet").getBoundingClientRect(); return {left: r.left, top: r.top, bottom: r.bottom}; });
+    check(`${where}: Edit opens the item sheet beside the large card`, editor.left >= main4.right && editor.bottom <= 900);
+    await page.evaluate(() => document.querySelector(".item-sheet input").dispatchEvent(new PointerEvent("pointerdown", {bubbles: true, composed: true})));
+    check(`${where}: clicking in the item sheet keeps the large card open`, await isOpen());
+    await page.evaluate(() => document.querySelector(".item-sheet input").dispatchEvent(new KeyboardEvent("keydown", {key: "Escape", bubbles: true})));
+    check(`${where}: Escape in the item sheet leaves the large card open`, await isOpen());
+    await pointerdown(null); await wait(50);
+    check(`${where}: clicking elsewhere still closes it`, !(await isOpen()));
+    await page.evaluate(() => { document.querySelector(".item-sheet").remove(); window.itemSheets = {}; });
+  } else {
+    // Detached: the item sheet opens in the main window as usual.
+    await page.evaluate(() => window.sheetDoc.querySelector(".ccs-sheet").remove());
+    await mountSheet(40, 500, true);
+    await open(); await wait(200);
+    await click('[data-popover-action="editItem"]'); await wait(50);
+    check(`${where}: Edit opens the item sheet in the main window`, await page.evaluate(() => !!document.querySelector(".item-sheet")) && await isOpen());
+    await escape(); await wait(50);
+    await page.evaluate(() => { document.querySelector(".item-sheet").remove(); window.itemSheets = {}; });
   }
   await page.evaluate(() => { window.sheetDoc.querySelector(".ccs-sheet").remove(); document.querySelector("iframe")?.remove(); });
 }

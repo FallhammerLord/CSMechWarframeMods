@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10.2
+
+- **Edit opens the item sheet beside the large card** (right, else left, kept on screen) instead of behind it. Clicking or typing in that item sheet keeps the large card open, and Escape there goes to the item sheet. Clicking anywhere else still closes the large card.
+- A detached sheet's Edit opens the item sheet in the main window, as before.
+
 ## 0.10.1
 
 - **Socket picker selects, then confirms:** clicking a cypher selects it (highlighted, with a check mark) and shows its large card as a preview beside the picker. Click another to switch. **Socket** in the picker's footer sockets the selection and closes both panels; it stays disabled until something is selected. ✕, Escape or an outside click cancel with nothing socketed.
