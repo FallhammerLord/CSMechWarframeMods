@@ -103,11 +103,13 @@ const mountSheet = (x, y, inFrame) => page.evaluate(async ([x, y, inFrame]) => {
 }, [x, y, inFrame]);
 
 const wait = ms => page.waitForTimeout(ms);
-const q = sel => page.evaluate(sel => { const d = window.sheetDoc; const e = d.querySelector(sel); if (!e) return null; const r = e.getBoundingClientRect(); return {left: r.left, right: r.right, top: r.top, doc: e.ownerDocument === d}; }, sel);
+const q = sel => page.evaluate(sel => { const d = window.sheetDoc; const e = d.querySelector(sel); if (!e) return null; const r = e.getBoundingClientRect(); return {left: r.left, right: r.right, top: r.top, doc: e.ownerDocument === d, placement: e.dataset.placement}; }, sel);
 const click = sel => page.evaluate(sel => window.sheetDoc.querySelector(sel).click(), sel);
 const pointerdown = sel => page.evaluate(sel => { const t = sel ? window.sheetDoc.querySelector(sel) : window.sheetDoc.body; t.dispatchEvent(new PointerEvent("pointerdown", {bubbles: true, composed: true})); }, sel);
 const escape = () => page.evaluate(() => window.sheetDoc.defaultView.dispatchEvent(new KeyboardEvent("keydown", {key: "Escape", bubbles: true})));
 const open = () => page.evaluate(() => window.CardPopover.open(window.sheet, window.sheetDoc.querySelector(".ccs-card")));
+const socketDisabled = () => page.evaluate(() => window.sheetDoc.querySelector(".ccs-socket-confirm")?.disabled === true);
+const bolted = () => page.evaluate(() => window.actor.items.get("bolt").flags["cypher-card-sheet"].socket.artifactId === "rod");
 const isOpen = () => page.evaluate(() => window.CardPopover.isOpen);
 
 let failures = 0;
@@ -134,9 +136,25 @@ for (const inFrame of [false, true]) {
   check(`${where}: picker lists only the matching cypher`, await page.evaluate(() => [...window.sheetDoc.querySelectorAll(".ccs-socket-choice")].map(b => b.dataset.cypherId).join()) === "bolt");
   await pointerdown(".ccs-popover.is-picker");
   check(`${where}: clicking in the picker keeps the large card open`, await isOpen());
-  await click(".ccs-socket-choice"); await wait(100);
-  check(`${where}: choosing a cypher sockets it`, await page.evaluate(() => window.actor.items.get("bolt").flags["cypher-card-sheet"].socket.artifactId === "rod"));
-  check(`${where}: and closes the picker`, !(await q(".ccs-popover.is-side:not(.is-closing)")));
+  check(`${where}: nothing selected at first, Socket disabled`, !(await q(".ccs-socket-choice.is-selected")) && await socketDisabled());
+  await click(".ccs-socket-choice"); await wait(200);
+  check(`${where}: clicking a cypher selects it without socketing`, !!(await q('.ccs-socket-choice.is-selected[aria-pressed="true"]')) && !(await bolted()) && !(await socketDisabled()));
+  const preview = await q(".ccs-popover.is-preview");
+  // The iframe is too narrow for a third card on either side, so the preview overlays the list.
+  check(`${where}: its card previews ${inFrame ? "over the picker list" : "outward, beyond the picker"}`, inFrame
+    ? preview?.placement === "overlay" && await page.evaluate(() => { const b = window.sheetDoc.querySelector(".ccs-socket-confirm").getBoundingClientRect(); return window.sheetDoc.elementFromPoint(b.left + 5, b.top + 5)?.closest(".ccs-socket-confirm") != null; })
+    : preview?.placement === "outward" && preview.left >= picker.right);
+  if (process.env.SHOT && !inFrame) await page.screenshot({path: process.env.SHOT.replace(".png", "-preview.png"), clip: {x: 0, y: 40, width: 1200, height: 580}});
+  await pointerdown(".ccs-popover.is-preview");
+  check(`${where}: clicking in the preview keeps everything open`, await isOpen() && !!(await q(".ccs-popover.is-preview:not(.is-closing)")));
+  await escape(); await wait(50);
+  check(`${where}: Escape cancels picker and preview, nothing socketed`, !(await q(".ccs-popover.is-side:not(.is-closing)")) && await isOpen() && !(await bolted()));
+  await click('[data-popover-action="socketPick"]'); await wait(200);
+  check(`${where}: reopened picker starts unselected`, !(await q(".ccs-socket-choice.is-selected")) && !(await q(".ccs-popover.is-preview:not(.is-closing)")));
+  await click(".ccs-socket-choice"); await wait(200);
+  await click(".ccs-socket-confirm"); await wait(100);
+  check(`${where}: Socket sockets the selected cypher`, await bolted());
+  check(`${where}: and closes picker and preview`, !(await q(".ccs-popover.is-side:not(.is-closing)")));
 
   // Inline confirmation for a single-use cypher; Escape cancels it, not the card.
   await page.evaluate(() => window.CardPopover.refresh(window.sheet)); await wait(200);
@@ -165,8 +183,24 @@ for (const inFrame of [false, true]) {
   await click('[data-popover-action="socketPick"]'); await wait(200);
   const picker2 = await q(".ccs-popover.is-picker");
   check(`${where}: near the right edge, the picker opens to the left`, !!picker2 && picker2.right <= main2.left + 1);
+  await click(".ccs-socket-choice"); await wait(200);
+  const preview2 = await q(".ccs-popover.is-preview");
+  if (!inFrame) check(`${where}: leftward picker previews outward, further left`, preview2?.placement === "outward" && preview2.right <= picker2.left + 1);
   await escape(); await escape(); await wait(50);
   check(`${where}: Escape twice closes everything`, !(await isOpen()));
+
+  // Card mid-window: no room outward, so the preview flanks the large card.
+  if (!inFrame) {
+    await page.evaluate(() => window.sheetDoc.querySelector(".ccs-sheet").remove());
+    await mountSheet(606, 500, false);
+    await open(); await wait(200);
+    const main3 = await q(".ccs-popover:not(.is-side)");
+    await click('[data-popover-action="socketPick"]'); await wait(200);
+    await click(".ccs-socket-choice"); await wait(200);
+    const preview3 = await q(".ccs-popover.is-preview");
+    check(`${where}: without room outward, the preview flanks the large card`, preview3?.placement === "flank" && preview3.right <= main3.left + 1);
+    await escape(); await escape(); await wait(50);
+  }
   await page.evaluate(() => { window.sheetDoc.querySelector(".ccs-sheet").remove(); document.querySelector("iframe")?.remove(); });
 }
 

@@ -441,7 +441,7 @@ Materia-style slots: an artifact holds up to three cyphers. A socketed cypher st
 - Not built yet: transferring the artifact to carry its socketed cyphers along. Today they stay with the original actor, back in the Cyphers group. Needs custom drop handling, since the system's drop logic knows nothing of sockets.
 
 **Large card (where socketing happens):** a Sockets section under the facts row, one slot per socket.
-- Empty slot: click opens the picker (icon, name, level of each eligible cypher). With none eligible, it names the artifact's identifier.
+- Empty slot: click opens the picker (icon, name, level of each eligible cypher). With none eligible, it names the artifact's identifier. Clicking a cypher selects it and previews its card; **Socket** confirms (0.10.1).
 - Filled slot: cypher icon and name, **Use**, **Unsocket** (returns it to the Cyphers group).
 - **Refresh sockets** shows when any socket is spent.
 
@@ -482,6 +482,7 @@ v14 can detach any ApplicationV2 into its own browser window. Module code still 
 
 - **Large card (popover.js):** built with the main document and appended to the sheet's `ownerDocument` body (adopted); sizing, Escape, outside clicks and resize use the sheet's window. The sheet closes it in `_onDetach` / `_onAttach`.
 - **Side panel:** one slot beside the large card, showing a socketed cypher's card or the socket picker (no separate dialog). Confirmations are an inline bar above the action bar. Escape backs out: confirmation, side panel, large card.
+- **Picker selection (0.10.1):** nothing starts selected. Clicking a cypher selects it (accent fill, check mark, `aria-pressed`) and shows its card as a preview: outward beyond the picker when there's room, else on the large card's other side, else over the picker's list with its buttons left visible. **Socket** in the footer (disabled until a selection) sockets it and closes both. ✕, Escape or an outside click cancel and close both. Clicking the preview's title deselects. A selection that stops being eligible is dropped.
 - **Frames:** `ensureFrameStyles(doc)` adds the generated `<style>` to a sheet's window on render; `applyFrameStyles` updates every such window.
 - **Child windows:** detached, the sheet opens FilePicker and ImagePopout with `renderChild`, so they open in its window; attached, unchanged.
 - **Not covered:** the system's AppV1 windows (All-in-One dialog, item sheets), the portrait ContextMenu (`fixed`, appended to the main body), `Item.createDialog`, and the tag-delete DialogV2.

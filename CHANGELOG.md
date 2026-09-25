@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.10.1
+
+- **Socket picker selects, then confirms:** clicking a cypher selects it (highlighted, with a check mark) and shows its large card as a preview beside the picker. Click another to switch. **Socket** in the picker's footer sockets the selection and closes both panels; it stays disabled until something is selected. ✕, Escape or an outside click cancel with nothing socketed.
+- Preview placement: outward beyond the picker when there's room; otherwise on the large card's other side; otherwise over the picker's list, keeping its buttons visible. Clicking the preview's title deselects.
+- Every card and sheet state is unchanged (snapshot check). `popover-test.mjs` covers selection, the three preview placements, cancel and confirm.
+
 ## 0.10.0 — detached windows
 
 - **Socket picker is a panel beside the large card** (left or right, by room), matching its height, instead of a separate dialog. Choosing a cypher sockets it at once; the panel explains when nothing is eligible.

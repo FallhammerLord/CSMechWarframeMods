@@ -2118,6 +2118,38 @@
   flex: 1;
 }
 
+/* Selected: accent border and fill, plus a check mark. */
+.ccs-popover .ccs-socket-choice.is-selected {
+  border-color: var(--ccs-accent);
+  background: var(--ccs-accent-soft);
+}
+
+.ccs-socket-check {
+  visibility: hidden;
+  color: var(--ccs-accent);
+}
+
+.ccs-socket-choice.is-selected .ccs-socket-check {
+  visibility: visible;
+}
+
+.ccs-popover .ccs-socket-confirm {
+  height: 30px;
+  padding: 0 14px;
+  border: 1px solid var(--ccs-accent);
+  border-radius: 4px;
+  background: var(--ccs-accent-soft);
+  color: var(--ccs-text);
+  font-weight: 600;
+}
+
+.ccs-popover .ccs-socket-confirm:disabled {
+  border-color: var(--ccs-line);
+  background: var(--ccs-panel);
+  color: var(--ccs-muted);
+  cursor: default;
+}
+
 /* Inline confirmation, above the action bar */
 .ccs-pop-confirm {
   display: flex;

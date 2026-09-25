@@ -53,7 +53,7 @@ node popover-test.mjs
 ```
 
 Drives the large card in Chromium, in a normal page and inside an iframe (standing in for a
-detached window): picker panel placement, sockets, inline confirmations, Escape and outside
+detached window): picker panel placement, selection and preview, sockets, inline confirmations, Escape and outside
 clicks. Serves the module over a local HTTP server, since browsers block module imports from
 `file://`.
 

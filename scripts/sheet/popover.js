@@ -28,11 +28,8 @@ const ACTIONS = {
   resourceDown: (actor, item) => cs.adjustResource(actor, cs.artifactHost(actor, item), -1),
   resourceUp: (actor, item) => cs.adjustResource(actor, cs.artifactHost(actor, item), 1),
   socketPick: (actor, item, data, m) => m.openPicker(cs.artifactHost(actor, item), Number(data.slot)),
-  socketInsert: async (actor, artifact, data, m) => {
-    const cypher = actor.items.get(data.cypherId);
-    m.closeSide();
-    if (cypher && artifact) return cs.socketCypher(cypher, artifact, Number(data.slot));
-  },
+  socketSelect: (actor, artifact, data, m) => m.selectForSocket(data.cypherId),
+  socketConfirm: (actor, artifact, data, m) => m.confirmSocket(),
   useSocketed: async (actor, item, data, m) => {
     const cypher = actor.items.get(data.cypherId);
     if (!cypher) return;
@@ -102,17 +99,20 @@ function makeCard(doc, className, onClick) {
 }
 
 /** The socket picker: eligible cyphers for one socket, or why there are none. */
-function pickerHtml(actor, artifact, slot) {
+function pickerHtml(actor, artifact, eligible, selected) {
   const {key} = cs.socketSettings(artifact);
-  const eligible = key ? cs.eligibleCyphers(actor, artifact) : [];
   const body = !key
     ? `<p class="ccs-muted">${esc(t("Socket.NoKey", {name: artifact.name}))}</p>`
     : !eligible.length
       ? `<p class="ccs-muted">${esc(t("Socket.NoneEligible", {key}))}</p>`
-      : eligible.map(c => `<button type="button" class="ccs-socket-choice" data-popover-action="socketInsert" data-cypher-id="${c.id}" data-slot="${slot}">
+      : eligible.map(c => {
+        const on = c.id === selected;
+        return `<button type="button" class="ccs-socket-choice${on ? " is-selected" : ""}" data-popover-action="socketSelect" data-cypher-id="${c.id}" aria-pressed="${on}">
           <img src="${esc(c.img)}" alt=""><span>${esc(c.name)}</span>
           ${c.system.basic?.level ? `<span class="ccs-muted">${esc(t("Card.Level", {n: c.system.basic.level}))}</span>` : ""}
-        </button>`).join("");
+          <i class="fa-solid fa-check ccs-socket-check" aria-hidden="true"></i>
+        </button>`;
+      }).join("");
   return `<header class="ccs-pop-header">
       <span class="ccs-cap ccs-cap-top frame-${cs.cardData(artifact, actor).frameKey}" aria-hidden="true"></span>
       <h3>${esc(t("Socket.PickHeading"))}</h3>
@@ -122,6 +122,8 @@ function pickerHtml(actor, artifact, slot) {
     <footer class="ccs-pop-bar">
       <button type="button" class="ccs-pop-control" data-popover-action="closeSide"
               data-tooltip="${esc(t("Socket.Cancel"))}" aria-label="${esc(t("Socket.Cancel"))}"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+      <button type="button" class="ccs-btn ccs-socket-confirm" data-popover-action="socketConfirm"${selected ? "" : " disabled"}
+              data-tooltip="${esc(t(selected ? "Socket.InsertHint" : "Socket.SelectFirst"))}">${esc(t("Socket.Insert"))}</button>
     </footer>`;
 }
 
@@ -140,6 +142,9 @@ class CardPopoverManager {
   #sideItemId = null;
   #sideSlot = null;
   #sideMode = null;
+  /** The picker's selected cypher, and its card shown as a preview beside the picker. */
+  #pickSelected = null;
+  #preview = null;
   /** An open inline confirmation's resolver. */
   #confirming = null;
 
@@ -157,7 +162,7 @@ class CardPopoverManager {
   #onPointerDown = event => {
     if (!this.#el) return;
     const target = event.target;
-    if (this.#el.contains(target) || this.#side?.contains(target)) return;
+    if (this.#el.contains(target) || this.#side?.contains(target) || this.#preview?.contains(target)) return;
     // Card clicks are handled by the card itself (toggle / switch).
     if (target.closest?.(".ccs-card")) return;
     this.close();
@@ -188,6 +193,11 @@ class CardPopoverManager {
 
   #onSideClick = event => {
     if (this.#click(event, this.#sideItemId, true) && event.target.closest(".ccs-pop-header")) this.closeSide();
+  };
+
+  /** Clicking the preview's title deselects, uncovering the picker when the preview overlays it. */
+  #onPreviewClick = event => {
+    if (this.#click(event, this.#pickSelected, "preview") && event.target.closest(".ccs-pop-header")) this.selectForSocket(null);
   };
 
   get isOpen() {
@@ -278,6 +288,7 @@ class CardPopoverManager {
     if (next) next.scrollTop = scrollTop;
     this.#position();
     if (this.#sideMode) await this.#renderSide();
+    if (this.#preview) await this.#renderPreview();
   }
 
   reposition() {
@@ -300,6 +311,7 @@ class CardPopoverManager {
   /** Show a socketed cypher's large card beside this one, or hide it if it's already showing. */
   async toggleSide(itemId) {
     if (this.#sideMode === "card" && this.#sideItemId === itemId) return this.closeSide();
+    this.closePreview();
     this.#sideMode = "card";
     this.#sideItemId = itemId;
     this.#sideSlot = null;
@@ -309,15 +321,40 @@ class CardPopoverManager {
   /** Show the socket picker for one of the artifact's sockets beside the large card. */
   async openPicker(artifact, slot) {
     if (!artifact) return;
+    this.closePreview();
     this.#sideMode = "picker";
     this.#sideItemId = artifact.id;
     this.#sideSlot = slot;
     return this.#renderSide();
   }
 
+  /** Select a cypher in the picker (null clears) and preview its card. */
+  async selectForSocket(cypherId) {
+    if (this.#sideMode !== "picker") return;
+    this.#pickSelected = cypherId || null;
+    await this.#renderSide();
+    return this.#pickSelected ? this.#renderPreview() : this.closePreview();
+  }
+
+  /** Socket the selected cypher, then close the picker and preview. */
+  async confirmSocket() {
+    const actor = this.#sheet?.actor;
+    const cypher = actor?.items.get(this.#pickSelected);
+    const artifact = actor?.items.get(this.#sideItemId);
+    const slot = this.#sideSlot;
+    this.closeSide();
+    if (cypher && artifact) return cs.socketCypher(cypher, artifact, slot);
+  }
+
   closeSide() {
+    this.closePreview();
     if (this.#side) animateOut(this.#side);
     this.#side = this.#sideItemId = this.#sideSlot = this.#sideMode = null;
+  }
+
+  closePreview() {
+    if (this.#preview) animateOut(this.#preview);
+    this.#preview = this.#pickSelected = null;
   }
 
   async #renderSide() {
@@ -326,7 +363,13 @@ class CardPopoverManager {
     if (!item || !this.#el) return this.closeSide();
     const token = this.#token;
     const picker = this.#sideMode === "picker";
-    const html = picker ? pickerHtml(sheet.actor, item, this.#sideSlot) : await this.#renderContent(sheet, item);
+    let html;
+    if (picker) {
+      const eligible = cs.socketSettings(item).key ? cs.eligibleCyphers(sheet.actor, item) : [];
+      // A selection that is no longer eligible (used, archived, deleted) is dropped.
+      if (this.#pickSelected && !eligible.some(c => c.id === this.#pickSelected)) this.closePreview();
+      html = pickerHtml(sheet.actor, item, eligible, this.#pickSelected);
+    } else html = await this.#renderContent(sheet, item);
     if (token !== this.#token || !this.#el) return;
     this.#side ??= makeCard(this.#doc, "ccs-popover is-side", this.#onSideClick);
     const el = this.#side;
@@ -336,7 +379,23 @@ class CardPopoverManager {
     applyTheme(el, sheet);
     applyFrame(el, sheet, cs.cardData(item, sheet.actor).frameKey);
     this.#positionSide();
-    if (picker) el.querySelector(".ccs-socket-choice")?.focus();
+    if (picker) (el.querySelector(".ccs-socket-choice.is-selected") ?? el.querySelector(".ccs-socket-choice"))?.focus();
+  }
+
+  async #renderPreview() {
+    const sheet = this.#sheet;
+    const item = sheet?.actor.items.get(this.#pickSelected);
+    if (!item || !this.#side) return this.closePreview();
+    const token = this.#token;
+    const html = await this.#renderContent(sheet, item);
+    if (token !== this.#token || !this.#side || this.#pickSelected !== item.id) return;
+    this.#preview ??= makeCard(this.#doc, "ccs-popover is-side is-preview", this.#onPreviewClick);
+    const el = this.#preview;
+    el.setAttribute("aria-label", cs.displayName(item));
+    el.innerHTML = html;
+    applyTheme(el, sheet);
+    applyFrame(el, sheet, cs.cardData(item, sheet.actor).frameKey);
+    this.#positionPreview();
   }
 
   #positionSide() {
@@ -345,6 +404,31 @@ class CardPopoverManager {
     const pos = this.besidePosition(main.width);
     Object.assign(this.#side.style, {left: `${pos.left}px`, top: `${pos.top}px`, bottom: "auto", width: `${pos.width}px`, height: `${main.height}px`});
     this.#side.dataset.placement = "side";
+    this.#positionPreview();
+  }
+
+  /**
+   * The picker's preview goes outward beyond the picker; failing that, on the large card's other
+   * side; failing that, over the picker's list, leaving its buttons visible.
+   */
+  #positionPreview() {
+    if (!this.#preview || !this.#side || !this.#el) return;
+    const main = this.#el.getBoundingClientRect();
+    const side = this.#side.getBoundingClientRect();
+    const vw = this.#win.innerWidth;
+    const w = main.width;
+    const fits = x => x >= MARGIN && x + w <= vw - MARGIN;
+    const rightward = side.left >= main.left;
+    const outward = rightward ? side.right + GAP : side.left - GAP - w;
+    const flank = rightward ? main.left - GAP - w : main.right + GAP;
+    let left = side.left;
+    let height = main.height;
+    let placement = "overlay";
+    if (fits(outward)) [left, placement] = [outward, "outward"];
+    else if (fits(flank)) [left, placement] = [flank, "flank"];
+    else height -= this.#side.querySelector(".ccs-pop-bar")?.offsetHeight ?? 0;
+    Object.assign(this.#preview.style, {left: `${Math.round(left)}px`, top: `${Math.round(side.top)}px`, bottom: "auto", width: `${w}px`, height: `${height}px`});
+    this.#preview.dataset.placement = placement;
   }
 
   /**
@@ -434,16 +518,17 @@ class CardPopoverManager {
     if (action === "close") return this.close({restoreFocus: true});
     const sheet = this.#sheet;
     const item = sheet?.actor.items.get(itemId);
-    if (!item) return inSide ? this.closeSide() : this.close();
+    if (!item) return inSide === "preview" ? this.selectForSocket(null) : inSide ? this.closeSide() : this.close();
     if (!sheet.isEditable && !READ_ONLY_ACTIONS.has(action)) return;
 
     // Alt-click on archive deletes (confirmed), as on the default sheet. Alt is read from the
     // click, since Foundry's key tracker can miss it.
     if (action === "archiveItem" && (event?.altKey || game.keyboard.isModifierActive("Alt"))) {
-      const card = inSide ? this.#side : this.#el;
+      const card = inSide === "preview" ? this.#preview : inSide ? this.#side : this.#el;
       const message = t("Popover.DeleteConfirm", {name: esc(item.name)});
       if (!await this.confirm(message, t("Popover.Delete"), card)) return;
-      if (inSide) this.closeSide();
+      if (inSide === "preview") await this.selectForSocket(null);
+      else if (inSide) this.closeSide();
       else this.close();
       return cs.deleteItem(sheet.actor, item);
     }
