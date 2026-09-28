@@ -8,6 +8,19 @@
       },
       "Frames": {
         "Name": "Card frames"
+      },
+      "chatItemText": {
+        "Name": "Item text in chat cards",
+        "Hint": "Whether an item's description starts open or closed in its chat cards. Click the item's name in a card to open or close it."
+      },
+      "chatRollDetails": {
+        "Name": "Roll details in chat cards",
+        "Hint": "Whether the difficulty, damage and cost breakdowns and the dice start open or closed. Click a line or the dice total to open or close it."
+      },
+      "Chat": {
+        "default": "Game default",
+        "collapsed": "Closed",
+        "expanded": "Open"
       }
     },
     "Error": {

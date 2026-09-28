@@ -25,6 +25,20 @@ Hooks.once("init", () => {
     default: "category"
   });
 
+  // Chat cards: each player chooses how item text and roll details start.
+  for (const [key, fallback] of [["chatItemText", "collapsed"], ["chatRollDetails", "default"]]) {
+    game.settings.register(MODULE_ID, key, {
+      name: `CCS.Setting.${key}.Name`,
+      hint: `CCS.Setting.${key}.Hint`,
+      scope: "client",
+      config: true,
+      type: String,
+      choices: {default: "CCS.Setting.Chat.default", collapsed: "CCS.Setting.Chat.collapsed", expanded: "CCS.Setting.Chat.expanded"},
+      default: fallback,
+      onChange: () => ui.chat?.render()
+    });
+  }
+
   // Card frames: world-level, GM-only, chosen by skill training level.
   game.settings.register(MODULE_ID, FRAME_SETTING, {
     name: "CCS.Setting.Frames.Name",

@@ -15,6 +15,7 @@ In `tools/harness`, with the environment from its README:
 - [ ] `node render.mjs > out/render.log` ends with `missing i18n keys: []`.
 - [ ] `node snapshot.mjs compare` shows no differences, or only intended ones.
 - [ ] `node popover-test.mjs` passes.
+- [ ] `node chat-test.mjs` passes.
 
 ## Load
 
@@ -35,6 +36,12 @@ In `tools/harness`, with the environment from its README:
 - [ ] A card's d20 opens the All-in-One dialog; the roll posts to chat and pays its cost.
 - [ ] An XP-cost ability opens the dialog with XP selected, and paying takes XP.
 - [ ] A natural 19 lights the minor star, a 20 the major; clicking a lit star clears it. Rolling again doesn't clear either.
+
+## Chat cards
+
+- [ ] Large card chat button: the card shows only its header. Clicking the header opens and closes the text.
+- [ ] A roll from a card: item text starts closed; clicking the item name, the Difficulty line and the dice total each open and close.
+- [ ] Set *Roll details in chat cards* to Open: the chat log re-renders with breakdowns and dice open, and they still close on click.
 
 ## Large card
 

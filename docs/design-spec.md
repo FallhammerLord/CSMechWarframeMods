@@ -489,3 +489,10 @@ v14 can detach any ApplicationV2 into its own browser window. Module code still 
 - **Not covered:** the system's AppV1 windows (All-in-One dialog, item sheets), the portrait ContextMenu (`fixed`, appended to the main body), `Item.createDialog`, and the tag-delete DialogV2.
 - **Test:** `tools/harness/popover-test.mjs` runs the large card attached and inside an iframe (a separate document and window).
 
+
+## 20. Chat card disclosure (built in 1.0.0-rc.2)
+
+- **Per-player settings** (client scope): *Item text in chat cards* (default Closed) and *Roll details in chat cards* (default Game default). Each is Game default, Closed or Open.
+- **Roll cards:** the system already makes the item description and the difficulty, damage and cost breakdowns collapsible, starting from its world settings. At render (`renderChatMessageHTML`), `chat-cards.js` sets each block's starting state the way the system's click handler expects: the `expanded` class plus `display`. Open roll details also expand Foundry's dice tooltip. Clicks stay with the system and core.
+- **Cards sent from the sheet** (chat button, socket Use): a header link (`.ccs-chat-toggle`, a keyboard-operable button role with `aria-expanded`) opens and closes the body. Saved expanded, so the text reads in full without the module. Game default follows the system's *always show description on roll*.
+- Nothing stored changes, so older cards follow the setting when the chat log re-renders.

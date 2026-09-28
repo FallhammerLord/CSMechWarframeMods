@@ -55,6 +55,15 @@ to run one state. Comparing `out/render.log` with `baseline/render.log` checks t
 The stand-ins for core Foundry styles are minimal, so this can't catch every interaction with
 core CSS. Test in Foundry before release.
 
+## Chat cards
+
+```sh
+node chat-test.mjs
+```
+
+Checks chat card disclosure in Chromium: a card sent from the sheet and a system roll card, under
+each player setting, including click and keyboard toggling.
+
 ## Large card behaviour
 
 ```sh

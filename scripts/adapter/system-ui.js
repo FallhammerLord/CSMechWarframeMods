@@ -6,11 +6,13 @@
  * - The roll dialog can pay from XP.
  * - A roll's minor or major effect is marked on the actor for the portrait indicators.
  * - Item sheets get the resource, socket and artifact-link fields (spec §15-17).
+ * - Chat cards open with item text and roll details collapsed or expanded, per player.
  * Baseline: cyphersystem v3.5.2.
  */
 
 import {MODULE_ID, t} from "../constants.js";
 import {LINKABLE_TYPES, applyPoolNames, itemPool, setRollEffect} from "./cypher.js";
+import {applyChatDisclosure} from "./chat-cards.js";
 import {CypherCardSheet} from "../sheet/card-sheet.js";
 import {effectiveTheme} from "../sheet/theme.js";
 
@@ -177,12 +179,14 @@ function addSheetFields(root, item, editable) {
 }
 
 function onRenderChatMessage(message, html) {
+  const root = html instanceof HTMLElement ? html : html?.[0];
+  if (!root) return;
+  applyChatDisclosure(root);
   const uuid = message.flags?.data?.actorUuid;
   if (!uuid) return;
   const actor = fromUuidSync(uuid);
   if (!actor?.getFlag(MODULE_ID, "poolLabels")) return;
-  const root = html instanceof HTMLElement ? html : html?.[0];
-  applyPoolNames(root?.querySelector(".roll-flavor") ?? root, actor);
+  applyPoolNames(root.querySelector(".roll-flavor") ?? root, actor);
 }
 
 /**

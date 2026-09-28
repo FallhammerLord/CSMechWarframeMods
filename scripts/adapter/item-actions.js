@@ -65,10 +65,13 @@ export async function sendToChat(actor, item) {
   } else if (b.level) {
     brackets = ` (${L("level")} ${b.level})`;
   }
-  const description = `<hr style="margin:3px 0;"><img class="description-image-chat" src="${item.img}" width="50" height="50"/>${item.system.description ?? ""}`;
+  const description = `<img class="description-image-chat" src="${item.img}" width="50" height="50"/>${item.system.description ?? ""}`;
+  // Saved expanded, so it reads in full without this module; the header toggles the body.
   return ChatMessage.create({
     speaker: ChatMessage.getSpeaker({actor}),
-    content: `<b>${capitalize(item.type)}: ${item.name}</b>${brackets}${description}`
+    content: `<div class="ccs-chat-item"><a class="ccs-chat-toggle" role="button" tabindex="0" aria-expanded="true">`
+      + `<b>${capitalize(item.type)}: ${item.name}</b>${brackets}<i class="fa-solid fa-caret-down" aria-hidden="true"></i></a>`
+      + `<div class="ccs-chat-body"><hr style="margin:3px 0;">${description}</div></div>`
   });
 }
 

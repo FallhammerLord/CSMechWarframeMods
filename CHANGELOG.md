@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.0-rc.2 — collapsible chat cards
+
+- **Item cards sent to chat collapse to their header.** Click the header (or press Enter on it) to open or close the item text. This covers the large card's chat button and socket **Use**.
+- **Two settings for each player** (Configure Settings → Cypher Card Sheet):
+  - *Item text in chat cards*: Closed (default), Open, or Game default. Applies to roll cards and sent cards.
+  - *Roll details in chat cards*: Game default (default), Closed or Open. Covers the difficulty, damage and cost breakdowns and the dice.
+- Everything stays clickable: the system's own handlers open and close roll card blocks, and Foundry's opens the dice. Only the starting state changes; saved messages are unchanged, so older cards follow the setting too.
+- New `tools/harness/chat-test.mjs` checks both card kinds under each setting. The sheet is unchanged.
+
 ## 1.0.0-rc.1 — stability pass
 
 No change to the sheet. This release candidate becomes 1.0.0 once the live-world checklist passes.

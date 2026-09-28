@@ -11,6 +11,7 @@ An alternative character sheet for the [Cypher System](https://foundryvtt.com/pa
 - **Card frames.** Warframe-style frame textures, set by the GM, with a high-contrast suite for colour-blind players.
 - **Artifacts.** A named counter such as Charges, with depletion rolled at 0; up to three sockets that hold cyphers; any item can link to an artifact to share its charges and sockets.
 - **Roll effects.** Minor and major effect stars on the portrait, lit by a natural 19 or 20 and kept until you clear them.
+- **Chat cards.** Item cards sent to chat collapse to their header; click to open. Each player chooses whether item text and roll details start open or closed.
 - **XP as a pool** in the All-in-One dialog for abilities that cost XP.
 - **Detached windows.** The sheet, its large card and panels work in a detached window (Foundry v14).
 
@@ -50,6 +51,7 @@ Enable **Cypher Card Sheet** in your world. Then, on a PC's sheet, open **Sheet*
 |---|---|
 | `scripts/adapter/` | The only code that reads Cypher System data or calls the system; fix data-path changes here. `cypher.js` re-exports `actor.js`, `options.js` (per-actor settings, sheet design), `items.js` (cards, sorting, grouping), `item-actions.js` and `sockets.js`. |
 | `scripts/adapter/system-imports.js` | Imports of system functions that are not on `game.cyphersystem`. Highest coupling risk. |
+| `scripts/adapter/chat-cards.js` | Chat card disclosure: starting state of item text and roll details. |
 | `scripts/adapter/system-ui.js` | Dark theme and pool names for the system's roll dialog, item sheets and chat cards. |
 | `scripts/adapter/ruler.js` | Per-actor movement ranges on the token ruler. |
 | `scripts/sheet/card-sheet.js` | The AppV2 sheet. |

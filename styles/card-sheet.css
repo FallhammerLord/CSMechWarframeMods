@@ -2690,3 +2690,22 @@
     animation: none !important;
   }
 }
+
+/* Chat cards sent from the sheet: the header opens and closes the item text. */
+.ccs-chat-toggle {
+  display: block;
+  cursor: pointer;
+}
+
+.ccs-chat-toggle > i {
+  margin-left: 4px;
+  transition: rotate 120ms ease;
+}
+
+.ccs-chat-toggle[aria-expanded="false"] > i {
+  rotate: -90deg;
+}
+
+.ccs-chat-body[hidden] {
+  display: none;
+}
