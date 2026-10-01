@@ -152,3 +152,26 @@ test("roll effects are independent and read the 0.8.0 flag", async () => {
   await cs.setRollEffect(legacy, "major", true);
   assert.deepEqual(legacy.updates, [{[`flags.${F}.effects`]: {minor: true, major: true}, [`flags.${F}.-=effect`]: null}]);
 });
+
+test("system windows follow the player's dark setting, then Foundry's theme", async () => {
+  const {systemDarkWanted, foundryIsDark} = await import("../../scripts/adapter/system-dark.js");
+  const doc = (cls = "", prefersDark = false) => ({body: {classList: {contains: c => cls.split(" ").includes(c)}},
+    defaultView: {matchMedia: () => ({matches: prefersDark})}});
+  const withSettings = (values, fn) => {
+    const get = game.settings.get;
+    game.settings.get = (ns, key) => { const k = `${ns}.${key}`; if (k in values) return values[k]; throw new Error("no setting"); };
+    try { return fn(); } finally { game.settings.get = get; }
+  };
+  const ui = scheme => ({"core.uiConfig": {colorScheme: scheme}});
+
+  withSettings(ui({applications: "dark", interface: "light"}), () => assert.equal(foundryIsDark(doc()), true));
+  withSettings(ui({applications: "", interface: "light"}), () => assert.equal(foundryIsDark(doc("theme-dark")), false));
+  withSettings({}, () => {
+    assert.equal(foundryIsDark(doc("theme-dark")), true);
+    assert.equal(foundryIsDark(doc("", true)), true);
+    assert.equal(foundryIsDark(doc("theme-light", true)), false);
+    assert.equal(systemDarkWanted(doc("theme-dark")), true, "defaults to following Foundry");
+  });
+  withSettings({[`${F}.systemDark`]: "always"}, () => assert.equal(systemDarkWanted(doc("theme-light")), true));
+  withSettings({[`${F}.systemDark`]: "off"}, () => assert.equal(systemDarkWanted(doc("theme-dark")), false));
+});

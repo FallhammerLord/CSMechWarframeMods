@@ -9,6 +9,13 @@
       "Frames": {
         "Name": "Card frames"
       },
+      "systemDark": {
+        "Name": "Dark Cypher System windows",
+        "Hint": "Dark theme for the system's character, NPC, item and other sheets, its roll dialog and its forms. Characters using the Cypher Card Sheet follow that sheet's theme instead. While dark, the system's sheet background choice is not shown.",
+        "foundry": "Follow Foundry's theme",
+        "always": "Always dark",
+        "off": "Off (system default)"
+      },
       "chatItemText": {
         "Name": "Item text in chat cards",
         "Hint": "Whether an item's description starts open or closed in its chat cards. Click the item's name in a card to open or close it."

@@ -2467,11 +2467,11 @@
 }
 
 /* System windows in the sheet's dark theme --------------------------------- */
-/* The All-in-One roll dialog and item sheets, for actors using this sheet (system-ui.js).
-   The system paints these with !important backgrounds, so the selectors are heavier. */
+/* The All-in-One roll dialog (.ccs-aio) and the system's sheets and forms (.ccs-sys-sheet), set
+   by system-dark.js. The system paints these with !important backgrounds, so the selectors are heavier. */
 
 .ccs-aio.ccs-sys-dark,
-.ccs-item-sheet.ccs-sys-dark {
+.ccs-sys-sheet.ccs-sys-dark {
   --ccs-bg: #0f131a;
   --ccs-panel: rgba(21, 27, 37, 0.94);
   --ccs-panel-2: rgba(30, 38, 51, 0.96);
@@ -2487,16 +2487,16 @@
 .ccs-aio.ccs-sys-dark .window-content,
 .ccs-aio.ccs-sys-dark .window-content form,
 .ccs-aio.ccs-sys-dark .window-content form.background-image,
-.ccs-item-sheet.ccs-sys-dark .window-content,
-.ccs-item-sheet.ccs-sys-dark .window-content form,
-.ccs-item-sheet.ccs-sys-dark .window-content form.background-image {
+.ccs-sys-sheet.ccs-sys-dark .window-content,
+.ccs-sys-sheet.ccs-sys-dark .window-content form,
+.ccs-sys-sheet.ccs-sys-dark .window-content form.background-image {
   background: var(--ccs-bg) !important;
   background-image: none !important;
   color: var(--ccs-text);
 }
 
 .ccs-aio.ccs-sys-dark .background-image-rectangle,
-.ccs-item-sheet.ccs-sys-dark .background-image-rectangle {
+.ccs-sys-sheet.ccs-sys-dark .background-image-rectangle {
   display: none;
 }
 
@@ -2506,37 +2506,37 @@
 }
 
 /* Opacity is set inline by the system template. */
-.ccs-item-sheet.ccs-sys-dark img.background-image-icon:not(.custom) {
+.ccs-sys-sheet.ccs-sys-dark img.background-image-icon:not(.custom) {
   filter: invert(1);
   opacity: 0.12 !important;
 }
 
 .ccs-aio.ccs-sys-dark input,
 .ccs-aio.ccs-sys-dark select,
-.ccs-item-sheet.ccs-sys-dark input,
-.ccs-item-sheet.ccs-sys-dark select,
-.ccs-item-sheet.ccs-sys-dark textarea {
+.ccs-sys-sheet.ccs-sys-dark input,
+.ccs-sys-sheet.ccs-sys-dark select,
+.ccs-sys-sheet.ccs-sys-dark textarea {
   border: 1px solid var(--ccs-line);
   background: var(--ccs-input);
   color: var(--ccs-text);
 }
 
 .ccs-aio.ccs-sys-dark input:disabled,
-.ccs-item-sheet.ccs-sys-dark input:disabled,
-.ccs-item-sheet.ccs-sys-dark select:disabled {
+.ccs-sys-sheet.ccs-sys-dark input:disabled,
+.ccs-sys-sheet.ccs-sys-dark select:disabled {
   color: var(--ccs-muted);
 }
 
 .ccs-aio.ccs-sys-dark select option,
-.ccs-item-sheet.ccs-sys-dark select option {
+.ccs-sys-sheet.ccs-sys-dark select option {
   background: #1c2430;
   color: var(--ccs-text);
 }
 
 .ccs-aio.ccs-sys-dark hr,
 .ccs-aio.ccs-sys-dark .hr-roll-engine,
-.ccs-item-sheet.ccs-sys-dark .items-list hr,
-.ccs-item-sheet.ccs-sys-dark .editor-content hr {
+.ccs-sys-sheet.ccs-sys-dark .items-list hr,
+.ccs-sys-sheet.ccs-sys-dark .editor-content hr {
   border-color: var(--ccs-line);
   background: var(--ccs-line);
 }
@@ -2573,99 +2573,147 @@
   box-shadow: none;
 }
 
-/* Item sheets */
-.ccs-item-sheet.ccs-sys-dark .sheet-header,
-.ccs-item-sheet.ccs-sys-dark label,
-.ccs-item-sheet.ccs-sys-dark .resource-label-normal,
-.ccs-item-sheet.ccs-sys-dark .settings-list,
-.ccs-item-sheet.ccs-sys-dark .item-name,
-.ccs-item-sheet.ccs-sys-dark .editor-content {
+/* Sheets and forms */
+.ccs-sys-sheet.ccs-sys-dark .sheet-header,
+.ccs-sys-sheet.ccs-sys-dark label,
+.ccs-sys-sheet.ccs-sys-dark .resource-label-normal,
+.ccs-sys-sheet.ccs-sys-dark .settings-list,
+.ccs-sys-sheet.ccs-sys-dark .item-name,
+.ccs-sys-sheet.ccs-sys-dark .editor-content {
   color: var(--ccs-text);
 }
 
-.ccs-item-sheet.ccs-sys-dark .profile-img {
+.ccs-sys-sheet.ccs-sys-dark .profile-img {
   border: 1px solid var(--ccs-line-strong);
   background: rgba(0, 0, 0, 0.3);
 }
 
-.ccs-item-sheet.ccs-sys-dark input::placeholder {
+.ccs-sys-sheet.ccs-sys-dark input::placeholder {
   color: var(--ccs-muted);
 }
 
-.ccs-item-sheet.ccs-sys-dark input:focus,
-.ccs-item-sheet.ccs-sys-dark select:focus {
+.ccs-sys-sheet.ccs-sys-dark input:focus,
+.ccs-sys-sheet.ccs-sys-dark select:focus {
   border-color: var(--ccs-accent);
   box-shadow: none;
 }
 
-.ccs-item-sheet.ccs-sys-dark nav.sheet-tabs .item {
+.ccs-sys-sheet.ccs-sys-dark nav.sheet-tabs .item {
   border-color: var(--ccs-line-strong);
   background: var(--ccs-panel-2);
   color: var(--ccs-muted);
 }
 
-.ccs-item-sheet.ccs-sys-dark nav.sheet-tabs .item.active {
+.ccs-sys-sheet.ccs-sys-dark nav.sheet-tabs .item.active {
   border-color: var(--ccs-line-strong);
   background: var(--ccs-bg);
   color: var(--ccs-accent);
 }
 
-.ccs-item-sheet.ccs-sys-dark .sheet-body .tab {
+.ccs-sys-sheet.ccs-sys-dark .sheet-body .tab {
   border-color: var(--ccs-line-strong);
   background: var(--ccs-panel);
 }
 
-.ccs-item-sheet.ccs-sys-dark .items-list .item-header,
-.ccs-item-sheet.ccs-sys-dark .items-list .item-header .item-name {
+.ccs-sys-sheet.ccs-sys-dark .items-list .item-header,
+.ccs-sys-sheet.ccs-sys-dark .items-list .item-header .item-name {
   color: var(--ccs-accent);
 }
 
-.ccs-item-sheet.ccs-sys-dark a {
+.ccs-sys-sheet.ccs-sys-dark a {
   color: var(--ccs-text);
 }
 
-.ccs-item-sheet.ccs-sys-dark a:hover {
+.ccs-sys-sheet.ccs-sys-dark a:hover {
   color: var(--ccs-accent);
   text-shadow: none;
 }
 
-.ccs-item-sheet.ccs-sys-dark .editor-content a.content-link,
-.ccs-item-sheet.ccs-sys-dark .editor-content a.inline-roll {
+.ccs-sys-sheet.ccs-sys-dark .editor-content a.content-link,
+.ccs-sys-sheet.ccs-sys-dark .editor-content a.inline-roll {
   border-color: var(--ccs-line-strong);
   background: var(--ccs-panel-2);
   color: var(--ccs-text);
 }
 
-.ccs-item-sheet.ccs-sys-dark .editor-content h4 {
+.ccs-sys-sheet.ccs-sys-dark .editor-content h4 {
   border-color: var(--ccs-line);
 }
 
-.ccs-item-sheet.ccs-sys-dark .ProseMirror,
-.ccs-item-sheet.ccs-sys-dark prose-mirror {
+.ccs-sys-sheet.ccs-sys-dark .ProseMirror,
+.ccs-sys-sheet.ccs-sys-dark prose-mirror {
   --color-control-bg: rgba(255, 255, 255, 0.08);
   --color-hover-bg: rgba(255, 255, 255, 0.14);
 }
 
-.ccs-item-sheet.ccs-sys-dark .ProseMirror menu,
-.ccs-item-sheet.ccs-sys-dark prose-mirror menu {
+.ccs-sys-sheet.ccs-sys-dark .ProseMirror menu,
+.ccs-sys-sheet.ccs-sys-dark prose-mirror menu {
   border-color: var(--ccs-line);
   background: var(--ccs-panel-2);
   color: var(--ccs-text);
 }
 
-.ccs-item-sheet.ccs-sys-dark .ProseMirror menu .pm-dropdown ul,
-.ccs-item-sheet.ccs-sys-dark prose-mirror menu .pm-dropdown ul {
+.ccs-sys-sheet.ccs-sys-dark .ProseMirror menu .pm-dropdown ul,
+.ccs-sys-sheet.ccs-sys-dark prose-mirror menu .pm-dropdown ul {
   background: #1c2430;
   color: var(--ccs-text);
 }
 
 /* Cypher-type icons are coloured inline for a light background. */
-.ccs-item-sheet.ccs-sys-dark i[style*="44, 63, 101"] {
+.ccs-sys-sheet.ccs-sys-dark i[style*="44, 63, 101"] {
   color: #8cb4ff !important;
 }
 
-.ccs-item-sheet.ccs-sys-dark i[style*="146, 16, 18"] {
+.ccs-sys-sheet.ccs-sys-dark i[style*="146, 16, 18"] {
   color: #f08a80 !important;
+}
+
+/* The system's text colours, chosen for its light background. Training keeps its words. */
+.ccs-sys-sheet.ccs-sys-dark .Inability,
+.ccs-sys-sheet.ccs-sys-dark .exceeded {
+  color: #f08a80;
+}
+
+.ccs-sys-sheet.ccs-sys-dark .Trained {
+  color: #7fd18b;
+}
+
+.ccs-sys-sheet.ccs-sys-dark .Specialized,
+.ccs-sys-sheet.ccs-sys-dark .multi-roll-active {
+  color: #8cb4ff;
+}
+
+.ccs-sys-sheet.ccs-sys-dark .archived,
+.ccs-sys-sheet.ccs-sys-dark .tag-inactive,
+.ccs-sys-sheet.ccs-sys-dark .disabled,
+.ccs-sys-sheet.ccs-sys-dark .rollForLevel i,
+.ccs-sys-sheet.ccs-sys-dark .tag-items i {
+  color: var(--ccs-muted);
+}
+
+.ccs-sys-sheet.ccs-sys-dark .black {
+  color: var(--ccs-text);
+}
+
+.ccs-sys-sheet.ccs-sys-dark .rollForLevel,
+.ccs-sys-sheet.ccs-sys-dark .tag-items,
+.ccs-sys-sheet.ccs-sys-dark .cypher-note {
+  border-color: var(--ccs-line-strong);
+  background: var(--ccs-panel-2);
+  color: var(--ccs-text);
+}
+
+.ccs-sys-sheet.ccs-sys-dark .cypher-note::before {
+  background: var(--ccs-line-strong);
+}
+
+.ccs-sys-sheet.ccs-sys-dark .tag-list {
+  border-color: var(--ccs-line);
+}
+
+/* The black "Compatible with Cypher System" logo; the colour and white ones read on dark. */
+.ccs-sys-sheet.ccs-sys-dark img.cypher-logo[src*="compatible-cypher-system-black"] {
+  filter: invert(1);
 }
 
 /* Reduced motion ----------------------------------------------------------- */

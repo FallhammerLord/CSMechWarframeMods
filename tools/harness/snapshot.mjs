@@ -85,7 +85,7 @@ function systemWindow(kind) {
       sheetSettings: {isGM: true, identified: true, backgroundImage: "cypher-blue", backgroundImageBaseSetting: "background-image", backgroundIcon: "none", isMaskForm: true, rollButtons: true},
       itemLists: {tags: [], tagsOnItem: []}
     }).replace(`class="tab${tab === "settings" ? " settings" : ""}" data-group="primary" data-tab="${tab}"`, m => m.replace('class="tab', 'class="tab active'));
-    return `<div class="application window-app cyphersystem sheet item item-sheet ccs-item-sheet ccs-sys-dark themed theme-dark" style="width:575px"><header class="window-header">Item</header><section class="window-content">${html}</section></div>`;
+    return `<div class="application window-app cyphersystem sheet item item-sheet ccs-item-sheet ccs-sys-sheet ccs-sys-dark themed theme-dark" style="width:575px"><header class="window-header">Item</header><section class="window-content">${html}</section></div>`;
   };
   if (kind === "items") return item("artifact", "description") + item("ability", "settings") + item("cypher", "description");
   const roll = H.compile(fs.readFileSync(path.join(CS, "templates/forms/roll-engine-dialog-sheet.html"), "utf8"))({});

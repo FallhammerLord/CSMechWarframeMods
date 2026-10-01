@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.0.0-rc.3 — dark system windows
+
+- **The Cypher System's own windows can be dark:** the default PC sheet, NPC, Companion, Community, Vehicle and Marker sheets, every item sheet (sidebar, compendium, NPC-owned), the All-in-One roll dialog for any actor, and Sheet Customization. Same palette as the card sheet.
+- **Per-player setting** *Dark Cypher System windows*: Follow Foundry's theme (default), Always dark, or Off. Characters using the Cypher Card Sheet keep following that sheet's theme, as before.
+- The system's light-background colours are adjusted for dark: training words (Inability, Trained, Specialized), archived and inactive items, tags, roll-for-level buttons, notes, and the black "Compatible with Cypher System" logo.
+- While dark, the GM's sheet background choice (Sheet Customization) isn't shown. The difficulty and GM intrusion panels are already translucent and dark, so they're unchanged.
+- New harness scripts render the system's real sheets (`system-render.mjs`) and screenshot each tab light and dark (`system-preview.mjs`). Card sheet states unchanged (snapshot check).
+
 ## 1.0.0-rc.2 — collapsible chat cards
 
 - **Item cards sent to chat collapse to their header.** Click the header (or press Enter on it) to open or close the item text. This covers the large card's chat button and socket **Use**.

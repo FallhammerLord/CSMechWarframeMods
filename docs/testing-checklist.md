@@ -43,6 +43,12 @@ In `tools/harness`, with the environment from its README:
 - [ ] A roll from a card: item text starts closed; clicking the item name, the Difficulty line and the dice total each open and close.
 - [ ] Set *Roll details in chat cards* to Open: the chat log re-renders with breakdowns and dice open, and they still close on click.
 
+## Dark system windows
+
+- [ ] With Foundry's applications theme dark, open an NPC sheet, a sidebar item and the default PC sheet: all dark, every tab readable.
+- [ ] Set *Dark Cypher System windows* to Off: open system windows return to the system's look. Always dark: dark even with Foundry light.
+- [ ] A card-sheet character's item sheet still follows the card sheet's theme.
+
 ## Large card
 
 - [ ] Click a card: the large card covers it, leaving the d20 visible. Click again, Escape, or click outside: it closes.

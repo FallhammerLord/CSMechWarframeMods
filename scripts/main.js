@@ -6,6 +6,7 @@ import {preloadSystemImports} from "./adapter/system-imports.js";
 import {GROUP_MODES} from "./adapter/cypher.js";
 import {registerMovementRuler} from "./adapter/ruler.js";
 import {registerSystemUi} from "./adapter/system-ui.js";
+import {DARK_SETTING} from "./adapter/system-dark.js";
 import {FRAME_SETTING, applyFrameStyles, defaultFrames} from "./frames/frames.js";
 import {CardFramesConfig} from "./frames/frames-config.js";
 
@@ -23,6 +24,20 @@ Hooks.once("init", () => {
     type: String,
     choices: Object.fromEntries(GROUP_MODES.map(mode => [mode, `CCS.Grid.Mode.${mode}`])),
     default: "category"
+  });
+
+  // The system's windows in the dark theme: each player chooses (system-dark.js).
+  game.settings.register(MODULE_ID, DARK_SETTING, {
+    name: "CCS.Setting.systemDark.Name",
+    hint: "CCS.Setting.systemDark.Hint",
+    scope: "client",
+    config: true,
+    type: String,
+    choices: {foundry: "CCS.Setting.systemDark.foundry", always: "CCS.Setting.systemDark.always", off: "CCS.Setting.systemDark.off"},
+    default: "foundry",
+    onChange: () => {
+      for (const app of Object.values(ui.windows)) if (app.element?.[0]?.classList.contains("ccs-sys")) app.render(false);
+    }
   });
 
   // Chat cards: each player chooses how item text and roll details start.

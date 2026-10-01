@@ -64,6 +64,17 @@ node chat-test.mjs
 Checks chat card disclosure in Chromium: a card sent from the sheet and a system roll card, under
 each player setting, including click and keyboard toggling.
 
+## System windows (dark theme)
+
+```sh
+node system-render.mjs     # the system's real sheet classes and templates → out/sys-*.html
+node system-preview.mjs    # screenshots per tab, light and dark → out/sys-shots/
+```
+
+Renders the Cypher System's own actor sheets, item sheets and small forms with Foundry mocked,
+then screenshots each tab with and without the module's dark theme. Pass a name filter to
+`system-preview.mjs` (for example `npc` or `item-`) to shoot fewer.
+
 ## Large card behaviour
 
 ```sh
