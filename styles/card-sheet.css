@@ -1161,12 +1161,15 @@
   color: var(--ccs-text);
 }
 
-/* While editing, the text area fills the box, so a click anywhere in it places the caret. Only
-   the part holding the text grows; the toolbar keeps its own height. */
+/* Foundry's editor: prose-mirror > menu + .editor-container > .editor-content, the content
+   positioned inside its container, so its own padding sets the margins. While editing, only
+   the part holding the text grows, so a click anywhere in the box reaches the text. */
 .ccs-text-panel prose-mirror {
+  --menu-height: 36px;
   position: relative;
   display: flex;
   flex-direction: column;
+  padding: 0;
 }
 
 .ccs-text-panel prose-mirror > * {
@@ -1184,37 +1187,15 @@
 .ccs-text-panel prose-mirror .ProseMirror {
   flex: 1 1 auto;
   min-height: 240px;
-  padding: 4px 8px;
   outline: none;
 }
 
-/* The toolbar: one row, a little taller than its buttons. */
-.ccs-text-panel prose-mirror :is(menu, .editor-menu) {
-  flex: 0 0 auto;
-  min-height: 0;
-  height: auto;
-  margin: 0 0 8px;
-  padding: 4px 6px;
-  gap: 2px;
-  border-radius: var(--ccs-radius);
-  background: var(--ccs-panel-2);
-}
-
-.ccs-text-panel prose-mirror :is(menu, .editor-menu) button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 0;
-  height: 30px;
-}
-
-/* Reading view: the text gets room from the frame. The edit button sits in the corner. */
-.ccs-text-panel prose-mirror:not([open]),
+.ccs-text-panel prose-mirror .editor-content,
 .ccs-text-panel .ccs-enriched {
   padding: 12px 16px;
 }
 
-.ccs-text-panel prose-mirror:not([open]) > button {
+.ccs-text-panel prose-mirror > button.toggle {
   top: 8px;
   right: 8px;
 }

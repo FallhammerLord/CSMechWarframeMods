@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0-rc.7
+
+- **Editor spacing uses Foundry's own controls** (rc.6 had no visible effect). The toolbar height is set through Foundry's `--menu-height` (36px), and the buttons keep Foundry's sizing, so Save centres as Foundry draws it. Margins are padding on the text itself (12px top and bottom, 16px sides), because Foundry positions the text inside its container, where padding on the outer box can't reach.
+- `editor-test.mjs` stands in Foundry's editor structure (confirmed from dnd5e's styles) and checks toolbar height and text margins in editing and reading view.
+
 ## 1.0.0-rc.6
 
 - **Editor toolbar:** a little taller than its buttons again (4px above and below), on its own panel. Buttons centre their icons, so Save sits centred.
