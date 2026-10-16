@@ -325,6 +325,12 @@ export class CypherCardSheet extends HandlebarsApplicationMixin(ActorSheetV2) {
     root.addEventListener("input", event => {
       if (event.target.matches?.("input[data-tooltip-value]")) event.target.dataset.tooltip = event.target.value;
     });
+    // A click on a notes editor's frame (outside its text) focuses the editor.
+    root.addEventListener("click", event => {
+      const editor = event.target.closest?.(".ccs-text-panel prose-mirror");
+      if (!editor || event.target.closest(".ProseMirror, menu, button, a")) return;
+      editor.focus();
+    });
     // Fallback drop handling in case the core sheet doesn't bind DragDrop in this version.
     root.addEventListener("dragover", event => event.preventDefault());
     root.addEventListener("drop", event => this.#handleDrop(event));

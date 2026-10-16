@@ -1152,13 +1152,31 @@
 
 .ccs-text-panel prose-mirror,
 .ccs-text-panel .ccs-enriched {
-  display: block;
+  display: flex;
+  flex-direction: column;
   min-height: 300px;
   padding: 8px;
   border: 1px solid var(--ccs-line);
   border-radius: var(--ccs-radius);
   background: var(--ccs-panel);
   color: var(--ccs-text);
+}
+
+/* The editable area fills the box, so a click anywhere in it places the caret. */
+.ccs-text-panel prose-mirror > :not(menu, .ProseMirror) {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.ccs-text-panel prose-mirror .ProseMirror {
+  flex: 1 1 auto;
+  min-height: 240px;
+  outline: none;
+}
+
+.ccs-text-panel prose-mirror:focus-within {
+  border-color: var(--ccs-accent);
 }
 
 /* Toolbar, tag bar, currency ----------------------------------------------- */

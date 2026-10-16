@@ -55,6 +55,15 @@ to run one state. Comparing `out/render.log` with `baseline/render.log` checks t
 The stand-ins for core Foundry styles are minimal, so this can't catch every interaction with
 core CSS. Test in Foundry before release.
 
+## Notes editors
+
+```sh
+node editor-test.mjs
+```
+
+Checks that the Notes, GM Notes and Description editors' text area fills its box and takes a
+click anywhere in it. Foundry's editor is stood in by its markup; run `render.mjs` first.
+
 ## Chat cards
 
 ```sh

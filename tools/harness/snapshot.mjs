@@ -28,7 +28,7 @@ function assets(dir) {
 function saveBaseline() {
   fs.rmSync(BASE, {recursive: true, force: true});
   fs.mkdirSync(BASE);
-  for (const f of fs.readdirSync(OUT)) if (f.startsWith("out-") || f === "frames.css") fs.copyFileSync(path.join(OUT, f), path.join(BASE, f));
+  for (const f of fs.readdirSync(OUT)) if (f.startsWith("out-") || f === "frames.css" || f === "render.log") fs.copyFileSync(path.join(OUT, f), path.join(BASE, f));
   fs.copyFileSync(path.join(ROOT, "styles/card-sheet.css"), path.join(BASE, "card-sheet.css"));
   fs.copyFileSync(path.join(CS, "css/cyphersystem.css"), path.join(BASE, "cyphersystem.css"));
 }

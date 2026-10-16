@@ -16,6 +16,7 @@ In `tools/harness`, with the environment from its README:
 - [ ] `node snapshot.mjs compare` shows no differences, or only intended ones.
 - [ ] `node popover-test.mjs` passes.
 - [ ] `node chat-test.mjs` passes.
+- [ ] `node editor-test.mjs` passes.
 
 ## Load
 
@@ -30,6 +31,10 @@ In `tools/harness`, with the environment from its README:
 - [ ] Recovery tiles roll, and an unused tile can be used out of order.
 - [ ] Group by category, type and tag; family filter and search narrow the grid.
 - [ ] A tag chip toggles its tag (stats change as on the default sheet).
+
+## Notes
+
+- [ ] Notes, GM Notes and Description: click low in the empty box, type, click another tab and back. The text is saved.
 
 ## Rolls
 

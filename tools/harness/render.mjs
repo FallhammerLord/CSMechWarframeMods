@@ -151,6 +151,9 @@ console.log("== design", JSON.stringify(cs.sheetDesign(actor)));
 const sheet = new CypherCardSheet();
 Object.defineProperty(sheet, "actor", {value: actor});
 Object.defineProperty(sheet, "isEditable", {value: true});
+// Notes tab, for editor-test.mjs.
+sheet.view.tab = "notes";
+fs.writeFileSync("out-notes.html", compile(`${MOD}sheet.hbs`)(await sheet._prepareContext({})));
 for (const tab of ["cards", "settings"]) {
   for (const mode of cs.GROUP_MODES) {
     const ctx = await sheet._prepareContext({});

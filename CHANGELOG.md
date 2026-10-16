@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0-rc.4
+
+- **Fix: the Notes, GM Notes and Description editors can be edited again.** The editable area had collapsed to one line at the top of its box, so clicks in the rest of the box hit the frame and did nothing. It now fills the box, and a click anywhere in the box focuses the editor. The box outline turns gold while editing.
+- New `tools/harness/editor-test.mjs` checks that the text area fills the box and takes clicks. `snapshot.mjs baseline` now keeps `render.log`.
+
 ## 1.0.0-rc.3 — dark system windows
 
 - **The Cypher System's own windows can be dark:** the default PC sheet, NPC, Companion, Community, Vehicle and Marker sheets, every item sheet (sidebar, compendium, NPC-owned), the All-in-One roll dialog for any actor, and Sheet Customization. Same palette as the card sheet.
