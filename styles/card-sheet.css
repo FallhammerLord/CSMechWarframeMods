@@ -1150,58 +1150,52 @@
   padding: 8px 12px 12px;
 }
 
+/* Notes editors use Foundry's own layout. Core v14 sizes the box from --min-height and
+   positions the text over the whole box; the core "content-sized" mode (class in sheet.hbs)
+   flows the text below the toolbar instead, so the two never overlap and the box grows with
+   the text. The sheet only adds its frame, margins and a text area tall enough to click. */
 .ccs-text-panel prose-mirror,
 .ccs-text-panel .ccs-enriched {
-  display: block;
-  min-height: 300px;
-  padding: 8px;
   border: 1px solid var(--ccs-line);
   border-radius: var(--ccs-radius);
   background: var(--ccs-panel);
   color: var(--ccs-text);
 }
 
-/* Foundry's editor: prose-mirror > menu + .editor-container > .editor-content, the content
-   positioned inside its container, so its own padding sets the margins. While editing, only
-   the part holding the text grows, so a click anywhere in the box reaches the text. */
 .ccs-text-panel prose-mirror {
-  --menu-height: 36px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  padding: 0;
+  --min-height: 300px;
 }
 
-.ccs-text-panel prose-mirror > * {
-  flex: 0 0 auto;
-}
-
-.ccs-text-panel prose-mirror > :has(.ProseMirror),
-.ccs-text-panel prose-mirror > .ProseMirror {
-  display: flex;
-  flex: 1 1 auto;
-  flex-direction: column;
-  min-height: 0;
-}
-
-.ccs-text-panel prose-mirror .ProseMirror {
-  flex: 1 1 auto;
-  min-height: 240px;
-  outline: none;
-}
-
-.ccs-text-panel prose-mirror .editor-content,
-.ccs-text-panel .ccs-enriched {
+.ccs-text-panel prose-mirror .editor-content {
   padding: 12px 16px;
 }
 
-.ccs-text-panel prose-mirror > button.toggle {
-  top: 8px;
-  right: 8px;
+/* The text part fills the rest of the box, so a click anywhere below the toolbar reaches it.
+   Only the part holding the text grows; the toolbar keeps Foundry's height. */
+.ccs-text-panel prose-mirror.content-sized {
+  display: flex;
+  flex-direction: column;
+}
+
+.ccs-text-panel prose-mirror.content-sized > :has(.editor-content) {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+}
+
+.ccs-text-panel prose-mirror.content-sized .editor-content {
+  flex: 1 1 auto;
 }
 
 .ccs-text-panel prose-mirror:focus-within {
   border-color: var(--ccs-accent);
+}
+
+/* Read-only view (observers). */
+.ccs-text-panel .ccs-enriched {
+  display: block;
+  min-height: 300px;
+  padding: 12px 16px;
 }
 
 /* Toolbar, tag bar, currency ----------------------------------------------- */

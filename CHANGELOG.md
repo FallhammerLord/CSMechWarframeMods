@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0-rc.8 — notes editors on Foundry's standard layout
+
+- **Fix: the editor's text no longer overlaps its toolbar.** Foundry's core v14 styles position the text over the whole editor box; the notes editors now use Foundry's own `content-sized` mode, which flows the text below the toolbar. Box height comes from Foundry's `--min-height` (300px).
+- **Standard Foundry behaviour throughout:** reading view with Foundry's edit button; the toolbar and its buttons are Foundry's, unmodified; Save on the toolbar saves and returns to reading view. The sheet adds only its frame, a gold outline while editing, 12/16px text margins, and a text area that fills the box below the toolbar.
+- `editor-test.mjs` reproduces the rc.7 overlap and checks toolbar/text separation, margins and the click area.
+
 ## 1.0.0-rc.7
 
 - **Editor spacing uses Foundry's own controls** (rc.6 had no visible effect). The toolbar height is set through Foundry's `--menu-height` (36px), and the buttons keep Foundry's sizing, so Save centres as Foundry draws it. Margins are padding on the text itself (12px top and bottom, 16px sides), because Foundry positions the text inside its container, where padding on the outer box can't reach.

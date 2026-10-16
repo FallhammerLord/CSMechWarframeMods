@@ -504,3 +504,11 @@ v14 can detach any ApplicationV2 into its own browser window. Module code still 
 - **Mechanism (`system-dark.js`):** classes `ccs-sys` + kind (`ccs-actor-sheet`, `ccs-item-sheet`, `ccs-sys-form`, `ccs-aio`) + `ccs-sys-sheet` for sheets and forms, and `ccs-sys-dark` when dark. The window, its content, form and sheet body get an inline `!important` background, since the system's backgrounds are `!important`. CSS in `card-sheet.css` under "System windows".
 - **Colours adjusted:** training classes, archived / inactive / disabled, tags, roll-for-level, `.cypher-note`, and the black logo (inverted). Cypher-type icons are coloured inline and matched by colour.
 - **Harness:** `system-render.mjs` runs the system's real sheet classes (getData) and templates with Foundry mocked; `system-preview.mjs` screenshots each tab light and dark.
+
+## 22. Notes editors (1.0.0-rc.8)
+
+Notes, GM Notes and Description use Foundry's `<prose-mirror>` element as Foundry intends it:
+
+- **Mode:** `toggled`: reading view (enriched HTML) with Foundry's edit button; the toolbar's Save stores the value (the sheet's submit-on-change saves it to the actor) and returns to reading view ([API](https://foundryvtt.com/api/classes/foundry.applications.elements.HTMLProseMirrorElement.html)). Observers get a plain read-only block.
+- **Layout:** core v14 sizes the box from `--min-height` and absolutely positions `.editor-content` over it; the core `content-sized` class flows the text below the toolbar instead. The sheet sets `--min-height: 300px`, uses `content-sized`, and makes only the wrapper holding the text fill the rest of the box. The toolbar and its buttons keep Foundry's styles. Lesson from rc.4 to rc.7: overriding the toolbar's height, the box's padding or the content's position fights core and misplaces the layers.
+- **Test:** `editor-test.mjs` stands in the element's markup and those core rules.
