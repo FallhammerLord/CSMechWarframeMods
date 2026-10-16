@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0-rc.6
+
+- **Editor toolbar:** a little taller than its buttons again (4px above and below), on its own panel. Buttons centre their icons, so Save sits centred.
+- **Reading view margins:** 12px top and bottom, 16px at the sides, with the edit button in the corner. The observer view matches. The text while editing has a small inset too.
+- `editor-test.mjs` now fails if the toolbar is either stretched or tight.
+
 ## 1.0.0-rc.5
 
 - **Notes, GM Notes and Description open in reading view.** The formatted text shows with Foundry's edit button; click it to edit, and the toolbar's Save button saves and returns to reading. Observers see the reading view only, as before.

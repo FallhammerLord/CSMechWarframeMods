@@ -52,8 +52,9 @@ for (const [name, inner] of Object.entries(variants)) {
   if (!box) continue;
   check(`${name}: the text area fills the box (${Math.round(box.height)} of ${Math.round(box.boxHeight)}px)`, box.height >= box.boxHeight - 80);
   check(`${name}: a click low in the box reaches the text`, box.hitsText);
-  // The toolbar is its buttons plus a little padding, never stretched by the box.
-  check(`${name}: the toolbar stays compact (${Math.round(box.menu)}px for ${Math.round(box.button)}px buttons)`, box.menu - box.button <= 8);
+  // The toolbar is its buttons plus a little padding: never stretched by the box, never tight.
+  const pad = box.menu - box.button;
+  check(`${name}: the toolbar is a little taller than its buttons (${Math.round(box.menu)}px for ${Math.round(box.button)}px)`, pad >= 6 && pad <= 12);
 }
 
 await browser.close();
