@@ -1152,8 +1152,7 @@
 
 .ccs-text-panel prose-mirror,
 .ccs-text-panel .ccs-enriched {
-  display: flex;
-  flex-direction: column;
+  display: block;
   min-height: 300px;
   padding: 8px;
   border: 1px solid var(--ccs-line);
@@ -1163,6 +1162,11 @@
 }
 
 /* The editable area fills the box, so a click anywhere in it places the caret. */
+.ccs-text-panel prose-mirror {
+  display: flex;
+  flex-direction: column;
+}
+
 .ccs-text-panel prose-mirror > :not(menu, .ProseMirror) {
   display: flex;
   flex: 1 1 auto;
