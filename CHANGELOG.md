@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.0-rc.9
+
+- **Fix: the editors' edit button centres its icon.** Foundry's button styles give icons a right margin meant for buttons with a label; the edit button now gets the sheet's icon-button treatment (no padding, gap or icon margin), like every other icon button on the sheet.
+- `editor-test.mjs` checks the icon is centred (rc.8 was 2px off in the test).
+
 ## 1.0.0-rc.8 — notes editors on Foundry's standard layout
 
 - **Fix: the editor's text no longer overlaps its toolbar.** Foundry's core v14 styles position the text over the whole editor box; the notes editors now use Foundry's own `content-sized` mode, which flows the text below the toolbar. Box height comes from Foundry's `--min-height` (300px).

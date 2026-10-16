@@ -22,7 +22,8 @@ prose-mirror{display:flex;flex-direction:column;position:relative;min-height:var
 prose-mirror menu{display:flex;align-items:center;height:var(--menu-height,32px);margin:0;padding:0 4px;flex:none}
 prose-mirror .editor-content{position:absolute;inset:0;overflow:auto}
 prose-mirror.content-sized .editor-content{position:unset}
-prose-mirror > button.toggle{position:absolute;top:4px;right:4px}`;
+prose-mirror > button.toggle{position:absolute;top:4px;right:4px;width:28px;height:28px}
+.application button{display:flex;gap:6px;padding:0 8px;align-items:center} .application button > i{margin-right:4px}`;
 const css = fs.readFileSync(path.join(ROOT, "styles/card-sheet.css"), "utf8");
 const sheet = fs.readFileSync(path.join(HERE, "out/out-notes.html"), "utf8");
 const MENU = '<menu class="editor-menu"><button type="button">B</button><button type="button">Save</button></menu>';
@@ -30,7 +31,7 @@ const TEXT = '<div class="editor-content ProseMirror" contenteditable="true"><p>
 const views = {
   editing: `${MENU}<div class="editor-container">${TEXT}</div>`,
   "editing (no wrapper)": `${MENU}${TEXT}`,
-  reading: '<div class="editor-content"><p>start</p></div><button type="button" class="toggle">Edit</button>'
+  reading: '<div class="editor-content"><p>start</p></div><button type="button" class="toggle"><i style="display:inline-block;width:14px;height:14px"></i></button>'
 };
 
 const browser = await chromium.launch({executablePath: process.env.CHROMIUM_PATH});
@@ -51,13 +52,17 @@ for (const [name, inner] of Object.entries(views)) {
     const menu = rect(box.querySelector("menu"));
     const editable = box.querySelector(".ProseMirror");
     const hit = editable && document.elementFromPoint(b.left + b.width / 2, b.bottom - 20);
+    const toggle = box.querySelector("button.toggle");
+    const t = rect(toggle), icon = rect(toggle?.querySelector("i"));
+    const off = toggle && Math.max(Math.abs(icon.left + icon.width / 2 - (t.left + t.width / 2)), Math.abs(icon.top + icon.height / 2 - (t.top + t.height / 2)));
     return {box: b.height, textTop: text.top, textHeight: text.height, menuBottom: menu?.bottom,
-      left: p.left - b.left, top: p.top - (menu?.bottom ?? b.top), editable: !!editable, hitsText: !!hit?.closest?.(".ProseMirror")};
+      left: p.left - b.left, top: p.top - (menu?.bottom ?? b.top), editable: !!editable, hitsText: !!hit?.closest?.(".ProseMirror"), off};
   });
   check(`${name}: the notes tab has an editor`, !!m);
   if (!m) continue;
   if (m.menuBottom !== undefined) check(`${name}: the text starts below the toolbar, never under it`, m.textTop >= m.menuBottom - 0.5);
   check(`${name}: the text has margins (${Math.round(m.left)}px side, ${Math.round(m.top)}px top)`, m.left >= 14 && m.top >= 10);
+  if (m.off != null) check(`${name}: the edit button's icon is centred (${m.off.toFixed(1)}px off)`, m.off <= 0.5);
   if (m.editable) {
     check(`${name}: the text area fills the box (${Math.round(m.textHeight)}px of ${Math.round(m.box)}px)`, m.textHeight >= m.box - 80);
     check(`${name}: a click low in the box reaches the text`, m.hitsText);

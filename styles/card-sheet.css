@@ -283,7 +283,8 @@
 .ccs-sheet .ccs-icon-btn,
 .ccs-sheet .ccs-card-actions > button,
 .ccs-popover .ccs-pop-control,
-.ccs-popover .ccs-pop-archive {
+.ccs-popover .ccs-pop-archive,
+.ccs-sheet .ccs-text-panel prose-mirror > button.toggle {
   display: grid;
   place-items: center;
   justify-content: center;
@@ -298,7 +299,8 @@
 .ccs-sheet .ccs-card-actions > button > i,
 .ccs-sheet .ccs-icon-btn > i,
 .ccs-popover .ccs-pop-control > i,
-.ccs-popover .ccs-pop-archive > i {
+.ccs-popover .ccs-pop-archive > i,
+.ccs-sheet .ccs-text-panel prose-mirror > button.toggle > i {
   margin: 0;
   width: 1.25em;
   line-height: 1;
