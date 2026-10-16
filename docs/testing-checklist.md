@@ -34,7 +34,8 @@ In `tools/harness`, with the environment from its README:
 
 ## Notes
 
-- [ ] Notes, GM Notes and Description: click low in the empty box, type, click another tab and back. The text is saved.
+- [ ] Notes, GM Notes and Description open in reading view. The edit button opens the editor; the toolbar is one compact row.
+- [ ] Click low in the empty box and type. Save returns to reading view with the text kept, also after closing and reopening the sheet.
 
 ## Rolls
 

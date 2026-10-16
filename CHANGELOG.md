@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.0-rc.5
+
+- **Notes, GM Notes and Description open in reading view.** The formatted text shows with Foundry's edit button; click it to edit, and the toolbar's Save button saves and returns to reading. Observers see the reading view only, as before.
+- **Compact editor toolbar:** it keeps the height of its buttons instead of stretching to half the box, with less padding.
+- `editor-test.mjs` also checks the toolbar height across four possible editor layouts.
+
 ## 1.0.0-rc.4
 
 - **Fix: the Notes, GM Notes and Description editors can be edited again.** The editable area had collapsed to one line at the top of its box, so clicks in the rest of the box hit the frame and did nothing. It now fills the box, and a click anywhere in the box focuses the editor. The box outline turns gold while editing.

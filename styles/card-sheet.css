@@ -1161,22 +1161,46 @@
   color: var(--ccs-text);
 }
 
-/* The editable area fills the box, so a click anywhere in it places the caret. */
+/* While editing, the text area fills the box, so a click anywhere in it places the caret. Only
+   the part holding the text grows; the toolbar keeps its own height. */
 .ccs-text-panel prose-mirror {
+  position: relative;
   display: flex;
   flex-direction: column;
 }
 
-.ccs-text-panel prose-mirror > :not(menu, .ProseMirror) {
+.ccs-text-panel prose-mirror > * {
+  flex: 0 0 auto;
+}
+
+.ccs-text-panel prose-mirror > :has(.ProseMirror),
+.ccs-text-panel prose-mirror > .ProseMirror {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
+  min-height: 0;
 }
 
 .ccs-text-panel prose-mirror .ProseMirror {
   flex: 1 1 auto;
   min-height: 240px;
   outline: none;
+}
+
+/* A compact toolbar. */
+.ccs-text-panel prose-mirror :is(menu, .editor-menu) {
+  flex: 0 0 auto;
+  min-height: 0;
+  height: auto;
+  margin: 0 0 6px;
+  padding: 2px 4px;
+  gap: 2px;
+}
+
+.ccs-text-panel prose-mirror :is(menu, .editor-menu) button {
+  min-height: 0;
+  height: 26px;
+  padding: 0 6px;
 }
 
 .ccs-text-panel prose-mirror:focus-within {

@@ -47,7 +47,7 @@
         <section class="ccs-panel ccs-text-panel" data-tab="{{key}}" role="tabpanel" {{#unless (eq @root.view.tab key)}}hidden{{/unless}}>
           {{#if (or (ne key "gmNotes") @root.isGM)}}
             {{#if @root.editable}}
-              <prose-mirror name="{{entry.path}}" value="{{entry.source}}" document-uuid="{{@root.actor.uuid}}"></prose-mirror>
+              <prose-mirror name="{{entry.path}}" value="{{entry.source}}" document-uuid="{{@root.actor.uuid}}" toggled>{{{entry.enriched}}}</prose-mirror>
             {{else}}
               <div class="ccs-enriched">{{{entry.enriched}}}</div>
             {{/if}}
